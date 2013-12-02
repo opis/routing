@@ -20,22 +20,45 @@
 
 namespace Opis\Routing;
 
-class PathFilter implements FilterInterface
+abstract class Router
 {
-    protected $compiler;
     
-    protected $path;
+    protected $collection;
     
-    public function __construct($path, CompilerInterface $compiler)
+    public function __construct(RouteCollection $collection)
     {
-        $this->compiler = $compiler;
-        $this->path = $path;
+        $this->collection = $collection;
+    }
+    
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+    
+    public function run()
+    {
+        foreach($this->collection->getRoutes() as $route)
+        {
+            if($this->match($route))
+            {
+                return $this->dispatcher()->dispatch($route);
+            }
+        }
     }
     
     public function match(Route $route)
     {
-        $pattern = $this->compiler->compile($route->getPath(), $route->getPlaceholders());
-        return preg_match($pattern, $this->path);
+        foreach($this->filters() as $filter)
+        {
+            if(!$filter->match($route))
+            {
+                return false;
+            }
+        }
+        return true;
     }
     
+    public abstract function dispatcher();
+    
+    public abstract function filters();
 }

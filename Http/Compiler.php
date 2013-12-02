@@ -18,7 +18,9 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing;
+namespace Opis\Routing\Http;
+
+use Opis\Routing\CompilerInterface;
 
 class Compiler implements CompilerInterface
 {    
