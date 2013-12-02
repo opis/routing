@@ -5,9 +5,9 @@ namespace Opis\Routing;
 class Compiler implements CompilerInterface
 {    
     
-    public function compile($value, array $wheres = array(), $delimit = true)
+    public function compile($value, array $placeholders = array(), $delimit = true)
     {
-        foreach($wheres as $key => $pattern)
+        foreach($placeholders as $key => $pattern)
         {
             $value = str_replace('/{'.$key.'}', '/(?P<' . $key . '>(' . $pattern . '))', $value);
             $value = str_replace('/{' . $key. '?}', "(?:/(?P<{$key}>({$pattern})))?", $value);
@@ -21,9 +21,9 @@ class Compiler implements CompilerInterface
             $key = $match[1];
             $suffix = isset($match[2]) ? '?' : '';
             $start = strlen($key) + ($suffix === '' ? 2 : 3);
-            if(isset($wheres[$key]))
+            if(isset($placeholders[$key]))
             {
-                $prefix = '(/?(?P<' . $key . '>(' . $wheres[$key] . '))'.$suffix.')' . $suffix;
+                $prefix = '(/?(?P<' . $key . '>(' . $placeholders[$key] . '))'.$suffix.')' . $suffix;
             }
             else
             {
@@ -88,6 +88,20 @@ class Compiler implements CompilerInterface
             }
         }
         return $values;
+    }
+    
+    public function build($pattern, array $values = array())
+    {
+        $names = $this->names($pattern);
+        foreach($names as $name)
+        {
+            if(isset($values[$name]))
+            {
+                $pattern = str_replace('{'.$name.'}', $values[$name], $pattern);
+                $pattern = str_replace('{'.$name.'?}', $values[$name], $pattern);
+            }
+        }
+        return $pattern;
     }
     
     public function delimit($value)

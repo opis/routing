@@ -10,7 +10,7 @@ class Route
     
     protected $routeAction;
     
-    protected $wheres = array();
+    protected $placeholders = array();
     
     protected $bindings = array();
     
@@ -34,9 +34,9 @@ class Route
         return $this->routeAction;
     }
     
-    public function getWheres()
+    public function getPlaceholders()
     {
-        return $this->wheres;
+        return $this->placeholders;
     }
     
     public function getBindings()
@@ -60,9 +60,9 @@ class Route
         return $this;
     }
     
-    public function where($name, $value)
+    public function placeholder($name, $value)
     {
-        $this->wheres[$name] = $value;
+        $this->placeholders[$name] = $value;
         return  $this;
     }
     

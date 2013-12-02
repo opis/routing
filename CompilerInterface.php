@@ -4,7 +4,7 @@ namespace Opis\Routing;
 
 interface CompilerInterface
 {
-    function compile($pattern, array $where = array(), $delimit = true);
+    function compile($pattern, array $placeholders = array(), $delimit = true);
     
     function delimit($compiled);
     
@@ -17,4 +17,6 @@ interface CompilerInterface
     function extract(array $names, array $values, array $defaults = array());
     
     function bind(array $values, array $bindings);
+    
+    function build($pattern, array $values = array());
 }

@@ -10,7 +10,7 @@ class RouteCollection
     
     protected $bindings = array();
     
-    protected $patterns = array();
+    protected $placeholders = array();
     
     protected $filters = array();
     
@@ -26,9 +26,9 @@ class RouteCollection
         return $this;
     }
     
-    public function pattern($name, $value)
+    public function placeholder($name, $value)
     {
-        $this->patterns[$name] = $value;
+        $this->placeholders[$name] = $value;
         return $this;
     }
     
@@ -48,16 +48,14 @@ class RouteCollection
         return $this->filters;
     }
     
-    public function getBindings(Route $route = null)
+    public function getBindings()
     {
-        $bindings = ($route === null) ? array() : $route->getBindings();
-        return $bindings + $this->bindings;
+        return $this->bindings;
     }
     
-    public function getPatterns(Route $route = null)
+    public function getPlaceholders()
     {
-        $patterns = ($route === null) ? array() : $route->getWheres();
-        return $patterns + $this->patterns;
+        return $this->placeholders;
     }
     
 }
