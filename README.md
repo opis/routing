@@ -13,7 +13,7 @@ $collection[] = Route::create('/{user}', function($user) {
     })
     ->where('user', '[a-z]+')
     ->bind('user', function($value){
-	return strtoupper($value);
+        return strtoupper($value);
     });
   
 $router = new Router('/opis', $collection);
