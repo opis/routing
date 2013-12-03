@@ -18,12 +18,10 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing\Http;
+namespace Opis\Routing\Example;
 
-use Opis\Routing\RouteCollection;
 use Opis\Routing\Router as AbstractRouter;
-use Opis\Routing\Http\Filters\Path as PathFilter;
-
+use Opis\Routing\Example\PathFilter;
 
 class Router extends AbstractRouter
 {   
@@ -40,8 +38,6 @@ class Router extends AbstractRouter
         parent::__construct($collection);
         
         $this->path = $path;
-        
-        $this->compiler = new Compiler();
     }
     
     public function getPath()
@@ -51,6 +47,11 @@ class Router extends AbstractRouter
     
     public function getCompiler()
     {
+        if($this->compiler === null)
+        {
+            $this->compiler = new Compiler();
+        }
+        
         return $this->compiler;
     }
     
@@ -71,6 +72,7 @@ class Router extends AbstractRouter
         {
             $this->dispatcher = new Dispatcher($this);
         }
+        
         return $this->dispatcher;
     }
 }

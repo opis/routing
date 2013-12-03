@@ -28,7 +28,7 @@ class Route
     
     protected $routeAction;
     
-    protected $placeholders = array();
+    protected $wildcards = array();
     
     protected $bindings = array();
     
@@ -52,9 +52,9 @@ class Route
         return $this->routeAction;
     }
     
-    public function getPlaceholders()
+    public function getWildcards()
     {
-        return $this->placeholders;
+        return $this->wildcards;
     }
     
     public function getBindings()
@@ -78,9 +78,9 @@ class Route
         return $this;
     }
     
-    public function placeholder($name, $value)
+    public function match($name, $value)
     {
-        $this->placeholders[$name] = $value;
+        $this->wildcards[$name] = $value;
         return  $this;
     }
     

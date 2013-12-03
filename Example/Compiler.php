@@ -18,7 +18,7 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing\Http;
+namespace Opis\Routing\Example;
 
 use Opis\Routing\CompilerInterface;
 

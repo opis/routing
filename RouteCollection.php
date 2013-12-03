@@ -20,60 +20,75 @@
 
 namespace Opis\Routing;
 
-use Closure;
+use Iterator;
+use ArrayAccess;
 
-class RouteCollection
+class RouteCollection implements Iterator, ArrayAccess
 {
     protected $routes = array();
     
-    protected $bindings = array();
-    
-    protected $placeholders = array();
-    
-    protected $filters = array();
-    
-    public function add(Route $route)
+    public function rewind()
     {
-        $this->routes[] = $route;
-        return $this;
+        return reset($this->routes);
     }
     
-    public function bind($name, Closure $value)
+    public function current()
     {
-        $this->bindings[$name] = $value;
-        return $this;
+        return current($this->routes);
     }
     
-    public function placeholder($name, $value)
+    public function key()
     {
-        $this->placeholders[$name] = $value;
-        return $this;
+        return key($this->routes);
     }
     
-    public function filter($name, Closure $filter)
+    public function next()
     {
-        $this->filters[$name] = $filter;
-        return $this;
+        return next($this->routes);
     }
     
-    public function getRoutes()
+    public function valid()
+    {
+        return key($this->routes) !== null;
+    }
+    
+    public function offsetSet($offset, $value)
+    {
+        $this->check($value);
+        
+        if (is_null($offset))
+        {
+            $this->routes[] = $value;
+        }
+        else
+        {
+            $this->routes[$offset] = $value;
+        }
+    }
+    
+    public function offsetExists($offset)
+    {
+        return isset($this->routes[$offset]);
+    }
+    
+    public function offsetUnset($offset)
+    {
+        unset($this->routes[$offset]);
+    }
+    
+    public function offsetGet($offset)
+    {
+        return isset($this->routes[$offset]) ? $this->routes[$offset] : null;
+    }
+    
+    public function toArray()
     {
         return $this->routes;
     }
     
-    public function getFilters()
+    protected function check(Route $value)
     {
-        return $this->filters;
-    }
-    
-    public function getBindings()
-    {
-        return $this->bindings;
-    }
-    
-    public function getPlaceholders()
-    {
-        return $this->placeholders;
+        
     }
     
 }

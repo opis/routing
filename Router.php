@@ -35,9 +35,9 @@ abstract class Router
         return $this->collection;
     }
     
-    public function run()
+    public function execute()
     {
-        foreach($this->collection->getRoutes() as $route)
+        foreach($this->collection as $route)
         {
             if($this->match($route))
             {
@@ -46,7 +46,7 @@ abstract class Router
         }
     }
     
-    public function match(Route $route)
+    protected function match(Route $route)
     {
         foreach($this->filters() as $filter)
         {
@@ -58,7 +58,7 @@ abstract class Router
         return true;
     }
     
-    public abstract function dispatcher();
+    protected abstract function dispatcher();
     
-    public abstract function filters();
+    protected abstract function filters();
 }

@@ -18,30 +18,26 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing\Http\Filters;
+namespace Opis\Routing\Example;
 
 use Opis\Routing\FilterInterface;
-use Opis\Routing\Route;
-use Opis\Routing\Http\Router;
+use Opis\Routing\Route as BaseRoute;
 
-class Path implements FilterInterface
+class PathFilter implements FilterInterface
 {
     protected $compiler;
     
     protected $path;
     
-    protected $placeholders;
-    
     public function __construct(Router $router)
     {
         $this->compiler = $router->getCompiler();
         $this->path = $router->getPath();
-        $this->placeholders = $router->getCollection()->getPlaceholders();
     }
     
-    public function match(Route $route)
+    public function match(BaseRoute $route)
     {
-        $placeholders = $route->getPlaceholders() + $this->placeholders;
+        $placeholders = $route->getWildcards() + $route->get('wildcards');
         $pattern = $this->compiler->compile($route->getPath(), $placeholders);
         return preg_match($pattern, $this->path);
     }

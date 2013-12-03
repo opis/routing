@@ -22,6 +22,10 @@ namespace Opis\Routing;
 
 interface CompilerInterface
 {
+    /**
+     * Compile a pattern
+     */
+    
     function compile($pattern, array $placeholders = array(), $delimit = true);
     
     function delimit($compiled);

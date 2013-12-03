@@ -1,24 +1,24 @@
 ##Opis Routing##
 
 ```php
-use \Opis\Routing\Route;
-use \Opis\Routing\RouteCollection;
-use \Opis\Routing\Http\Router;
+use \Opis\Routing\Example\Route;
+use \Opis\Routing\Example\Router;
+use \Opis\Routing\Example\RouteCollection;
 
-$collection  = new RouteCollection();
 
-$route = new Route('/{alpha}', function($text){
-    print $text;
-});
+$collection = new RouteCollection();
 
-$route->placeholder('alpha', '[a-zA-Z]+')
-      ->bind('alpha', function($value){ return strtoupper($value);});
-
-$collection->add($route);
-
+$collection[] = Route::create('/{user}', function($user) {
+        print $user;
+    })
+    ->where('user', '[a-z]+')
+    ->bind('user', function($value){
+	return strtoupper($value);
+    });
+  
 $router = new Router('/opis', $collection);
 
-$router->run();
+$router->execute();
 ```
 
 Output
