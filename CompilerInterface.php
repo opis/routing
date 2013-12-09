@@ -26,15 +26,13 @@ interface CompilerInterface
      * Compile a pattern
      */
     
-    function compile($pattern, array $placeholders = array(), $delimit = true);
+    function compile($pattern, array $placeholders = array());
     
     function delimit($compiled);
     
     function names($pattern);
     
     function values($pattern, $path);
-    
-    function htmlencode($value);
     
     function extract(array $names, array $values, array $defaults = array());
     
