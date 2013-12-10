@@ -78,7 +78,7 @@ class Route
         return $this;
     }
     
-    public function match($name, $value)
+    public function wildcard($name, $value)
     {
         $this->wildcards[$name] = $value;
         return  $this;
