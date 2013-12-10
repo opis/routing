@@ -225,7 +225,7 @@ class Compiler implements CompilerInterface
     
     public function delimit($value)
     {
-        return $this->delimiter . '^' . $value . '$' . $this->delimit . $this->modifier;
+        return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }
     
 }
