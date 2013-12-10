@@ -24,79 +24,130 @@ namespace Opis\Routing;
 class Compiler implements CompilerInterface
 {    
     
-    protected $startTag = '{';
+    const CAPTURE_LEFT = 0;
     
-    protected $endTag = '}';
+    const CAPTURE_RIGHT = 1;
     
-    protected $separator = '/';
+    const CAPTURE_ALL = 2;
     
-    protected $precede = false;
+    const CAPTURE_ADD_OPTIONAL = 4;
     
-    protected $optional = '?';
+    protected $startTag;
     
-    protected $delimiter = '`';
+    protected $endTag;
     
-    protected $modifier = 'u';
+    protected $separator;
     
-    protected $wildcard = '[a-zA-Z0-9\.\,\-_%=]+';
+    protected $captureLeft;
+    
+    protected $captureAll;
+    
+    protected $captureAddOptional;
+    
+    protected $optional;
+    
+    protected $delimiter;
+    
+    protected $modifier;
+    
+    protected $wildcard;
     
     protected $comp;
     
-    public function __construct()
+    public function __construct($startTag = '{', $endTag = '}', $separator = '/', $optional = '?',
+                                $capture = 6, $delimiter = '`', $modifier = 'u', $wildcard = '[a-zA-Z0-9\.\,\-_%=]+')
     {
+        
+        $capture = (int) $capture;
+        $this->startTag = $startTag;
+        $this->endTag = $endTag;
+        $this->separator = $separator;
+        $this->optional = $optional;
+        $this->captureLeft = ($capture & Compiler::CAPTURE_RIGHT) === Compiler::CAPTURE_LEFT;
+        $this->captureAll = ($capture & Compiler::CAPTURE_ALL) === Compiler::CAPTURE_ALL;
+        $this->captureAddOptional = ($capture & Compiler::CAPTURE_ADD_OPTIONAL) === Compiler::CAPTURE_ADD_OPTIONAL;
+        $this->delimiter = $delimiter;
+        $this->modifier = $modifier;
+        $this->wildcard = $wildcard;
         $this->comp = array(
-            'st' => preg_match($this->startTag, $this->delimiter),
-            'et' => preg_match($this->endTag, $this->delimiter),
-            'sep' => preg_match($this->separator, $this->delimiter),
-            'opt' => preg_match($this->optional, $this->delimiter)
+            preg_quote($startTag, $delimiter),
+            preg_quote($endTag, $delimiter),
+            preg_quote($separator, $delimiter),
+            preg_quote($optional, $delimiter)
         );
     }
     
-    public function compile($value, array $placeholders = array(), $delimit = true)
+    public function compile($value, array $placeholders = array())
     {
+        $names = $this->names($value);
+        
+        if(empty($names))
+        {
+            return preg_quote($value, $this->delimiter);
+        }
+        
+        $names = array_map(function($name){ return $this->wildcard; }, array_flip($names));
+        
+        $placeholders += $names;
+        
         $value = preg_quote($value, $this->delimiter);
         
         list($st, $et, $sep, $opt) = $this->comp;
         
+        $unmatched = array();
+        
         foreach($placeholders as $key => $pattern)
         {
+            $original = $key;
             $key = preg_quote($key, $this->delimiter);
             $pattern = '(?P<' . $key . '>(' . $pattern .'))';
-            if($this->precede)
+            $count = 0;
+            if($this->captureLeft)
             {
-                $value = str_replace($sep . $st . $key . $et, $sep . $pattern, $value);
-                $value = str_replace($sep . $st . $key . $opt . $et, '(?:' . $sep . $pattern .')?', $value);
+                $value = str_replace($sep . $st . $key . $et, $sep . $pattern, $value, $count);
+                if($count == 0)
+                {
+                    $value = str_replace($sep . $st . $key . $opt . $et, '(?:' . $sep . $pattern .')?', $value, $count);
+                }
             }
             else
             {
-                $value = str_replace($st . $key . $et . $sep, $pattern . $sep, $value);
-                $value = str_replace($st . $key . $opt . $et . $sep, '(' . $pattern . $sep . ')?', $value);
+                $value = str_replace($st . $key . $et . $sep, $pattern . $sep, $value, $count);
+                if($count == 0)
+                {
+                    $value = str_replace($st . $key . $opt . $et . $sep, '(' . $pattern . $sep . ')?', $value, $count);
+                }
+            }
+            if($count == 0)
+            {
+                $unmatched[$original] = $pattern;
             }
         }
         
-        $wild = '(?P<$1>(' . $this->wildcard . '))';
-        if($this->precede)
+        if($this->captureAll && !empty($unmatched))
         {
-            $pfx = $this->delimiter . $sep . $st . '([^' . $opt . ']+)';
-            $sfx = $et . $this->delimiter;
-            $wildOpt = '(?:' . $sep . $wild .')?';
+            foreach($unmatched as $key => $pattern)
+            {
+                if($this->captureAddOptional)
+                {
+                     $pattern = $this->captureLeft ? '(' . $sep . ')?' . $pattern : $pattern . '(' . $sep . ')?';
+                }
+                
+                $value = str_replace($st . $key . $et, $pattern, $value, $count);
+                if($count == 0)
+                {
+                    $value = str_replace($st . $key . $opt . $et, '('. $pattern . ')?', $value);
+                }
+            }
         }
-        else
-        {
-            $pfx = $this->delimiter . $st . '([^' . $opt . ']+)';
-            $sfx = $sep . $et . $this->delimiter;
-            $wildOpt = '(' . $wild . $sep . ')?';
-        }
-        
-        $value = preg_replace($pfx . $sfx, $sep . $wild, $value);
-        $value = preg_replace($pfx . $opt . $sfx, $wildOpt, $value);
-        
         return $value;
     }
     
     public function names($pattern)
     {
-        $regex = $this->delimiter . $this->comp['st'] . '(.*)' . $this->comp['et'] . $this->delimiter;
+        list($st, $et) = $this->comp;
+        
+        $regex = $this->delimiter . $st . '(.*?)' . $et . $this->delimiter;
         
         preg_match_all($regex, $pattern, $matches);
         
@@ -162,8 +213,11 @@ class Compiler implements CompilerInterface
         {
             if(isset($values[$name]))
             {
-                $pattern = str_replace($this->startTag . $name . $this->endTag, $values[$name], $pattern);
-                $pattern = str_replace($this->startTag . $name . $this->optional . $this->endTag, $values[$name], $pattern);
+                $pattern = str_replace($this->startTag . $name . $this->endTag, $values[$name], $pattern, $count);
+                if($count == 0)
+                {
+                    $pattern = str_replace($this->startTag . $name . $this->optional . $this->endTag, $values[$name], $pattern);
+                }
             }
         }
         return $pattern;
