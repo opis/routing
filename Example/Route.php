@@ -15,7 +15,7 @@ class Route extends BaseRoute
     
     public function where($name, $value)
     {
-        return $this->match($name, $value);
+        return $this->wildcard($name, $value);
     }
     
     public static function create($path, Closure $action)

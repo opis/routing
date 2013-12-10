@@ -41,6 +41,7 @@ class Dispatcher implements DispatcherInterface
         $placeholders = $route->getWildcards() + $route->get('wildcards');
         $bindings = $route->getBindings() + $route->get('bindings');
         $expr = $this->compiler->compile($routePath, $placeholders);
+        $expr = $this->compiler->delimit($expr);
         $names = $this->compiler->names($routePath);
         $values = $this->compiler->values($expr, $this->path);
         $values = $this->compiler->extract($names, $values, $route->getDefaults());

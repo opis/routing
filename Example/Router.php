@@ -22,6 +22,7 @@ namespace Opis\Routing\Example;
 
 use Opis\Routing\Router as AbstractRouter;
 use Opis\Routing\Example\PathFilter;
+use Opis\Routing\Compiler;
 
 class Router extends AbstractRouter
 {   

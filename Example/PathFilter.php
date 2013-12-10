@@ -39,6 +39,7 @@ class PathFilter implements FilterInterface
     {
         $placeholders = $route->getWildcards() + $route->get('wildcards');
         $pattern = $this->compiler->compile($route->getPath(), $placeholders);
+        $pattern = $this->compiler->delimit($pattern);
         return preg_match($pattern, $this->path);
     }
     
