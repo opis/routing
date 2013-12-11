@@ -28,6 +28,8 @@ interface CompilerInterface
     
     function compile($pattern, array $placeholders = array());
     
+    function expression($pattern, array $placeholders = array());
+    
     function delimit($compiled);
     
     function names($pattern);

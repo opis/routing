@@ -144,6 +144,11 @@ class Compiler implements CompilerInterface
         return $value;
     }
     
+    public function expression($pattern, array $placeholders = array())
+    {
+        return new CompiledExpression($this, $pattern, $placeholders);
+    }
+    
     public function names($pattern)
     {
         list($st, $et) = $this->comp;
