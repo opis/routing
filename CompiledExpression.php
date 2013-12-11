@@ -49,34 +49,24 @@ class CompiledExpression
         return $this->cache['compiled'];
     }
     
-    public function values()
+    public function values($path)
     {
-        if(!isset($this->cache['values']))
+        if(!isset($this->cache['values'][$path]))
         {
-            $this->cache['values'] = $this->compiler->values($this->compile(), $this->pattern);
+            $this->cache['values'][$path] = $this->compiler->values($this->delimit(), $path);
         }
         
-        return $this->cache['values'];
+        return $this->cache['values'][$path];
     }
     
-    public function extract(array $defauls = array())
+    public function extract($path, array $defauls = array())
     {
-        if(!isset($this->cache['extract']))
+        if(!isset($this->cache['extract'][$path]))
         {
-            $this->cache['extract'] = $this->compiler->extract($this->names(), $this->values(), $defauls);
+            $this->cache['extract'][$path] = $this->compiler->extract($this->names(), $this->values($path), $defauls);
         }
         
-        return $this->cache['extract'];
-    }
-    
-    public function bind(array $bindings = array())
-    {
-        if(!isset($this->cache['bind']))
-        {
-            $this->cache['bind'] = $this->compiler->bind($this->values(), $bindings);
-        }
-        
-        return $this->cache['bind'];
+        return $this->cache['extract'][$path];
     }
     
     public function delimit()
