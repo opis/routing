@@ -28,9 +28,9 @@ class Compiler implements CompilerInterface
     
     const CAPTURE_RIGHT = 1;
     
-    const CAPTURE_ALL = 2;
+    const CAPTURE_TRAIL = 2;
     
-    const CAPTURE_ADD_OPTIONAL = 4;
+    const OPT_SEPARATOR_TRAIL = 4;
     
     protected $startTag;
     
@@ -40,9 +40,9 @@ class Compiler implements CompilerInterface
     
     protected $captureLeft;
     
-    protected $captureAll;
+    protected $captureTrail;
     
-    protected $captureAddOptional;
+    protected $addOptionalSeparator;
     
     protected $optional;
     
@@ -64,8 +64,8 @@ class Compiler implements CompilerInterface
         $this->separator = $separator;
         $this->optional = $optional;
         $this->captureLeft = ($capture & Compiler::CAPTURE_RIGHT) === Compiler::CAPTURE_LEFT;
-        $this->captureAll = ($capture & Compiler::CAPTURE_ALL) === Compiler::CAPTURE_ALL;
-        $this->captureAddOptional = ($capture & Compiler::CAPTURE_ADD_OPTIONAL) === Compiler::CAPTURE_ADD_OPTIONAL;
+        $this->captureTrail = ($capture & Compiler::CAPTURE_TRAIL) === Compiler::CAPTURE_TRAIL;
+        $this->addOptionalSeparator = ($capture & Compiler::OPT_SEPARATOR_TRAIL) === Compiler::OPT_SEPARATOR_TRAIL;
         $this->delimiter = $delimiter;
         $this->modifier = $modifier;
         $this->wildcard = $wildcard;
@@ -124,16 +124,17 @@ class Compiler implements CompilerInterface
             }
         }
         
-        if($this->captureAll && !empty($unmatched))
+        if($this->captureTrail && !empty($unmatched))
         {
             foreach($unmatched as $key => $pattern)
             {
-                if($this->captureAddOptional)
+                if($this->addOptionalSeparator)
                 {
                      $pattern = $this->captureLeft ? '(' . $sep . ')?' . $pattern : $pattern . '(' . $sep . ')?';
                 }
                 
                 $value = str_replace($st . $key . $et, $pattern, $value, $count);
+                
                 if($count == 0)
                 {
                     $value = str_replace($st . $key . $opt . $et, '('. $pattern . ')?', $value);

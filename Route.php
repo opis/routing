@@ -84,6 +84,11 @@ class Route
         return  $this;
     }
     
+    public function point($name, $wildcard)
+    {
+        return $this->wildcard($name, '(?P=' . $wildcard. ')');
+    }
+    
     public function defaults($name, $value)
     {
         $this->def[$name] = $value;
