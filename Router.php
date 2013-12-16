@@ -29,7 +29,7 @@ class Router
     
     protected $resolver;
     
-    public function __construct(DispatcherResolver $resolver, FilterCollection $filters, RouteCollection $routes)
+    public function __construct(DispatcherResolverInterface $resolver, FilterCollection $filters, RouteCollection $routes)
     {
         $this->resolver = $resolver;
         $this->filters = $filters;
