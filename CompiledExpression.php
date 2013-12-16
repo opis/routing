@@ -69,6 +69,16 @@ class CompiledExpression
         return $this->cache['extract'][$path];
     }
     
+    public function bind($path, array $bindings, array $defaults = array())
+    {
+        if(!isset($this->cache['bind'][$path]))
+        {
+            $this->cache['bind'][$path] = $this->compiler->bind($this->extract($path, $defaults), $bindings);
+        }
+        
+        return $this->cache['bind'];
+    }
+    
     public function delimit()
     {
         if(!isset($this->cache['delimit']))
