@@ -25,6 +25,10 @@ abstract class Router
     
     protected $collection;
     
+    protected $filters;
+    
+    protected $resolver;
+    
     public function __construct(RouteCollection $collection)
     {
         $this->collection = $collection;

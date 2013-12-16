@@ -22,16 +22,16 @@ namespace Opis\Routing;
 
 use InvalidArgumentException;
 
-class RouteCollection extends AbstractCollection
+class FilterCollection extends AbstractCollection
 {
     
     public function offsetSet($offset, $value)
     {
-        if(!($value instanceof Route))
+        if(!($value instanceof FilterInterface))
         {
-            throw new InvalidArgumentException('Expected \Opis\Routing\Route');
+            throw new InvalidArgumentException('Expected \Opis\Routing\FilterInterface');
         }
         parent::offsetSet($offset, $value);
     }
-    
+
 }
