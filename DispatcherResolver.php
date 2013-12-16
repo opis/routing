@@ -29,5 +29,5 @@ abstract class DispatcherResolver
         $this->collection = $collection;
     }
     
-    public abstract function resolve(Route $route);
+    public abstract function resolve(Router $router, Route $route);
 }

@@ -26,5 +26,5 @@ interface DispatcherInterface
      * Dispatch a route
      */
     
-    function dispatch(Route $route);
+    function dispatch(Router $router, Route $route);
 }

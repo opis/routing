@@ -26,5 +26,5 @@ interface FilterInterface
      * Filter a route
      */
     
-    function match(Route $route);
+    function match(Router $router, Route $route);
 }

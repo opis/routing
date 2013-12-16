@@ -51,22 +51,23 @@ class Router
         return $this->resolver;
     }
     
-    public function execute()
+    public function route()
     {
-        foreach($this->collection as $route)
+        foreach($this->routes as $route)
         {
-            if($this->match($route))
+            if($this->pass($route))
             {
-                return $this->dispatcher()->dispatch($route);
+                $dispatcher = $this->resolver->resolve($this, $route);
+                return $dispatcher->dispatch($this, $route);
             }
         }
     }
     
-    protected function match(Route $route)
+    protected function pass(Route $route)
     {
-        foreach($this->filters() as $filter)
+        foreach($this->filters as $filter)
         {
-            if(!$filter->match($route))
+            if(!$filter->match($this, $route))
             {
                 return false;
             }
