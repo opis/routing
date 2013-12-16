@@ -1,6 +1,6 @@
 {
     "name": "opis/routing",
-    "description": "Opis Routing",
+    "description": "Opis Routing Component",
     "keywords": ["opis", "routing"],
     "homepage": "http://opis.io",
     "license": "Apache-2.0",
