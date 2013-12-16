@@ -20,23 +20,35 @@
 
 namespace Opis\Routing;
 
-abstract class Router
+class Router
 {
     
-    protected $collection;
+    protected $routes;
     
     protected $filters;
     
     protected $resolver;
     
-    public function __construct(RouteCollection $collection)
+    public function __construct(DispatcherResolver $resolver, FilterCollection $filters, RouteCollection $routes)
     {
-        $this->collection = $collection;
+        $this->resolver = $resolver;
+        $this->filters = $filters;
+        $this->routes = $routes;
     }
     
-    public function getCollection()
+    public function getRouteCollection()
     {
-        return $this->collection;
+        return $this->routes;
+    }
+    
+    public function getFilterCollection()
+    {
+        return $this->filters;
+    }
+    
+    public function getDispatcherResolver()
+    {
+        return $this->resolver;
     }
     
     public function execute()
@@ -61,8 +73,4 @@ abstract class Router
         }
         return true;
     }
-    
-    protected abstract function dispatcher();
-    
-    protected abstract function filters();
 }
