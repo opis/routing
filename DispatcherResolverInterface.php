@@ -20,14 +20,7 @@
 
 namespace Opis\Routing;
 
-abstract class DispatcherResolver
-{
-    protected $collection;
-    
-    public function __construct(DispatcherCollection $collection)
-    {
-        $this->collection = $collection;
-    }
-    
-    public abstract function resolve(Router $router, Route $route);
+interface DispatcherResolverInterface
+{   
+    function resolve(Router $router, Route $route);
 }
