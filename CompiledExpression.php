@@ -12,7 +12,7 @@ class CompiledExpression
     
     protected $cache = array();
     
-    public function __construct(Compiler $compiler, $pattern, array $placeholders = array())
+    public function __construct(CompilerInterface $compiler, $pattern, array $placeholders = array())
     {
         $this->compiler = $compiler;
         $this->pattern = $pattern;
@@ -86,5 +86,10 @@ class CompiledExpression
             $this->cache['delimit'] = $this->compiler->delimit($this->compile());
         }
         return $this->cache['delimit'];
+    }
+    
+    public function match($value)
+    {
+        return preg_match($this->delimit(), $value);
     }
 }

@@ -54,8 +54,14 @@ class Compiler implements CompilerInterface
     
     protected $comp;
     
-    public function __construct($startTag = '{', $endTag = '}', $separator = '/', $optional = '?',
-                                $capture = 6, $delimiter = '`', $modifier = 'u', $wildcard = '[a-zA-Z0-9\.\,\-_%=]+')
+    public function __construct($startTag = '{',
+                                $endTag = '}',
+                                $separator = '/',
+                                $optional = '?',
+                                $capture = 6,
+                                $delimiter = '`',
+                                $modifier = 'u',
+                                $wildcard = '[a-zA-Z0-9\.\,\-_%=]+')
     {
         
         $capture = (int) $capture;
