@@ -58,7 +58,10 @@ class Router
             if($this->pass($route))
             {
                 $dispatcher = $this->resolver->resolve($this, $route);
-                return $dispatcher->dispatch($this, $route);
+                if($dispatcher->filter($this, $route))
+                {
+                    return $dispatcher->dispatch($this, $route);
+                }
             }
         }
     }
@@ -67,11 +70,12 @@ class Router
     {
         foreach($this->filters as $filter)
         {
-            if(!$filter->match($this, $route))
+            if(!$filter->pass($route))
             {
                 return false;
             }
         }
         return true;
     }
+    
 }

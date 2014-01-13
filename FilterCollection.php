@@ -25,13 +25,12 @@ use InvalidArgumentException;
 class FilterCollection extends AbstractCollection
 {
     
-    public function offsetSet($offset, $value)
+    protected function checkType($value)
     {
         if(!($value instanceof FilterInterface))
         {
             throw new InvalidArgumentException('Expected \Opis\Routing\FilterInterface');
         }
-        parent::offsetSet($offset, $value);
     }
 
 }

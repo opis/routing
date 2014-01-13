@@ -25,13 +25,12 @@ use InvalidArgumentException;
 class RouteCollection extends AbstractCollection
 {
     
-    public function offsetSet($offset, $value)
+    protected function checkType($value)
     {
         if(!($value instanceof Route))
         {
             throw new InvalidArgumentException('Expected \Opis\Routing\Route');
         }
-        parent::offsetSet($offset, $value);
     }
     
 }

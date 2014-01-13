@@ -25,13 +25,12 @@ use InvalidArgumentException;
 class DispatcherCollection extends AbstractCollection
 {
     
-    public function offsetSet($offset, $value)
+    protected function checkType($value)
     {
         if(!($value instanceof DispatcherInterface))
         {
             throw new InvalidArgumentException('Expected \Opis\Routing\DispatcherInterface');
         }
-        parent::offsetSet($offset, $value);
     }
 
 }

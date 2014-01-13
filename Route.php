@@ -32,7 +32,7 @@ class Route
     
     protected $bindings = array();
     
-    protected $def = array();
+    protected $defaults = array();
     
     protected $properties = array();
     
@@ -64,7 +64,7 @@ class Route
     
     public function getDefaults()
     {
-        return $this->def;
+        return $this->defaults;
     }
     
     public function getProperties()
@@ -84,14 +84,9 @@ class Route
         return  $this;
     }
     
-    public function point($name, $wildcard)
+    public function implicit($name, $value)
     {
-        return $this->wildcard($name, '(?P=' . $wildcard. ')');
-    }
-    
-    public function defaults($name, $value)
-    {
-        $this->def[$name] = $value;
+        $this->defaults[$name] = $value;
         return $this;
     }
     

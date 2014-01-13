@@ -27,4 +27,6 @@ interface DispatcherInterface
      */
     
     function dispatch(Router $router, Route $route);
+    
+    function filter(Router $router, Route $route);
 }

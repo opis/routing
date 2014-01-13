@@ -22,9 +22,5 @@ namespace Opis\Routing;
 
 interface FilterInterface
 {
-    /**
-     * Filter a route
-     */
-    
-    function match(Router $router, Route $route);
+    function pass(Router $router, Route $route);
 }

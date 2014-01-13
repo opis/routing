@@ -27,6 +27,11 @@ abstract class AbstractCollection implements Iterator, ArrayAccess
 {
     protected $collection = array();
     
+    protected function checkType($value)
+    {
+        
+    }
+    
     public function rewind()
     {
         return reset($this->collection);
@@ -53,7 +58,9 @@ abstract class AbstractCollection implements Iterator, ArrayAccess
     }
     
     public function offsetSet($offset, $value)
-    {   
+    {
+        $this->checkType($value);
+        
         if (is_null($offset))
         {
             $this->collection[] = $value;
