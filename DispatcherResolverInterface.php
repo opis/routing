@@ -22,5 +22,5 @@ namespace Opis\Routing;
 
 interface DispatcherResolverInterface
 {   
-    function resolve(Router $router, Route $route);
+    function resolve(Path $path, Route $route);
 }

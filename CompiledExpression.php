@@ -12,7 +12,7 @@ class CompiledExpression
     
     protected $cache = array();
     
-    public function __construct(CompilerInterface $compiler, $pattern, array $placeholders = array())
+    public function __construct(CompilerInterface $compiler, Pattern $pattern, array $placeholders = array())
     {
         $this->compiler = $compiler;
         $this->pattern = $pattern;
@@ -49,7 +49,7 @@ class CompiledExpression
         return $this->cache['compiled'];
     }
     
-    public function values($path)
+    public function values(Path $path)
     {
         if(!isset($this->cache['values'][$path]))
         {
@@ -59,7 +59,7 @@ class CompiledExpression
         return $this->cache['values'][$path];
     }
     
-    public function extract($path, array $defauls = array())
+    public function extract(Path $path, array $defauls = array())
     {
         if(!isset($this->cache['extract'][$path]))
         {
@@ -69,7 +69,7 @@ class CompiledExpression
         return $this->cache['extract'][$path];
     }
     
-    public function bind($path, array $bindings, array $defaults = array())
+    public function bind(Path $path, array $bindings, array $defaults = array())
     {
         if(!isset($this->cache['bind'][$path]))
         {
@@ -88,8 +88,8 @@ class CompiledExpression
         return $this->cache['delimit'];
     }
     
-    public function match($value)
+    public function match(Path $value)
     {
-        return preg_match($this->delimit(), $value);
+        return preg_match($this->delimit(), (string) $value);
     }
 }

@@ -26,19 +26,19 @@ interface CompilerInterface
      * Compile a pattern
      */
     
-    function compile($pattern, array $placeholders = array());
+    function compile(Pattern $pattern, array $placeholders = array());
     
-    function expression($pattern, array $placeholders = array());
+    function expression(Pattern $pattern, array $placeholders = array());
     
-    function delimit($compiled);
+    function delimit(CompiledPattern $compiled);
     
-    function names($pattern);
+    function names(Pattern $pattern);
     
-    function values($pattern, $path);
+    function values(Pattern $pattern, Path $path);
     
     function extract(array $names, array $values, array $defaults = array());
     
     function bind(array $values, array $bindings);
     
-    function build($pattern, array $values = array());
+    function build(Pattern $pattern, array $values = array());
 }

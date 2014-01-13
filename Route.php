@@ -36,15 +36,15 @@ class Route
     
     protected $properties = array();
     
-    public function __construct($path, $action)
+    public function __construct(Pattern $pattern, $action)
     {
-        $this->routePath = $path;
+        $this->routePattern = $pattern;
         $this->routeAction = $action;
     }
     
-    public function getPath()
+    public function getPattern()
     {
-        return $this->routePath;
+        return $this->routePattern;
     }
     
     public function getAction()

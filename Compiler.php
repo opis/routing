@@ -83,7 +83,7 @@ class Compiler implements CompilerInterface
         );
     }
     
-    public function compile($value, array $placeholders = array())
+    public function compile(Pattern $value, array $placeholders = array())
     {
         $names = $this->names($value);
         
@@ -147,15 +147,15 @@ class Compiler implements CompilerInterface
                 }
             }
         }
-        return $value;
+        return new CompiledPattern($value);
     }
     
-    public function expression($pattern, array $placeholders = array())
+    public function expression(Pattern $pattern, array $placeholders = array())
     {
         return new CompiledExpression($this, $pattern, $placeholders);
     }
     
-    public function names($pattern)
+    public function names(Pattern $pattern)
     {
         list($st, $et) = $this->comp;
         
@@ -166,7 +166,7 @@ class Compiler implements CompilerInterface
         return array_map(function($m) { return trim($m, $this->optional); }, $matches[1]);
     }
     
-    public function values($pattern, $path)
+    public function values(Pattern $pattern, Path $path)
     {
         
         preg_match($pattern, $path, $parameters);
@@ -218,7 +218,7 @@ class Compiler implements CompilerInterface
         return $values;
     }
     
-    public function build($pattern, array $values = array())
+    public function build(Pattern $pattern, array $values = array())
     {
         $names = $this->names($pattern);
         foreach($names as $name)
@@ -235,7 +235,7 @@ class Compiler implements CompilerInterface
         return $pattern;
     }
     
-    public function delimit($value)
+    public function delimit(CompiledPattern $value)
     {
         return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }

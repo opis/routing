@@ -22,11 +22,5 @@ namespace Opis\Routing;
 
 interface DispatcherInterface
 {
-    /**
-     * Dispatch a route
-     */
-    
-    function dispatch(Router $router, Route $route);
-    
-    function filter(Router $router, Route $route);
+    function dispatch(Path $path, Route $route);
 }

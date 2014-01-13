@@ -29,11 +29,24 @@ class Router
     
     protected $resolver;
     
-    public function __construct(DispatcherResolverInterface $resolver, FilterCollection $filters, RouteCollection $routes)
+    public function __construct(RouteCollection $routes,
+                                DispatcherResolverInterface $resolver = null,
+                                FilterCollection $filters = null)
     {
+        $this->routes = $routes;
+        
+        if($resolver === null)
+        {
+            $resolver = new DispatcherResolver();
+        }
+        
+        if($filters === null)
+        {
+            $filters = new FilterCollection();
+        }
+        
         $this->resolver = $resolver;
         $this->filters = $filters;
-        $this->routes = $routes;
     }
     
     public function getRouteCollection()
@@ -51,26 +64,23 @@ class Router
         return $this->resolver;
     }
     
-    public function route()
+    public function route(Path $path)
     {
         foreach($this->routes as $route)
         {
-            if($this->pass($route))
+            if($this->pass($path, $route))
             {
                 $dispatcher = $this->resolver->resolve($this, $route);
-                if($dispatcher->filter($this, $route))
-                {
-                    return $dispatcher->dispatch($this, $route);
-                }
+                return $dispatcher->dispatch($this, $route);
             }
         }
     }
     
-    protected function pass(Route $route)
+    protected function pass(Path $path, Route $route)
     {
         foreach($this->filters as $filter)
         {
-            if(!$filter->pass($route))
+            if(!$filter->pass($path, $route))
             {
                 return false;
             }
