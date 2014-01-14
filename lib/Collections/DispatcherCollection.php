@@ -21,6 +21,7 @@
 namespace Opis\Routing\Collections;
 
 use InvalidArgumentException;
+use Opis\Routing\Contracts\DispatcherInterface;
 
 class DispatcherCollection extends AbstractCollection
 {
@@ -29,7 +30,7 @@ class DispatcherCollection extends AbstractCollection
     {
         if(!($value instanceof DispatcherInterface))
         {
-            throw new InvalidArgumentException('Expected \Opis\Routing\DispatcherInterface');
+            throw new InvalidArgumentException('Expected \Opis\Routing\Contracts\DispatcherInterface');
         }
     }
 

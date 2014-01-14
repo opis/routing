@@ -21,6 +21,7 @@
 namespace Opis\Routing\Collections;
 
 use InvalidArgumentException;
+use Opis\Routing\Contracts\FilterInterface;
 
 class FilterCollection extends AbstractCollection
 {
@@ -29,7 +30,7 @@ class FilterCollection extends AbstractCollection
     {
         if(!($value instanceof FilterInterface))
         {
-            throw new InvalidArgumentException('Expected \Opis\Routing\FilterInterface');
+            throw new InvalidArgumentException('Expected \Opis\Routing\Contracts\FilterInterface');
         }
     }
 

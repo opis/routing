@@ -21,6 +21,7 @@
 namespace Opis\Routing\Collections;
 
 use InvalidArgumentException;
+use Opis\Routing\Route;
 
 class RouteCollection extends AbstractCollection
 {
