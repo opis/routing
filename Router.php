@@ -71,8 +71,8 @@ class Router
         {
             if($this->pass($path, $route))
             {
-                $dispatcher = $this->resolver->resolve($this, $route);
-                return $dispatcher->dispatch($this, $route);
+                $dispatcher = $this->resolver->resolve($path, $route);
+                return $dispatcher->dispatch($path, $route);
             }
         }
     }

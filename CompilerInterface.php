@@ -22,19 +22,13 @@ namespace Opis\Routing;
 
 interface CompilerInterface
 {
-    /**
-     * Compile a pattern
-     */
-    
     function compile(Pattern $pattern, array $placeholders = array());
-    
-    function expression(Pattern $pattern, array $placeholders = array());
     
     function delimit(CompiledPattern $compiled);
     
     function names(Pattern $pattern);
     
-    function values(Pattern $pattern, Path $path);
+    function values(CompiledPattern $pattern, Path $path);
     
     function extract(array $names, array $values, array $defaults = array());
     

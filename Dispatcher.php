@@ -6,23 +6,21 @@ class Dispatcher implements DispatcherInterface
 {
     
     public function dispatch(Path $path, Route $route)
+    {   
+        return $this->invokeAction($path, $route->getAction(), $route->compile()->bind($path));
+    }
+    
+    protected function invokeAction(Path $path, $action, $values)
     {
-        $action = $route->getAction();
         
         if(!is_callable($action))
         {
             throw new \RuntimeException('Route action is not callable');
         }
         
-        return $this->invokeAction($path, $action);
-    }
-    
-    protected function invokeAction(Path $path, $action)
-    {
         $callback = new \ReflectionFunction($action);
         
         $parameters = $callback->getParameters();
-        $values  = $route->compile()->bind($path);
         $arguments = array();
         
         foreach($parameters as $param)

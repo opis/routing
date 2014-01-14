@@ -89,7 +89,7 @@ class Compiler implements CompilerInterface
         
         if(empty($names))
         {
-            return preg_quote($value, $this->delimiter);
+            return new CompiledPattern(preg_quote($value, $this->delimiter));
         }
         
         $names = array_map(function($name){ return $this->wildcard; }, array_flip($names));
@@ -151,11 +151,6 @@ class Compiler implements CompilerInterface
         return new CompiledPattern($value);
     }
     
-    public function expression(Pattern $pattern, array $placeholders = array())
-    {
-        return new CompiledExpression($this, $pattern, $placeholders);
-    }
-    
     public function names(Pattern $pattern)
     {
         list($st, $et) = $this->comp;
@@ -167,10 +162,10 @@ class Compiler implements CompilerInterface
         return array_map(function($m) { return trim($m, $this->optional); }, $matches[1]);
     }
     
-    public function values(Pattern $pattern, Path $path)
+    public function values(CompiledPattern $pattern, Path $path)
     {
         
-        preg_match($pattern, $path, $parameters);
+        preg_match($this->delimit($pattern), $path, $parameters);
        
         $parameters = array_slice($parameters, 1);
         

@@ -18,7 +18,7 @@ class CompiledRoute
     
     public function pattern()
     {
-        if(isset($this->cache['route']['pattern']))
+        if(!isset($this->cache['route']['pattern']))
         {
             $this->cache['route']['pattern'] = $this->route->getPattern();
         }
@@ -28,7 +28,7 @@ class CompiledRoute
     
     public function wildcards()
     {
-        if(isset($this->cache['route']['wildcards']))
+        if(!isset($this->cache['route']['wildcards']))
         {
             $this->cache['route']['wildcards'] = $this->route->getWildcards();
         }
@@ -38,7 +38,7 @@ class CompiledRoute
     
     public function defaults()
     {
-        if(isset($this->cache['route']['defaults']))
+        if(!isset($this->cache['route']['defaults']))
         {
             $this->cache['route']['defaults'] = $this->route->getDefaults();
         }
@@ -48,7 +48,7 @@ class CompiledRoute
     
     public function bindings()
     {
-        if(isset($this->cache['route']['bindings']))
+        if(!isset($this->cache['route']['bindings']))
         {
             $this->cache['route']['bindings'] = $this->route->getBindings();
         }
@@ -83,38 +83,38 @@ class CompiledRoute
     
     public function values(Path $path)
     {
-        $path = (string) $path;
+        $id = (string) $path;
         
-        if(!isset($this->cache['values'][$path]))
+        if(!isset($this->cache['values'][$id]))
         {
-            $this->cache['values'][$path] = $this->compiler->values($this->delimit(), $path);
+            $this->cache['values'][$id] = $this->compiler->values($this->compile(), $path);
         }
         
-        return $this->cache['values'][$path];
+        return $this->cache['values'][$id];
     }
     
     public function extract(Path $path)
     {
-        $path = (string) $path;
+        $id = (string) $path;
         
-        if(!isset($this->cache['extract'][$path]))
+        if(!isset($this->cache['extract'][$id]))
         {
-            $this->cache['extract'][$path] = $this->compiler->extract($this->names(), $this->values($path), $this->defaults());
+            $this->cache['extract'][$id] = $this->compiler->extract($this->names(), $this->values($path), $this->defaults());
         }
         
-        return $this->cache['extract'][$path];
+        return $this->cache['extract'][$id];
     }
     
     public function bind(Path $path)
     {
-        $path = (string) $path;
+        $id = (string) $path;
         
-        if(!isset($this->cache['bind'][$path]))
+        if(!isset($this->cache['bind'][$id]))
         {
-            $this->cache['bind'][$path] = $this->compiler->bind($this->extract($path), $this->bindings());
+            $this->cache['bind'][$id] = $this->compiler->bind($this->extract($path), $this->bindings());
         }
         
-        return $this->cache['bind'];
+        return $this->cache['bind'][$id];
     }
     
     public function delimit()
