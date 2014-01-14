@@ -32,7 +32,7 @@ class Route
     
     protected $compiler;
     
-    protected $expression;
+    protected $compiledRoute;
     
     protected $wildcards = array();
     
@@ -46,12 +46,6 @@ class Route
     {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
-        
-        if($compiler === null)
-        {
-            $compiler = new Compiler();
-        }
-        
         $this->compiler = $compiler;
     }
     
@@ -85,14 +79,24 @@ class Route
         return $this->properties;
     }
     
-    public function compile()
+    public function getCompiler()
     {
-        if($this->expression === null)
+        if($this->compiler === null)
         {
-           $this->expression = new CompiledRoute($this->compiler, $this);
+            $this->compiler = new Compiler();
         }
         
-        return $this->expression;
+        return $this->compiler;
+    }
+    
+    public function compile()
+    {
+        if($this->compiledRoute === null)
+        {
+           $this->compiledRoute = new CompiledRoute($this);
+        }
+        
+        return $this->compiledRoute;
     }
     
     public function bind($name, Closure $value)

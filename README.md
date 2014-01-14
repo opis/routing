@@ -4,7 +4,7 @@
 use \Opis\Routing\Router;
 use \Opis\Routing\Route;
 use \Opis\Routing\Compiler;
-use \Opis\Routing\RouteCollection;
+use \Opis\Routing\Collections\RouteCollection;
 use \Opis\Routing\Path;
 use \Opis\Routing\Pattern;
 
