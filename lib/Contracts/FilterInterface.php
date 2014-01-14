@@ -18,9 +18,11 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing;
+namespace Opis\Routing\Contracts;
+
+use Opis\Routing\Route;
 
 interface FilterInterface
 {
-    function pass(Path $path, Route $route);
+    function pass(PathInterface $path, Route $route);
 }

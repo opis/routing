@@ -20,6 +20,10 @@
 
 namespace Opis\Routing;
 
+use Opis\Routing\Contracts\CompilerInterface;
+use Opis\Routing\Contracts\PathInterface;
+use Opis\Routing\Contracts\PatternInterface;
+use Opis\Routing\Contracts\CompiledPatternInterface;
 
 class Compiler implements CompilerInterface
 {    
@@ -83,13 +87,18 @@ class Compiler implements CompilerInterface
         );
     }
     
-    public function compile(Pattern $value, array $placeholders = array())
+    protected function compilePattern($value)
+    {
+        return new CompiledPattern($value);
+    }
+    
+    public function compile(PatternInterface $value, array $placeholders = array())
     {
         $names = $this->names($value);
         
         if(empty($names))
         {
-            return new CompiledPattern(preg_quote($value, $this->delimiter));
+            return $this->compilePattern(preg_quote($value, $this->delimiter));
         }
         
         $names = array_map(function($name){ return $this->wildcard; }, array_flip($names));
@@ -148,10 +157,10 @@ class Compiler implements CompilerInterface
             }
         }
         
-        return new CompiledPattern($value);
+        return $this->compilePattern($value);
     }
     
-    public function names(Pattern $pattern)
+    public function names(PatternInterface $pattern)
     {
         list($st, $et) = $this->comp;
         
@@ -162,7 +171,7 @@ class Compiler implements CompilerInterface
         return array_map(function($m) { return trim($m, $this->optional); }, $matches[1]);
     }
     
-    public function values(CompiledPattern $pattern, Path $path)
+    public function values(CompiledPatternInterface $pattern, PathInterface $path)
     {
         
         preg_match($this->delimit($pattern), $path, $parameters);
@@ -214,7 +223,7 @@ class Compiler implements CompilerInterface
         return $values;
     }
     
-    public function build(Pattern $pattern, array $values = array())
+    public function build(PatternInterface $pattern, array $values = array())
     {
         $names = $this->names($pattern);
         foreach($names as $name)
@@ -231,7 +240,7 @@ class Compiler implements CompilerInterface
         return $pattern;
     }
     
-    public function delimit(CompiledPattern $value)
+    public function delimit(CompiledPatternInterface $value)
     {
         return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }

@@ -20,6 +20,11 @@
 
 namespace Opis\Routing;
 
+use Opis\Routing\Collections\RouteCollection;
+use Opis\Routing\Collections\FilterCollection;
+use Opis\Routing\Contracts\DispatcherResolverInterface;
+use Opis\Routing\Contracts\PathInterface;
+
 class Router
 {
     
@@ -65,7 +70,7 @@ class Router
         return $this->resolver;
     }
     
-    public function route(Path $path)
+    public function route(PathInterface $path)
     {
         foreach($this->routes as $route)
         {
@@ -77,7 +82,7 @@ class Router
         }
     }
     
-    protected function pass(Path $path, Route $route)
+    protected function pass(PathInterface $path, Route $route)
     {
         foreach($this->filters as $filter)
         {

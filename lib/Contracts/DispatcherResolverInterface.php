@@ -18,9 +18,11 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing;
+namespace Opis\Routing\Contracts;
+
+use Opis\Routing\Route;
 
 interface DispatcherResolverInterface
 {   
-    function resolve(Path $path, Route $route);
+    function resolve(PathInterface $path, Route $route);
 }

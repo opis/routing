@@ -18,21 +18,21 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing;
+namespace Opis\Routing\Contracts;
 
 interface CompilerInterface
 {
-    function compile(Pattern $pattern, array $placeholders = array());
+    function compile(PatternInterface $pattern, array $placeholders = array());
     
-    function delimit(CompiledPattern $compiled);
+    function delimit(CompiledPatternInterface $compiled);
     
-    function names(Pattern $pattern);
+    function names(PatternInterface $pattern);
     
-    function values(CompiledPattern $pattern, Path $path);
+    function values(CompiledPatternInterface $pattern, PathInterface $path);
     
     function extract(array $names, array $values, array $defaults = array());
     
     function bind(array $values, array $bindings);
     
-    function build(Pattern $pattern, array $values = array());
+    function build(PatternInterface $pattern, array $values = array());
 }

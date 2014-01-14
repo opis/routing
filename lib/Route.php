@@ -21,6 +21,8 @@
 namespace Opis\Routing;
 
 use Closure;
+use Opis\Routing\Contracts\PatternInterface;
+use Opis\Routing\Contracts\CompilerInterface;
 
 class Route
 {
@@ -40,7 +42,7 @@ class Route
     
     protected $properties = array();
     
-    public function __construct(Pattern $pattern, $action, CompilerInterface $compiler = null)
+    public function __construct(PatternInterface $pattern, $action, CompilerInterface $compiler = null)
     {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
