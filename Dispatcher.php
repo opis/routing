@@ -5,22 +5,8 @@ namespace Opis\Routing;
 class Dispatcher implements DispatcherInterface
 {
     
-    protected $compiler;
-    
-    public function __construct(CompilerInterface $compiler = null)
-    {
-        if($compiler === null)
-        {
-            $compiler = new Compiler();
-        }
-        
-        $this->compiler = $compiler;
-    }
-    
     public function dispatch(Path $path, Route $route)
     {
-        $expression = new CompiledExpression($this->compiler, $route->getPattern(), $route->getWildcards());
-        $arguments = $expression->bind($path, $route->getBindings(), $route->getDefaults());
         $action = $route->getAction();
         
         if(!is_callable($action))
@@ -28,7 +14,37 @@ class Dispatcher implements DispatcherInterface
             throw new \RuntimeException('Route action is not callable');
         }
         
-        return call_user_func_array($action, $arguments);
+        return $this->invokeAction($path, $action);
     }
     
+    protected function invokeAction(Path $path, $action)
+    {
+        $callback = new \ReflectionFunction($action);
+        
+        $parameters = $callback->getParameters();
+        $values  = $route->compile()->bind($path);
+        $arguments = array();
+        
+        foreach($parameters as $param)
+        {
+            $name = $param->getName();
+            if(isset($values[$name]))
+            {
+                $arguments[] = $values[$name];
+                unset($values[$name]);
+            }
+            elseif($param->isOptional())
+            {
+                $arguments[] = $param->getDefaultValue();
+            }
+            else
+            {
+                $arguments[] = null;
+            }
+        }
+        
+        $arguments += $values;
+        
+        return $callback->invokeArgs($arguments);
+    }
 }

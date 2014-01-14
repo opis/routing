@@ -24,9 +24,13 @@ use Closure;
 
 class Route
 {
-    protected $routePath;
+    protected $routePattern;
     
     protected $routeAction;
+    
+    protected $compiler;
+    
+    protected $expression;
     
     protected $wildcards = array();
     
@@ -36,10 +40,17 @@ class Route
     
     protected $properties = array();
     
-    public function __construct(Pattern $pattern, $action)
+    public function __construct(Pattern $pattern, $action, CompilerInterface $compiler = null)
     {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
+        
+        if($compiler === null)
+        {
+            $compiler = new Compiler();
+        }
+        
+        $this->compiler = $compiler;
     }
     
     public function getPattern()
@@ -70,6 +81,16 @@ class Route
     public function getProperties()
     {
         return $this->properties;
+    }
+    
+    public function compile()
+    {
+        if($this->expression === null)
+        {
+           $this->expression = new CompiledRoute($this->compiler, $this);
+        }
+        
+        return $this->expression;
     }
     
     public function bind($name, Closure $value)

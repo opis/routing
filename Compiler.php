@@ -147,6 +147,7 @@ class Compiler implements CompilerInterface
                 }
             }
         }
+        
         return new CompiledPattern($value);
     }
     

@@ -43,6 +43,7 @@ class Router
         if($filters === null)
         {
             $filters = new FilterCollection();
+            $filters[] = new PathFilter();
         }
         
         $this->resolver = $resolver;
