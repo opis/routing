@@ -174,8 +174,8 @@ class Compiler implements CompilerInterface
             return array();
         }
         
-        $keys = array_filter(array_keys($parameters), function($value){
-            return is_string($value) && strlen($value) > 0;
+        $keys = array_filter(array_keys($parameters), function($value) use (&$parameters){
+            return is_string($value) && strlen($value) > 0 && $parameters[$value] != null;
         });
         
         return array_intersect_key($parameters, array_flip($keys));
@@ -186,16 +186,16 @@ class Compiler implements CompilerInterface
         $parameters = array_intersect_key($values, array_flip($names));
         
         $result = array();
-        
+       
         foreach($names as $key)
         {
             if(isset($parameters[$key]))
             {
                 $result[$key] = $parameters[$key];
             }
-            else
+            elseif(isset($defaults[$key]))
             {
-                $result[$key] = isset($defaults[$key]) ? $defaults[$key] : null;
+                $result[$key] = $defaults[$key];
             }
         }
         
