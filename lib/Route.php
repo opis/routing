@@ -20,7 +20,6 @@
 
 namespace Opis\Routing;
 
-use Closure;
 use Opis\Routing\Contracts\PatternInterface;
 use Opis\Routing\Contracts\CompilerInterface;
 
@@ -99,9 +98,12 @@ class Route
         return $this->compiledRoute;
     }
     
-    public function bind($name, Closure $value)
+    public function bind($name, $callback)
     {
-        $this->bindings[$name] = $value;
+        if(is_callable($callback))
+        {
+            $this->bindings[$name] = $callback;
+        }
         return $this;
     }
     

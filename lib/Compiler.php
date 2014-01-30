@@ -217,7 +217,7 @@ class Compiler implements CompilerInterface
         {
             if(isset($bindings[$key]))
             {
-                $value = $bindings[$key]($value);
+                $value = call_user_func($bindings[$key], $value);
             }
         }
         return $values;
