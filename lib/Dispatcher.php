@@ -29,9 +29,11 @@ class Dispatcher implements DispatcherInterface
     
     public function dispatch(PathInterface $path, RouteInterface $route)
     {
-        $values = $route->compile()->bind($path);
-        $action = $route->getAction();
-        
+        return $this->invokeAction($route->getAction(), $route->compile()->bind($path));
+    }
+    
+    public function invokeAction(callable $action, array $values = array())
+    {
         $isMethod = false;
         
         if(is_object($action) && !($action instanceof \Closure))
@@ -68,6 +70,5 @@ class Dispatcher implements DispatcherInterface
         $arguments += $values;
         
         return $isMethod ? $callback->invokeArgs($action, $arguments) : $callback->invokeArgs($arguments);
-        
     }
 }

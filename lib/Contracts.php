@@ -93,6 +93,8 @@ interface RouterInterface
 interface DispatcherInterface
 {
     function dispatch(PathInterface $path, RouteInterface $route);
+    
+    function invokeAction(callable $action, array $values = array());
 }
 
 interface DispatcherResolverInterface
