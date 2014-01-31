@@ -47,6 +47,10 @@ class Dispatcher implements DispatcherInterface
             $callback = new \ReflectionMethod(get_class($action), '__invoke');
             $isobject = true;
         }
+        else
+        {
+            $callback = new \ReflectionFunction($action);
+        }
         
         $parameters = $callback->getParameters();
         $arguments = array();
