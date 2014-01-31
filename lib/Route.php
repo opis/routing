@@ -42,7 +42,9 @@ class Route implements RouteInterface
     
     protected $properties = array();
     
-    public function __construct(PatternInterface $pattern, $action, CompilerInterface $compiler = null)
+    public function __construct(PatternInterface $pattern,
+                                callable $action,
+                                CompilerInterface $compiler = null)
     {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
@@ -99,12 +101,9 @@ class Route implements RouteInterface
         return $this->compiledRoute;
     }
     
-    public function bind($name, $callback)
+    public function bind($name, callable $callback)
     {
-        if(is_callable($callback))
-        {
-            $this->bindings[$name] = $callback;
-        }
+        $this->bindings[$name] = $callback;
         return $this;
     }
     
@@ -134,5 +133,27 @@ class Route implements RouteInterface
     public function get($name, $default = null)
     {
         return isset($this->properties[$name]) ? $this->properties[$name] : $default;
+    }
+    
+    public function serialize()
+    {
+        return serialize(array(
+            'routePattern' => $this->routePattern,
+            'routeAction' => $this->routeAction,
+            'compiler' => $this->compiler,
+            'wildcards' => $this->wildcards,
+            'bindings' => $this->bindings,
+            'defaults' => $this->defaults,
+            'properties' => $this->properties,
+        ));
+    }
+    
+    public function unserialize($data)
+    {
+        $object = unserialize($data);
+        foreach($object as $key => $value)
+        {
+            $this->{$key} = $value;
+        }
     }
 }

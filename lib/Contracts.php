@@ -20,12 +20,24 @@
 
 namespace Opis\Routing\Contracts;
 
-interface CompiledPatternInterface
+use Serializable;
+
+interface PathInterface
 {
     function __toString();
 }
 
-interface CompilerInterface
+interface PatternInterface extends Serializable
+{
+    function __toString();
+}
+
+interface CompiledPatternInterface extends Serializable
+{
+    function __toString();
+}
+
+interface CompilerInterface extends Serializable
 {
     function compile(PatternInterface $pattern, array $placeholders = array());
     
@@ -42,7 +54,7 @@ interface CompilerInterface
     function build(PatternInterface $pattern, array $values = array());
 }
 
-interface RouteInterface
+interface RouteInterface extends Serializable
 {   
     function getPattern();
     
@@ -60,7 +72,7 @@ interface RouteInterface
     
     function compile();
     
-    function bind($name, $callback);
+    function bind($name, callable $callback);
     
     function wildcard($name, $regex);
     
@@ -91,14 +103,4 @@ interface DispatcherResolverInterface
 interface FilterInterface
 {
     function pass(PathInterface $path, RouteInterface $route);
-}
-
-interface PathInterface
-{
-    function __toString();
-}
-
-interface PatternInterface
-{
-    function __toString();
 }

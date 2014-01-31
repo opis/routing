@@ -31,6 +31,16 @@ class Pattern implements PatternInterface
         $this->pattern = $pattern;
     }
     
+    public function serialize()
+    {
+        return serialize($this->pattern);
+    }
+    
+    public function unserialize($data)
+    {
+        $this->pattern = unserialize($data);
+    }
+    
     public function __toString()
     {
         return $this->pattern;

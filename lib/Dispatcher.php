@@ -28,24 +28,20 @@ class Dispatcher implements DispatcherInterface
 {
     
     public function dispatch(PathInterface $path, RouteInterface $route)
-    {   
-        return $this->invokeAction($path, $route->getAction(), $route->compile()->bind($path));
-    }
-    
-    protected function invokeAction(PathInterface $path, $action, $values)
     {
+        $values = $route->compile()->bind($path);
+        $action = $route->getAction();
         
-        if(!is_callable($action))
-        {
-            throw new \RuntimeException('Route action is not callable');
-        }
-        
-        $isobject = false;
+        $isMethod = false;
         
         if(is_object($action) && !($action instanceof \Closure))
         {
             $callback = new \ReflectionMethod(get_class($action), '__invoke');
-            $isobject = true;
+            $isMethod = true;
+        }
+        else
+        {
+            $callback = new \ReflectionFunction($action);
         }
         
         $parameters = $callback->getParameters();
@@ -71,6 +67,7 @@ class Dispatcher implements DispatcherInterface
         
         $arguments += $values;
         
-        return $isobject ?  $callback->invokeArgs($action, $arguments) : $callback->invokeArgs($arguments);
+        return $isMethod ? $callback->invokeArgs($action, $arguments) : $callback->invokeArgs($arguments);
+        
     }
 }

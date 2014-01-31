@@ -245,4 +245,30 @@ class Compiler implements CompilerInterface
         return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }
     
+    public function serialize()
+    {
+        return serialize(array(
+            'startTag' => $this->startTag,
+            'endTag' => $this->endTag,
+            'separator' => $this->separator,
+            'captureLeft' => $this->captureLeft,
+            'captureTrail' => $this->captureTrail,
+            'addOptionalSeparator' => $this->addOptionalSeparator,
+            'optional' => $this->optional,
+            'delimiter' => $this->delimiter,
+            'modifier' => $this->modifier,
+            'wildcard' => $this->wildcard,
+            'comp' => $this->comp,
+        ));
+    }
+    
+    public function unserialize($data)
+    {
+        $object = unserialize($data);
+        
+        foreach($object as $key => $value)
+        {
+            $this->{$key} = $value;
+        }
+    }
 }
