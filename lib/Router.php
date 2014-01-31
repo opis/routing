@@ -24,8 +24,10 @@ use Opis\Routing\Collections\RouteCollection;
 use Opis\Routing\Collections\FilterCollection;
 use Opis\Routing\Contracts\DispatcherResolverInterface;
 use Opis\Routing\Contracts\PathInterface;
+use Opis\Routing\Contracts\RouterInterface;
+use Opis\Routing\Contracts\RouteInterface;
 
-class Router
+class Router implements RouterInterface
 {
     
     protected $routes;
@@ -82,7 +84,7 @@ class Router
         }
     }
     
-    protected function pass(PathInterface $path, Route $route)
+    protected function pass(PathInterface $path, RouteInterface $route)
     {
         foreach($this->filters as $filter)
         {

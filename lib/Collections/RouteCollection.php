@@ -21,16 +21,16 @@
 namespace Opis\Routing\Collections;
 
 use InvalidArgumentException;
-use Opis\Routing\Route;
+use Opis\Routing\Contracts\RouteInterface;
 
 class RouteCollection extends AbstractCollection
 {
     
     protected function checkType($value)
     {
-        if(!($value instanceof Route))
+        if(!($value instanceof RouteInterface))
         {
-            throw new InvalidArgumentException('Expected \Opis\Routing\Route');
+            throw new InvalidArgumentException('Expected \Opis\Routing\Contracts\RouteInterface');
         }
     }
     

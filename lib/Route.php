@@ -20,10 +20,11 @@
 
 namespace Opis\Routing;
 
+use Opis\Routing\Contracts\RouteInterface;
 use Opis\Routing\Contracts\PatternInterface;
 use Opis\Routing\Contracts\CompilerInterface;
 
-class Route
+class Route implements RouteInterface
 {
     protected $routePattern;
     

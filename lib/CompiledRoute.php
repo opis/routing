@@ -20,9 +20,11 @@
 
 namespace Opis\Routing;
 
+use Opis\Routing\Contracts\RouteInterface;
+
 class CompiledRoute extends CompiledExpression
 {
-    public function __construct(Route $route)
+    public function __construct(RouteInterface $route)
     {
         parent::__construct($route->getCompiler(),
                             $route->getPattern(),

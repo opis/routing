@@ -22,10 +22,11 @@ namespace Opis\Routing;
 
 use Opis\Routing\Contracts\FilterInterface;
 use Opis\Routing\Contracts\PathInterface;
+use Opis\Routing\Contracts\RouteInterface;
 
 class PathFilter implements FilterInterface
 {
-    public function pass(PathInterface $path, Route $route)
+    public function pass(PathInterface $path, RouteInterface $route)
     {
         return $route->compile()->match($path);
     }

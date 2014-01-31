@@ -42,19 +42,55 @@ interface CompilerInterface
     function build(PatternInterface $pattern, array $values = array());
 }
 
+interface RouteInterface
+{   
+    function getPattern();
+    
+    function getAction();
+    
+    function getWildcards();
+    
+    function getBindings();
+    
+    function getDefaults();
+    
+    function getProperties();
+    
+    function getCompiler();
+    
+    function compile();
+    
+    function bind($name, $callback);
+    
+    function wildcard($name, $regex);
+    
+    function implicit($name, $value);
+    
+    function set($name, $value);
+    
+    function has($name);
+    
+    function get($name, $default = null);
+}
+
+interface RouterInterface
+{
+    function route(PathInterface $path);
+}
+
 interface DispatcherInterface
 {
-    function dispatch(PathInterface $path, Route $route);
+    function dispatch(PathInterface $path, RouteInterface $route);
 }
 
 interface DispatcherResolverInterface
 {   
-    function resolve(PathInterface $path, Route $route);
+    function resolve(PathInterface $path, RouteInterface $route);
 }
 
 interface FilterInterface
 {
-    function pass(PathInterface $path, Route $route);
+    function pass(PathInterface $path, RouteInterface $route);
 }
 
 interface PathInterface

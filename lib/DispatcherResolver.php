@@ -22,10 +22,11 @@ namespace Opis\Routing;
 
 use Opis\Routing\Contracts\DispatcherResolverInterface;
 use Opis\Routing\Contracts\PathInterface;
+use Opis\Routing\Contracts\RouteInterface;
 
 class DispatcherResolver implements DispatcherResolverInterface
 {
-    public function resolve(PathInterface $path, Route $route)
+    public function resolve(PathInterface $path, RouteInterface $route)
     {
         return new Dispatcher();
     }
