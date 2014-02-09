@@ -34,7 +34,7 @@ class Dispatcher implements DispatcherInterface
     
     public function invokeAction(callable $action, array $values = array())
     {
-        $isMethod = false;
+        $isMethod = true;
         $that = null;
         
         if(is_string($action) && strpos($action, '::') !== false)
@@ -45,7 +45,6 @@ class Dispatcher implements DispatcherInterface
         if(is_object($action) && !($action instanceof \Closure))
         {
             $callback = new \ReflectionMethod(get_class($action), '__invoke');
-            $isMethod = true;
         }
         elseif(is_array($action))
         {
@@ -60,12 +59,12 @@ class Dispatcher implements DispatcherInterface
             {
                 $className = get_class($that);
             }
-            
             $callback = new \ReflectionMethod($className, $action[1]);
         }
         else
         {
             $callback = new \ReflectionFunction($action);
+            $isMethod = false;
         }
         
         $parameters = $callback->getParameters();
