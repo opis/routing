@@ -20,6 +20,8 @@
 
 namespace Opis\Routing;
 
+use Closure;
+use Opis\Closure\SerializableClosure;
 use Opis\Routing\Contracts\RouteInterface;
 use Opis\Routing\Contracts\PatternInterface;
 use Opis\Routing\Contracts\CompilerInterface;
@@ -42,7 +44,9 @@ class Route implements RouteInterface
     
     protected $properties = array();
     
-    public function __construct(PatternInterface $pattern, $action, CompilerInterface $compiler = null)
+    public function __construct(PatternInterface $pattern,
+                                Closure $action,
+                                CompilerInterface $compiler = null)
     {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
@@ -99,12 +103,9 @@ class Route implements RouteInterface
         return $this->compiledRoute;
     }
     
-    public function bind($name, $callback)
+    public function bind($name, Closure $callback)
     {
-        if(is_callable($callback))
-        {
-            $this->bindings[$name] = $callback;
-        }
+        $this->bindings[$name] = $callback;
         return $this;
     }
     
@@ -134,5 +135,85 @@ class Route implements RouteInterface
     public function get($name, $default = null)
     {
         return isset($this->properties[$name]) ? $this->properties[$name] : $default;
+    }
+    
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
+    
+    public function __set($name, $value)
+    {
+        return $this->set($name, $value);
+    }
+    
+    public function serialize()
+    {
+        SerializableClosure::enterContext();
+        
+        $map = function(&$value) use(&$map){
+            
+            if($value instanceof Closure)
+            {
+                return SerializableClosure::from($value);
+            }
+            elseif(is_array($value))
+            {
+                return array_map($map, $value);
+            }
+            elseif($value instanceof \stdClass)
+            {
+                $object = (array) $value;
+                $object = array_map($map, $object);
+                return (object) $object;
+            }
+            return $value;
+        };
+        
+        $object = array(
+            'routePattern' => $this->routePattern,
+            'routeAction' => SerializableClosure::form($this->routeAction),
+            'compiler' => $this->compiler,
+            'wildcards' => $this->wildcards,
+            'bidings' => array_map($map, $this->bindings),
+            'defaults' => array_map($this->defaults),
+            'properties' => array_map($map, $this->properties),
+        );
+        
+        SerializableClosure::exitContext();
+        
+        return serialize($object);
+    }
+    
+    public function unserialize($data)
+    {
+        $object = unserialize($data);
+        
+        $map = function(&$value) use(&$map){
+            
+            if($value instanceof SerializableClosure)
+            {
+                return $value->getClosure();
+            }
+            elseif(is_array($value))
+            {
+                return array_map($map, $value);
+            }
+            elseif($value instanceof \stdClass)
+            {
+                $object = (array) $value;
+                $object = array_map($map, $object);
+                return (object) $object;
+            }
+            return $value;
+        };
+        
+        $this->routePattern = $object['routePattern'];
+        $this->routeAction = $object['routeAction']->getClosure();
+        $this->compiler = $object['compiler'];
+        $this->wildcards = $object['wildcards'];
+        $this->bindings = array_map($map, $object['bindings']);
+        $this->defaults = array_map($map, $object['defaults']);
+        $this->properties = array_map($map, $object['properties']);
     }
 }

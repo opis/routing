@@ -22,8 +22,9 @@ namespace Opis\Routing\Collections;
 
 use Iterator;
 use ArrayAccess;
+use Serializable;
 
-abstract class AbstractCollection implements Iterator, ArrayAccess
+abstract class AbstractCollection implements Iterator, ArrayAccess, Serializable
 {
     protected $collection = array();
     
@@ -89,6 +90,16 @@ abstract class AbstractCollection implements Iterator, ArrayAccess
     public function toArray()
     {
         return $this->collection;
+    }
+    
+    public function serialize()
+    {
+        return serialize($this->collection);
+    }
+    
+    public function unserialize($data)
+    {
+        $this->collection = unserialize($data);
     }
     
 }
