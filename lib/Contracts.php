@@ -21,6 +21,7 @@
 namespace Opis\Routing\Contracts;
 
 use Serializable;
+use Closure;
 
 interface PathInterface
 {
@@ -72,7 +73,7 @@ interface RouteInterface extends Serializable
     
     function compile();
     
-    function bind($name, callable $callback);
+    function bind($name, Closure $callback);
     
     function wildcard($name, $regex);
     
@@ -94,7 +95,7 @@ interface DispatcherInterface
 {
     function dispatch(PathInterface $path, RouteInterface $route);
     
-    function invokeAction(callable $action, array $values = array());
+    function invokeAction(Closure $action, array $values = array());
 }
 
 interface DispatcherResolverInterface

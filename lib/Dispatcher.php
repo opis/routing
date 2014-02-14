@@ -20,6 +20,9 @@
 
 namespace Opis\Routing;
 
+use Closure;
+use InvalidArgumentException;
+use ReflectionFunction;
 use Opis\Routing\Contracts\DispatcherInterface;
 use Opis\Routing\Contracts\PathInterface;
 use Opis\Routing\Contracts\RouteInterface;
@@ -32,40 +35,10 @@ class Dispatcher implements DispatcherInterface
         return $this->invokeAction($route->getAction(), $route->compile()->bind($path));
     }
     
-    public function invokeAction(callable $action, array $values = array())
+    public function invokeAction(Closure $action, array $values = array())
     {
-        $isMethod = true;
-        $that = null;
         
-        if(is_string($action) && strpos($action, '::') !== false)
-        {
-            $action = explode('::', $action);
-        }
-        
-        if(is_object($action) && !($action instanceof \Closure))
-        {
-            $callback = new \ReflectionMethod(get_class($action), '__invoke');
-        }
-        elseif(is_array($action))
-        {
-            $that = $action[0];
-            
-            if(is_string($that))
-            {
-                $className =  $that;
-                $that = null;
-            }
-            else
-            {
-                $className = get_class($that);
-            }
-            $callback = new \ReflectionMethod($className, $action[1]);
-        }
-        else
-        {
-            $callback = new \ReflectionFunction($action);
-            $isMethod = false;
-        }
+        $callback = new ReflectionFunction($action);
         
         $parameters = $callback->getParameters();
         $arguments = array();
@@ -73,6 +46,7 @@ class Dispatcher implements DispatcherInterface
         foreach($parameters as $param)
         {
             $name = $param->getName();
+            
             if(isset($values[$name]))
             {
                 $arguments[] = $values[$name];
@@ -90,6 +64,6 @@ class Dispatcher implements DispatcherInterface
         
         $arguments += $values;
         
-        return $isMethod ? $callback->invokeArgs($that, $arguments) : $callback->invokeArgs($arguments);
+        return $callback->invokeArgs($arguments);
     }
 }

@@ -36,6 +36,8 @@ class Compiler implements CompilerInterface
     
     const OPT_SEPARATOR_TRAIL = 4;
     
+    const STANDARD_MODE = 6;
+    
     protected $startTag;
     
     protected $endTag;
@@ -62,7 +64,7 @@ class Compiler implements CompilerInterface
                                 $endTag = '}',
                                 $separator = '/',
                                 $optional = '?',
-                                $capture = 6,
+                                $capture = self::STANDARD_MODE,
                                 $delimiter = '`',
                                 $modifier = 'u',
                                 $wildcard = '[a-zA-Z0-9\.\,\-_%=]+')
@@ -101,7 +103,9 @@ class Compiler implements CompilerInterface
             return $this->compilePattern(preg_quote($value, $this->delimiter));
         }
         
-        $names = array_map(function($name){ return $this->wildcard; }, array_flip($names));
+        $wildcard = $this->wildcard;
+        
+        $names = array_map(function($name) use(&$wildcard){ return $wildcard; }, array_flip($names));
         
         $placeholders += $names;
         
@@ -168,7 +172,9 @@ class Compiler implements CompilerInterface
         
         preg_match_all($regex, $pattern, $matches);
         
-        return array_map(function($m) { return trim($m, $this->optional); }, $matches[1]);
+        $optional = $this->optional;
+        
+        return array_map(function($m) use(&$optional) { return trim($m, $optional); }, $matches[1]);
     }
     
     public function values(CompiledPatternInterface $pattern, PathInterface $path)
