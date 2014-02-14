@@ -172,11 +172,11 @@ class Route implements RouteInterface
         
         $object = array(
             'routePattern' => $this->routePattern,
-            'routeAction' => SerializableClosure::form($this->routeAction),
+            'routeAction' => SerializableClosure::from($this->routeAction),
             'compiler' => $this->compiler,
             'wildcards' => $this->wildcards,
-            'bidings' => array_map($map, $this->bindings),
-            'defaults' => array_map($this->defaults),
+            'bindings' => array_map($map, $this->bindings),
+            'defaults' => array_map($map, $this->defaults),
             'properties' => array_map($map, $this->properties),
         );
         
