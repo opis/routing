@@ -38,26 +38,7 @@ class Dispatcher implements DispatcherInterface
     public function invokeAction(Closure $action, array $values = array())
     {
         
-<<<<<<< HEAD
-        if(!is_callable($action))
-        {
-            throw new \RuntimeException('Route action is not callable');
-        }
-        
-        $isobject = false;
-        
-        if(is_object($action) && !($action instanceof \Closure))
-        {
-            $callback = new \ReflectionMethod(get_class($action), '__invoke');
-            $isobject = true;
-        }
-        else
-        {
-            $callback = new \ReflectionFunction($action);
-        }
-=======
         $callback = new ReflectionFunction($action);
->>>>>>> 2.0
         
         $parameters = $callback->getParameters();
         $arguments = array();

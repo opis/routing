@@ -149,7 +149,6 @@ class Route implements RouteInterface
     
     public function serialize()
     {
-        SerializableClosure::enterContext();
         
         $map = function(&$value) use(&$map){
             
@@ -170,7 +169,9 @@ class Route implements RouteInterface
             return $value;
         };
         
-        $object = array(
+        SerializableClosure::enterContext();
+        
+        $object = serialize(array(
             'routePattern' => $this->routePattern,
             'routeAction' => SerializableClosure::from($this->routeAction),
             'compiler' => $this->compiler,
@@ -178,11 +179,11 @@ class Route implements RouteInterface
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
             'properties' => array_map($map, $this->properties),
-        );
+        ));
         
         SerializableClosure::exitContext();
         
-        return serialize($object);
+        return $object;
     }
     
     public function unserialize($data)
