@@ -188,7 +188,7 @@ class Route implements RouteInterface
     
     public function unserialize($data)
     {
-        $object = unserialize($data);
+        $object = SerializableClosure::unserializeData($data);
         
         $map = function(&$value) use(&$map){
             
