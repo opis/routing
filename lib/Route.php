@@ -147,6 +147,11 @@ class Route implements RouteInterface
         return $this->set($name, $value);
     }
     
+    public function __call($name, $arguments)
+    {
+        return $this->set($name, array_shift($arguments));
+    }
+    
     public function serialize()
     {
         
