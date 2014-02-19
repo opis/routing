@@ -19,7 +19,9 @@ This library is available on [Packagist](https://packagist.org/packages/opis/rou
 }
 ```
 
-##Examples
+###Documentation
+
+###Examples
 
 ```php
 use \Opis\Routing\Router;
