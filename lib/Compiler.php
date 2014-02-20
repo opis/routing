@@ -115,18 +115,29 @@ class Compiler implements CompilerInterface
         
         $unmatched = array();
         
+        $position = -1;
+        
         foreach($placeholders as $key => $pattern)
         {
             $original = $key;
             $key = preg_quote($key, $this->delimiter);
             $pattern = '(?P<' . $key . '>(' . $pattern .'))';
             $count = 0;
+            $position++;
             if($this->captureLeft)
             {
                 $value = str_replace($sep . $st . $key . $et, $sep . $pattern, $value, $count);
+                
                 if($count == 0)
                 {
-                    $value = str_replace($sep . $st . $key . $opt . $et, '(?:' . $sep . $pattern .')?', $value, $count);
+                    if($position === 0 && strpos($value, $sep . $st . $key . $opt . $et) === 0)
+                    {
+                        $value = str_replace($sep . $st . $key . $opt . $et, '(' . $sep . $pattern .'?)?', $value, $count);
+                    }
+                    else
+                    {
+                        $value = str_replace($sep . $st . $key . $opt . $et, '(?:' . $sep . $pattern .')?', $value, $count);
+                    }
                 }
             }
             else
