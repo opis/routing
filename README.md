@@ -14,7 +14,7 @@ This library is available on [Packagist](https://packagist.org/packages/opis/rou
 ```json
 {
     "require": {
-        "opis/routing": "2.0.*"
+        "opis/routing": "2.1.*"
     }
 }
 ```
@@ -46,16 +46,13 @@ function route($pattern, Closure $callback)
 
 $collection = new RouteCollection();
 
-$collection[] = route('/{text}/{from?}', function($text, $from){
-    return 'Hello ' . $text . ' from ' . $from;
+$collection[] = route('/{text}/{from?}', function($output){
+    return $output;
 })
 ->wildcard('text', '[a-z]+')
 ->implicit('from', 'OPIS')
-->bind('text', function($value){
-   return strtoupper($value); 
-})
-->bind('from', function($value){
-   return strtolower($value); 
+->bind('output', function($text, $from){
+    return 'Hello ' . strtoupper($text) . ' from ' . strtolower($from);
 });
 
 $router = new Router($collection);
