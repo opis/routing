@@ -209,35 +209,42 @@ class Compiler implements CompilerInterface
     
     public function extract(array $names, array $values, array $defaults = array())
     {
-        $parameters = array_intersect_key($values, array_flip($names));
-        
-        $result = array();
-       
-        foreach($names as $key)
-        {
-            if(isset($parameters[$key]))
-            {
-                $result[$key] = $parameters[$key];
-            }
-            elseif(isset($defaults[$key]))
-            {
-                $result[$key] = $defaults[$key];
-            }
-        }
-        
-        return $result;
+        return array_intersect_key($values, array_flip($names)) + $defaults;
     }
     
     public function bind(array $values, array $bindings)
     {
-        foreach($values as $key => &$value)
+        $binded = array();
+        
+        foreach($bindings as $key => $callback)
         {
-            if(isset($bindings[$key]))
+            $arguments = array();
+            $reflection = new \ReflectionFunction($callback);
+            
+            foreach($reflection->getParameters() as $param)
             {
-                $value = call_user_func($bindings[$key], $value);
+                $name = $param->getName();
+                
+                if(isset($values[$name]))
+                {
+                    $arguments[] = $values[$name];
+                }
+                elseif($param->isOptional())
+                {
+                    $arguments[] = $param->getDefaultValue();
+                }
+                else
+                {
+                    $arguments[] = null;
+                }
             }
+            
+            $binded[$key] = $reflection->invokeArgs($arguments);
         }
-        return $values;
+        
+        $binded += $values;
+        
+        return $binded;
     }
     
     public function build(PatternInterface $pattern, array $values = array())
