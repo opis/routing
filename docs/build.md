@@ -1,4 +1,4 @@
 Building a routing system
 --------------------
 
-![Diagram](img/build.png?raw=true)
+![Diagram](https://raw.githubusercontent.com/opis/routing/master/docs/img/build.jpg)
