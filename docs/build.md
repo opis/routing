@@ -1,4 +1,4 @@
 Building a routing system
 --------------------
 
-![Diagram](/docs/img/build.png)
+![Diagram](img/build.png?raw=true)
