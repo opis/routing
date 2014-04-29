@@ -1,6 +1,6 @@
 {
     "name": "opis/routing",
-    "description": "A framework for building routing componets",
+    "description": "A framework for building routing components",
     "keywords": ["opis", "routing", "serializable", "framework", "http", "events"],
     "homepage": "http://opis.io",
     "license": "Apache-2.0",
