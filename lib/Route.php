@@ -51,6 +51,8 @@ class Route implements RouteInterface
         $this->routePattern = $pattern;
         $this->routeAction = $action;
         $this->compiler = $compiler;
+        $this->defaults['self'] = $this;
+        $this->defaults['path'] = null;
     }
     
     public function getPattern()
@@ -174,6 +176,9 @@ class Route implements RouteInterface
             return $value;
         };
         
+        $path = $this->defaults['path'];
+        unset($this->defaults['path'], $this->defaults['self']);
+        
         SerializableClosure::enterContext();
         
         $object = serialize(array(
@@ -187,6 +192,9 @@ class Route implements RouteInterface
         ));
         
         SerializableClosure::exitContext();
+        
+        $this->defaults['self'] = $this;
+        $this->defaults['path'] = $path;
         
         return $object;
     }
@@ -221,5 +229,7 @@ class Route implements RouteInterface
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
         $this->properties = array_map($map, $object['properties']);
+        $this->defaults['self'] = $this;
+        $this->defaults['path'] = null;
     }
 }
