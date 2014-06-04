@@ -22,6 +22,7 @@ namespace Opis\Routing;
 
 use Opis\Routing\Contracts\CompilerInterface;
 use Opis\Routing\Contracts\PatternInterface;
+use Opis\Routing\Contracts\CompiledPatternInterface;
 use Opis\Routing\Contracts\PathInterface;
 
 class CompiledExpression
@@ -29,6 +30,8 @@ class CompiledExpression
     protected $compiler;
     
     protected $pattern;
+    
+    protected $compiledPattern;
     
     protected $wildcards;
     
@@ -40,12 +43,14 @@ class CompiledExpression
     
     public function __construct(CompilerInterface $compiler,
                                 PatternInterface $pattern,
+                                CompiledPatternInterface $compiledPattern = null,
                                 array $wildcards = array(),
                                 array $defaults = array(),
                                 array $bindings = array())
     {
         $this->compiler = $compiler;
         $this->pattern = $pattern;
+        $this->compiledPattern = $compiledPattern;
         $this->wildcards = $wildcards;
         $this->defaults = $defaults;
         $this->bindings = $bindings;
@@ -83,12 +88,12 @@ class CompiledExpression
     
     public function compile()
     {
-        if(!isset($this->cache['compiled']))
+        if($this->compiledPattern === null)
         {
-            $this->cache['compiled'] = $this->compiler->compile($this->pattern(), $this->wildcards());
+            $this->compiledPattern = $this->compiler->compile($this->pattern(), $this->wildcards());
         }
         
-        return $this->cache['compiled'];
+        return $this->compiledPattern;
     }
     
     public function values(PathInterface $path)

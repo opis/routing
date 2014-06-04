@@ -28,6 +28,6 @@ class PathFilter implements FilterInterface
 {
     public function pass(PathInterface $path, RouteInterface $route)
     {
-        return $route->compile()->match($path);
+        return preg_match($route->getDelimitedPattern(), (string) $path);
     }
 }

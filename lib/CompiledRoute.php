@@ -28,6 +28,7 @@ class CompiledRoute extends CompiledExpression
     {
         parent::__construct($route->getCompiler(),
                             $route->getPattern(),
+                            $route->getCompiledPattern(),
                             $route->getWildcards(),
                             $route->getDefaults(),
                             $route->getBindings());

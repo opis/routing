@@ -74,7 +74,7 @@ class Router implements RouterInterface
     
     public function route(PathInterface $path)
     {
-        foreach($this->routes as $route)
+        foreach($this->routes->toArray() as $route)
         {
             $route->implicit('path', $path);
             
@@ -88,7 +88,7 @@ class Router implements RouterInterface
     
     protected function pass(PathInterface $path, RouteInterface $route)
     {
-        foreach($this->filters as $filter)
+        foreach($this->filters->toArray() as $filter)
         {
             if(!$filter->pass($path, $route))
             {

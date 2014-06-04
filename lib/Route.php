@@ -36,6 +36,10 @@ class Route implements RouteInterface
     
     protected $compiledRoute;
     
+    protected $compiledPattern;
+    
+    protected $delimitedPattern;
+    
     protected $wildcards = array();
     
     protected $bindings = array();
@@ -83,6 +87,26 @@ class Route implements RouteInterface
     public function getProperties()
     {
         return $this->properties;
+    }
+    
+    public function getCompiledPattern()
+    {
+        if(is_string($this->compiledPattern))
+        {
+            $this->compiledPattern = new CompiledPattern($this->compiledPattern);
+        }
+        
+        return $this->compiledPattern;
+    }
+    
+    public function getDelimitedPattern()
+    {
+        if($this->delimitedPattern === null)
+        {
+            $this->delimitedPattern = $this->compile()->delimit();
+        }
+        
+        return $this->delimitedPattern;
     }
     
     public function getCompiler()
@@ -184,6 +208,8 @@ class Route implements RouteInterface
         $object = serialize(array(
             'routePattern' => $this->routePattern,
             'routeAction' => SerializableClosure::from($this->routeAction),
+            'delimitedPattern' => $this->getDelimitedPattern(),
+            'compiledPattern' => $this->compile()->compile(),
             'compiler' => $this->compiler,
             'wildcards' => $this->wildcards,
             'bindings' => array_map($map, $this->bindings),
@@ -224,6 +250,8 @@ class Route implements RouteInterface
         
         $this->routePattern = $object['routePattern'];
         $this->routeAction = $object['routeAction']->getClosure();
+        $this->delimitedPattern = $object['delimitedPattern'];
+        $this->compiledPattern = $object['compiledPattern'];
         $this->compiler = $object['compiler'];
         $this->wildcards = $object['wildcards'];
         $this->bindings = array_map($map, $object['bindings']);
