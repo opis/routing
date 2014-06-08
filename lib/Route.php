@@ -203,13 +203,15 @@ class Route implements RouteInterface
         $path = $this->defaults['path'];
         unset($this->defaults['path'], $this->defaults['self']);
         
+        $compiledPatter = $this->getCompiler()->compile($this->routeAction, $this->wildcards);
+        
         SerializableClosure::enterContext();
         
         $object = serialize(array(
             'routePattern' => $this->routePattern,
             'routeAction' => SerializableClosure::from($this->routeAction),
-            'delimitedPattern' => $this->getDelimitedPattern(),
-            'compiledPattern' => $this->compile()->compile(),
+            'compiledPattern' => $compiledPatter,
+            'delimitedPattern' => $this->getCompiler()->delimit($compiledPatter),
             'compiler' => $this->compiler,
             'wildcards' => $this->wildcards,
             'bindings' => array_map($map, $this->bindings),
