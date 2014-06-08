@@ -1,10 +1,10 @@
 CHANGELOG
 -------------
-### Opis HTTP Routing 2.2.1, 2014.06.08
+### Opis Routing 2.2.1, 2014.06.08
 
 * Fixed a major bug in `Opis\Routing\Route`
 
-### Opis HTTP Routing 2.2.0, 2014.06.04
+### Opis Routing 2.2.0, 2014.06.04
 
 * Started changelog
 * Modified `Opis\Routing\CompiledExpression` constructor
