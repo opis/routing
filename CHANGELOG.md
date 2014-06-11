@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis Routing 2.3.1, 2014.06.11
+
+*  Fixed a bug in `Opis\Routing\Route`. The protected static variable `$compiler` was removed.
+
 ### Opis Routing 2.3.0, 2014.06.11
 
 * The `getCompiler` method in `Opis\Routing\Contracts\RouteInterface` is now declared as static.
