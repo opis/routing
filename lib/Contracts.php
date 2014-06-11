@@ -25,85 +25,85 @@ use Closure;
 
 interface PathInterface
 {
-    function __toString();
+    public function __toString();
 }
 
 interface PatternInterface extends Serializable
 {
-    function __toString();
+    public function __toString();
 }
 
 interface CompiledPatternInterface extends Serializable
 {
-    function __toString();
+    public function __toString();
 }
 
 interface CompilerInterface extends Serializable
 {
-    function compile(PatternInterface $pattern, array $placeholders = array());
+    public function compile(PatternInterface $pattern, array $placeholders = array());
     
-    function delimit(CompiledPatternInterface $compiled);
+    public function delimit(CompiledPatternInterface $compiled);
     
-    function names(PatternInterface $pattern);
+    public function names(PatternInterface $pattern);
     
-    function values(CompiledPatternInterface $pattern, PathInterface $path);
+    public function values(CompiledPatternInterface $pattern, PathInterface $path);
     
-    function extract(array $names, array $values, array $defaults = array());
+    public function extract(array $names, array $values, array $defaults = array());
     
-    function bind(array $values, array $bindings);
+    public function bind(array $values, array $bindings);
     
-    function build(PatternInterface $pattern, array $values = array());
+    public function build(PatternInterface $pattern, array $values = array());
 }
 
 interface RouteInterface extends Serializable
 {   
-    function getPattern();
+    public function getPattern();
     
-    function getAction();
+    public function getAction();
     
-    function getWildcards();
+    public function getWildcards();
     
-    function getBindings();
+    public function getBindings();
     
-    function getDefaults();
+    public function getDefaults();
     
-    function getProperties();
+    public function getProperties();
     
-    function getCompiler();
+    public static function getCompiler();
     
-    function compile();
+    public function compile();
     
-    function bind($name, Closure $callback);
+    public function bind($name, Closure $callback);
     
-    function wildcard($name, $regex);
+    public function wildcard($name, $regex);
     
-    function implicit($name, $value);
+    public function implicit($name, $value);
     
-    function set($name, $value);
+    public function set($name, $value);
     
-    function has($name);
+    public function has($name);
     
-    function get($name, $default = null);
+    public function get($name, $default = null);
 }
 
 interface RouterInterface
 {
-    function route(PathInterface $path);
+    public function route(PathInterface $path);
 }
 
 interface DispatcherInterface
 {
-    function dispatch(PathInterface $path, RouteInterface $route);
+    public function dispatch(PathInterface $path, RouteInterface $route);
     
-    function invokeAction(Closure $action, array $values = array());
+    public function invokeAction(Closure $action, array $values = array());
 }
 
 interface DispatcherResolverInterface
 {   
-    function resolve(PathInterface $path, RouteInterface $route);
+    public function resolve(PathInterface $path, RouteInterface $route);
 }
 
 interface FilterInterface
 {
-    function pass(PathInterface $path, RouteInterface $route);
+    public function pass(PathInterface $path, RouteInterface $route);
 }
