@@ -14,7 +14,7 @@ This library is available on [Packagist](https://packagist.org/packages/opis/rou
 ```json
 {
     "require": {
-        "opis/routing": "2.2.*"
+        "opis/routing": "2.3.*"
     }
 }
 ```
