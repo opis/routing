@@ -46,8 +46,6 @@ class Route implements RouteInterface
     
     protected $properties = array();
     
-    protected static $compiler;
-    
     public function __construct(PatternInterface $pattern, Closure $action)
     {
         $this->routePattern = $pattern;
@@ -108,12 +106,14 @@ class Route implements RouteInterface
     
     public static function getCompiler()
     {
-        if(static::$compiler === null)
+        static $compiler = null;
+        
+        if($compiler === null)
         {
-            static::$compiler = new Compiler();
+            $compiler = new Compiler();
         }
         
-        return static::$compiler;
+        return $compiler;
     }
     
     public function compile()
