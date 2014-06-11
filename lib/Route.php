@@ -32,8 +32,6 @@ class Route implements RouteInterface
     
     protected $routeAction;
     
-    protected $compiler;
-    
     protected $compiledRoute;
     
     protected $compiledPattern;
@@ -48,13 +46,12 @@ class Route implements RouteInterface
     
     protected $properties = array();
     
-    public function __construct(PatternInterface $pattern,
-                                Closure $action,
-                                CompilerInterface $compiler = null)
+    protected static $compiler;
+    
+    public function __construct(PatternInterface $pattern, Closure $action)
     {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
-        $this->compiler = $compiler;
         $this->defaults['self'] = $this;
         $this->defaults['path'] = null;
     }
@@ -109,14 +106,14 @@ class Route implements RouteInterface
         return $this->delimitedPattern;
     }
     
-    public function getCompiler()
+    public static function getCompiler()
     {
-        if($this->compiler === null)
+        if(static::$compiler === null)
         {
-            $this->compiler = new Compiler();
+            static::$compiler = new Compiler();
         }
         
-        return $this->compiler;
+        return static::$compiler;
     }
     
     public function compile()
@@ -212,7 +209,6 @@ class Route implements RouteInterface
             'routeAction' => SerializableClosure::from($this->routeAction),
             'compiledPattern' => $compiledPatter,
             'delimitedPattern' => $this->getCompiler()->delimit($compiledPatter),
-            'compiler' => $this->compiler,
             'wildcards' => $this->wildcards,
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
@@ -254,7 +250,6 @@ class Route implements RouteInterface
         $this->routeAction = $object['routeAction']->getClosure();
         $this->delimitedPattern = $object['delimitedPattern'];
         $this->compiledPattern = $object['compiledPattern'];
-        $this->compiler = $object['compiler'];
         $this->wildcards = $object['wildcards'];
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
