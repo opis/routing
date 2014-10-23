@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis Routing 2.4.0, 2014.10.23
+
+* Updated `opis/closure` library dependency to version `1.3.*`
+
 ### Opis Routing 2.3.1, 2014.06.11
 
 *  Fixed a bug in `Opis\Routing\Route`. The protected static variable `$compiler` was removed.
