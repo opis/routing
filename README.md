@@ -26,7 +26,6 @@ This library is available on [Packagist](https://packagist.org/packages/opis/rou
 ```php
 use \Opis\Routing\Router;
 use \Opis\Routing\Route;
-use \Opis\Routing\Compiler;
 use \Opis\Routing\Collections\RouteCollection;
 use \Opis\Routing\Path;
 use \Opis\Routing\Pattern;
@@ -34,14 +33,7 @@ use \Opis\Routing\Pattern;
 
 function route($pattern, Closure $callback)
 {
-    static $compiler = null;
-    
-    if($compiler === null)
-    {
-        $compiler = new Compiler();
-    }
-    
-    return new Route(new Pattern($pattern), $callback, $compiler);
+    return new Route(new Pattern($pattern), $callback);
 }
 
 $collection = new RouteCollection();
