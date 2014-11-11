@@ -178,38 +178,20 @@ class Route implements RouteInterface
     public function serialize()
     {
         
-        $map = function(&$value) use(&$map){
-            
-            if($value instanceof Closure)
-            {
-                return SerializableClosure::from($value);
-            }
-            elseif(is_array($value))
-            {
-                return array_map($map, $value);
-            }
-            elseif($value instanceof \stdClass)
-            {
-                $object = (array) $value;
-                $object = array_map($map, $object);
-                return (object) $object;
-            }
-            return $value;
-        };
+        $map = static::getMapFunction();
         
         $path = $this->defaults['path'];
         unset($this->defaults['path'], $this->defaults['self']);
         
-        $compiledPatter = $this->getCompiler()->compile($this->routePattern, $this->wildcards);
         
         SerializableClosure::enterContext();
         
         $object = serialize(array(
             'routePattern' => $this->routePattern,
             'routeAction' => SerializableClosure::from($this->routeAction),
-            'compiledPattern' => $compiledPatter,
-            'delimitedPattern' => $this->getCompiler()->delimit($compiledPatter),
-            'wildcards' => $this->wildcards,
+            'compiledPattern' => $this->compile()->compile(),
+            'delimitedPattern' => $this->compile()->delimit(),
+            'wildcards' => $this->getWildcards(),
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
             'properties' => array_map($map, $this->properties),
@@ -227,24 +209,7 @@ class Route implements RouteInterface
     {
         $object = SerializableClosure::unserializeData($data);
         
-        $map = function(&$value) use(&$map){
-            
-            if($value instanceof SerializableClosure)
-            {
-                return $value->getClosure();
-            }
-            elseif(is_array($value))
-            {
-                return array_map($map, $value);
-            }
-            elseif($value instanceof \stdClass)
-            {
-                $object = (array) $value;
-                $object = array_map($map, $object);
-                return (object) $object;
-            }
-            return $value;
-        };
+        $map = static::getUnmapFunction();
         
         $this->routePattern = $object['routePattern'];
         $this->routeAction = $object['routeAction']->getClosure();
@@ -256,5 +221,63 @@ class Route implements RouteInterface
         $this->properties = array_map($map, $object['properties']);
         $this->defaults['self'] = $this;
         $this->defaults['path'] = null;
+    }
+    
+    protected static function getMapFunction()
+    {
+        static $map = null;
+        
+        if($map === null)
+        {
+            $map = function(&$value) use(&$map){
+                
+                if($value instanceof Closure)
+                {
+                    return SerializableClosure::from($value);
+                }
+                elseif(is_array($value))
+                {
+                    return array_map($map, $value);
+                }
+                elseif($value instanceof \stdClass)
+                {
+                    $object = (array) $value;
+                    $object = array_map($map, $object);
+                    return (object) $object;
+                }
+                return $value;
+            };
+        }
+        
+        return $map;
+    }
+    
+    protected static function getUnmapFunction()
+    {
+        static $map = null;
+        
+        if($map === null)
+        {
+            $map = function(&$value) use(&$map){
+                
+                if($value instanceof SerializableClosure)
+                {
+                    return $value->getClosure();
+                }
+                elseif(is_array($value))
+                {
+                    return array_map($map, $value);
+                }
+                elseif($value instanceof \stdClass)
+                {
+                    $object = (array) $value;
+                    $object = array_map($map, $object);
+                    return (object) $object;
+                }
+                return $value;
+            };
+        }
+        
+        return $map;
     }
 }
