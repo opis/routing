@@ -1,5 +1,10 @@
 CHANGELOG
 -------------
+### Opis Routing 2.4.1, 2014.11.11
+
+* Fixed a bug in `Opis\Routing\Route::serialize` method.
+* Added `getMapFunction` and 'getUnmapFunction' protected static methods in `Opis\Routing\Route`.
+
 ### Opis Routing 2.4.0, 2014.10.23
 
 * Updated `opis/closure` library dependency to version `1.3.*`
