@@ -24,13 +24,30 @@ use Opis\Routing\Contracts\RouteInterface;
 
 class CompiledRoute extends CompiledExpression
 {
+    
+    protected $route;
+    
     public function __construct(RouteInterface $route)
     {
         parent::__construct($route->getCompiler(),
                             $route->getPattern(),
-                            $route->getCompiledPattern(),
-                            $route->getWildcards(),
-                            $route->getDefaults(),
-                            $route->getBindings());
+                            $route->getCompiledPattern());
+        
+        $this->route = $route;
+    }
+    
+    public function wildcards()
+    {
+        return $this->route->getWildcards();
+    }
+    
+    public function defaults()
+    {
+        return $this->route->getDefaults();
+    }
+    
+    public function bindings()
+    {
+        return $this->route->getBindings();
     }
 }
