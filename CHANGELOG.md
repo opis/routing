@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis Routing 2.4.2, 2014.11.12
+
+* Modified `Opis\Routing\CompiledRoute`
+
 ### Opis Routing 2.4.1, 2014.11.11
 
 * Fixed a bug in `Opis\Routing\Route::serialize` method.
