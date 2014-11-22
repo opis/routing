@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis Routing 2.4.3, 2014.11.22
+
+* Fixed several bugs in `Opis\Routing\Compiler` class.
+
 ### Opis Routing 2.4.2, 2014.11.12
 
 * Modified `Opis\Routing\CompiledRoute`

@@ -100,7 +100,9 @@ class Compiler implements CompilerInterface
         
         if(empty($names))
         {
-            return $this->compilePattern(preg_quote($value, $this->delimiter));
+            $value = preg_quote($value, $this->delimiter);
+            list($st, $et, $sep, $opt) = $this->comp;
+            goto TRAIL;
         }
         
         $wildcard = $this->wildcard;
@@ -154,14 +156,15 @@ class Compiler implements CompilerInterface
             }
         }
         
-        if($this->captureTrail && !empty($unmatched))
+        if(!empty($unmatched))
         {
             foreach($unmatched as $key => $pattern)
             {
                 if($this->addOptionalSeparator)
                 {
-                     $pattern = $this->captureLeft ? '(' . $sep . ')?' . $pattern : $pattern . '(' . $sep . ')?';
+                    $pattern = $this->captureLeft ?  '(' . $sep . ')?' . $pattern : $pattern . '(' . $sep . ')?';
                 }
+                
                 
                 $value = str_replace($st . $key . $et, $pattern, $value, $count);
                 
@@ -170,6 +173,27 @@ class Compiler implements CompilerInterface
                     $value = str_replace($st . $key . $opt . $et, '('. $pattern . ')?', $value);
                 }
             }
+        }
+        
+        TRAIL:
+        
+        if($this->captureTrail)
+        {
+            if($this->captureLeft)
+            {   
+                if(substr($value, strlen($value) - strlen($sep)) !== $sep)
+                {
+                    $value = $value . '(' . $sep . ')?';
+                }
+            }
+            else
+            {
+                if(substr($value, 0, strlen($sep)) !== $sep)
+                {
+                    $value = '(' . $sep . ')?' . $value;
+                }
+            }
+            
         }
         
         return $this->compilePattern($value);
