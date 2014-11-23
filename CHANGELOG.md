@@ -1,6 +1,6 @@
 CHANGELOG
 -------------
-### Opis Routing 2.4.3, 2014.11.22
+### Opis Routing 2.4.3, 2014.11.23
 
 * Added autoload file
 
