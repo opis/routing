@@ -4,12 +4,26 @@ Opis Routing
 [![Latest Unstable Version](https://poser.pugx.org/opis/routing/v/unstable.png)](//packagist.org/packages/opis/routing)
 [![License](https://poser.pugx.org/opis/routing/license.png)](https://packagist.org/packages/opis/routing)
 
-A framework for building routing components
-------------------------------
+Routing framework
+------------------
+**Opis Routing** is a framework for building various routing components. In contrast to other routing libraries,
+it may handle anything that follows a pattern and is not limited only to HTTP request.
+
+This library was conceived to be embedded by other libraries that need routing capabilities and not as a
+standalone library; although the usage of this library as a standalone library is not discouraged. 
+
+### License
+
+**Opis Routing** is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
+
+### Requirements
+
+* PHP 5.3.* or higher
+* [Opis Closure](http://www.opis.io/closure) 1.3.*
 
 ### Installation
 
-This library is available on [Packagist](https://packagist.org/packages/opis/routing) and can be installed using [Composer](http://getcomposer.org)
+This library is available on [Packagist](https://packagist.org/packages/opis/routing) and can be installed using [Composer](http://getcomposer.org).
 
 ```json
 {
@@ -19,40 +33,16 @@ This library is available on [Packagist](https://packagist.org/packages/opis/rou
 }
 ```
 
-### Documentation
-
-### Examples
+If you are unable to use [Composer](http://getcomposer.org) you can download the
+[tar.gz](https://github.com/opis/routing/archive/2.4.4.tar.gz) or the [zip](https://github.com/opis/routing/archive/2.4.4.zip)
+archive file, extract the content of the archive and include de `autoload.php` file into your project. 
 
 ```php
-use \Opis\Routing\Router;
-use \Opis\Routing\Route;
-use \Opis\Routing\Collections\RouteCollection;
-use \Opis\Routing\Path;
-use \Opis\Routing\Pattern;
 
+require_once 'path/to/routing-2.4.4/autoload.php';
 
-function route($pattern, Closure $callback)
-{
-    return new Route(new Pattern($pattern), $callback);
-}
-
-$collection = new RouteCollection();
-
-$collection[] = route('/{text}/{from?}', function($output){
-    return $output;
-})
-->wildcard('text', '[a-z]+')
-->implicit('from', 'OPIS')
-->bind('output', function($text, $from){
-    return 'Hello ' . strtoupper($text) . ' from ' . strtolower($from);
-});
-
-$router = new Router($collection);
-print $router->route(new Path('/world')); //> Hello WORLD from opis
-
-//Serialize & unseialize
-$collection = unserialize(serialize($collection));
-
-$router = new Router($collection);
-print $router->route(new Path('/world/MARS')); //> Hello WORLD from mars
 ```
+
+### Documentation
+
+Examples and documentation can be found at http://opis.io/routing .
