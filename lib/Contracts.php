@@ -107,3 +107,8 @@ interface FilterInterface
 {
     public function pass(PathInterface $path, RouteInterface $route);
 }
+
+interface BindingInterface
+{
+    public function value();
+}

@@ -49,8 +49,7 @@ class Dispatcher implements DispatcherInterface
             
             if(isset($values[$name]))
             {
-                $arguments[] = $values[$name];
-                unset($values[$name]);
+                $arguments[] = $values[$name]->value();
             }
             elseif($param->isOptional())
             {
@@ -61,8 +60,6 @@ class Dispatcher implements DispatcherInterface
                 $arguments[] = null;
             }
         }
-        
-        $arguments += $values;
         
         return $callback->invokeArgs($arguments);
     }

@@ -263,7 +263,15 @@ class Compiler implements CompilerInterface
                 }
             }
             
-            $binded[$key] = $reflection->invokeArgs($arguments);
+            $binded[$key] = new Binding($reflection, $arguments);
+        }
+        
+        foreach($values as $key => &$value)
+        {
+            if(!isset($binded[$key]))
+            {
+                $value = new Binding(null, null, $value);
+            }
         }
         
         $binded += $values;
