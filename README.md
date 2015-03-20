@@ -28,18 +28,18 @@ This library is available on [Packagist](https://packagist.org/packages/opis/rou
 ```json
 {
     "require": {
-        "opis/routing": "2.4.*"
+        "opis/routing": "2.5.*"
     }
 }
 ```
 
 If you are unable to use [Composer](http://getcomposer.org) you can download the
-[tar.gz](https://github.com/opis/routing/archive/2.4.4.tar.gz) or the [zip](https://github.com/opis/routing/archive/2.4.4.zip)
+[tar.gz](https://github.com/opis/routing/archive/2.5.0.tar.gz) or the [zip](https://github.com/opis/routing/archive/2.5.0.zip)
 archive file, extract the content of the archive and include de `autoload.php` file into your project. 
 
 ```php
 
-require_once 'path/to/routing-2.4.4/autoload.php';
+require_once 'path/to/routing-2.5.0/autoload.php';
 
 ```
 
