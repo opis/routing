@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis Routing 2.5.0, 2015.03.20
+
+* Added support for late binding. 
+
 ### Opis Routing 2.4.3, 2014.11.23
 
 * Added autoload file
