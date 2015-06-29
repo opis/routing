@@ -20,9 +20,7 @@
 
 namespace Opis\Routing;
 
-use Opis\Routing\Contracts\PathInterface;
-
-class Path implements PathInterface
+class Path
 {
     protected $path;
     

@@ -22,11 +22,8 @@ namespace Opis\Routing;
 
 use Closure;
 use Opis\Closure\SerializableClosure;
-use Opis\Routing\Contracts\RouteInterface;
-use Opis\Routing\Contracts\PatternInterface;
-use Opis\Routing\Contracts\CompilerInterface;
 
-class Route implements RouteInterface
+class Route
 {
     protected $routePattern;
     
@@ -46,8 +43,13 @@ class Route implements RouteInterface
     
     protected $properties = array();
     
-    public function __construct(PatternInterface $pattern, Closure $action)
+    public function __construct(Pattern $pattern, $action)
     {
+        if(!is_callable($action))
+        {
+            throw new CallableExpectedException();
+        }
+        
         $this->routePattern = $pattern;
         $this->routeAction = $action;
         $this->defaults['self'] = $this;
@@ -126,8 +128,13 @@ class Route implements RouteInterface
         return $this->compiledRoute;
     }
     
-    public function bind($name, Closure $callback)
+    public function bind($name, $callback)
     {
+        if(!is_callable($callback))
+        {
+            throw new CallableExpectedException();
+        }
+        
         $this->bindings[$name] = $callback;
         return $this;
     }
@@ -186,9 +193,16 @@ class Route implements RouteInterface
         
         SerializableClosure::enterContext();
         
+        $routeAction = $this->routeAction;
+        
+        if($routeAction instanceof Closure)
+        {
+            $routeAction = SerializableClosure::from($routeAction);
+        }
+        
         $object = serialize(array(
             'routePattern' => $this->routePattern,
-            'routeAction' => SerializableClosure::from($this->routeAction),
+            'routeAction' => $routeAction,
             'compiledPattern' => $this->compile()->compile(),
             'delimitedPattern' => $this->compile()->delimit(),
             'wildcards' => $this->getWildcards(),
@@ -211,8 +225,13 @@ class Route implements RouteInterface
         
         $map = static::getUnmapFunction();
         
+        if($object['routeAction'] instanceof SerializableClosure)
+        {
+            $object['routeAction'] = $object['routeAction']->getClosure();
+        }
+        
         $this->routePattern = $object['routePattern'];
-        $this->routeAction = $object['routeAction']->getClosure();
+        $this->routeAction = $object['routeAction'];
         $this->delimitedPattern = $object['delimitedPattern'];
         $this->compiledPattern = $object['compiledPattern'];
         $this->wildcards = $object['wildcards'];

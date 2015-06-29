@@ -1,5 +1,14 @@
 CHANGELOG
 -------------
+### Opis Routing 3.0.0, 2015.06.30
+
+* `FilterInterface` was moved to `Opis\Routing` namespace
+* All other interfaces that were under the `Opis\Routing\Contracts` namespace have been removed
+* The `Opis\Routing\Dispatcher`'s `invokeAction` method was removed
+* The new `Opis\Routing\Callback` class was added
+* Added new exception class `Opis\Routing\CallableExpectedException`
+* Routes supports now all types of callable
+
 ### Opis Routing 2.5.0, 2015.03.20
 
 * Added support for late binding. 

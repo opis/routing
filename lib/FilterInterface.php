@@ -20,28 +20,7 @@
 
 namespace Opis\Routing;
 
-class Pattern
+interface FilterInterface
 {
-    protected $pattern;
-    
-    public function __construct($pattern)
-    {
-        $this->pattern = $pattern;
-    }
-    
-    public function serialize()
-    {
-        return serialize($this->pattern);
-    }
-    
-    public function unserialize($data)
-    {
-        $this->pattern = unserialize($data);
-    }
-    
-    public function __toString()
-    {
-        return $this->pattern;
-    }
-    
+    public function pass(Path $path, Route $route);
 }

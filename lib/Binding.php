@@ -20,20 +20,15 @@
 
 namespace Opis\Routing;
 
-use Closure;
-use InvalidArgumentException;
-use ReflectionFunction;
-use Opis\Routing\Contracts\BindingInterface;
-
-class Binding implements BindingInterface
+class Binding
 {
     protected $value;
     protected $arguments;
-    protected $reflection;
+    protected $callback;
     
-    public function __construct(ReflectionFunction $reflection = null, array $arguments = null, $value = null)
+    public function __construct(Callback $callback = null, array $arguments = null, $value = null)
     {
-        $this->reflection = $reflection;
+        $this->callback = $callback;
         $this->arguments = $arguments;
         $this->value = $value === null ? $this : $value;
     }
@@ -42,7 +37,7 @@ class Binding implements BindingInterface
     {
         if($this->value === $this)
         {
-            $this->value = $this->reflection->invokeArgs($this->arguments);
+            $this->value = $this->callback->invoke($this->arguments);
         }
         
         return $this->value;

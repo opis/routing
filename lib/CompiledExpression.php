@@ -20,11 +20,6 @@
 
 namespace Opis\Routing;
 
-use Opis\Routing\Contracts\CompilerInterface;
-use Opis\Routing\Contracts\PatternInterface;
-use Opis\Routing\Contracts\CompiledPatternInterface;
-use Opis\Routing\Contracts\PathInterface;
-
 class CompiledExpression
 {
     protected $compiler;
@@ -41,9 +36,9 @@ class CompiledExpression
     
     protected $cache = array();
     
-    public function __construct(CompilerInterface $compiler,
-                                PatternInterface $pattern,
-                                CompiledPatternInterface $compiledPattern = null,
+    public function __construct(Compiler $compiler,
+                                Pattern $pattern,
+                                CompiledPattern $compiledPattern = null,
                                 array $wildcards = array(),
                                 array $defaults = array(),
                                 array $bindings = array())
@@ -96,7 +91,7 @@ class CompiledExpression
         return $this->compiledPattern;
     }
     
-    public function values(PathInterface $path)
+    public function values(Path $path)
     {
         $id = (string) $path;
         
@@ -108,7 +103,7 @@ class CompiledExpression
         return $this->cache['values'][$id];
     }
     
-    public function extract(PathInterface $path)
+    public function extract(Path $path)
     {
         $id = (string) $path;
         
@@ -120,7 +115,7 @@ class CompiledExpression
         return $this->cache['extract'][$id];
     }
     
-    public function bind(PathInterface $path)
+    public function bind(Path $path)
     {
         $id = (string) $path;
         
@@ -141,7 +136,7 @@ class CompiledExpression
         return $this->cache['delimit'];
     }
     
-    public function match(PathInterface $value)
+    public function match(Path $value)
     {
         return preg_match($this->delimit(), (string) $value);
     }

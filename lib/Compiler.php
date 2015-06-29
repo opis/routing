@@ -20,12 +20,7 @@
 
 namespace Opis\Routing;
 
-use Opis\Routing\Contracts\CompilerInterface;
-use Opis\Routing\Contracts\PathInterface;
-use Opis\Routing\Contracts\PatternInterface;
-use Opis\Routing\Contracts\CompiledPatternInterface;
-
-class Compiler implements CompilerInterface
+class Compiler
 {    
     
     const CAPTURE_LEFT = 0;
@@ -94,7 +89,7 @@ class Compiler implements CompilerInterface
         return new CompiledPattern($value);
     }
     
-    public function compile(PatternInterface $value, array $placeholders = array())
+    public function compile(Pattern $value, array $placeholders = array())
     {
         $names = $this->names($value);
         
@@ -199,7 +194,7 @@ class Compiler implements CompilerInterface
         return $this->compilePattern($value);
     }
     
-    public function names(PatternInterface $pattern)
+    public function names(Pattern $pattern)
     {
         list($st, $et) = $this->comp;
         
@@ -212,7 +207,7 @@ class Compiler implements CompilerInterface
         return array_map(function($m) use(&$optional) { return trim($m, $optional); }, $matches[1]);
     }
     
-    public function values(CompiledPatternInterface $pattern, PathInterface $path)
+    public function values(CompiledPattern $pattern, Path $path)
     {
         
         preg_match($this->delimit($pattern), $path, $parameters);
@@ -243,9 +238,10 @@ class Compiler implements CompilerInterface
         foreach($bindings as $key => $callback)
         {
             $arguments = array();
-            $reflection = new \ReflectionFunction($callback);
             
-            foreach($reflection->getParameters() as $param)
+            $callback = new Callback($callback);
+            
+            foreach($callback->getParameters() as $param)
             {
                 $name = $param->getName();
                 
@@ -263,7 +259,7 @@ class Compiler implements CompilerInterface
                 }
             }
             
-            $binded[$key] = new Binding($reflection, $arguments);
+            $binded[$key] = new Binding($callback, $arguments);
         }
         
         foreach($values as $key => &$value)
@@ -279,7 +275,7 @@ class Compiler implements CompilerInterface
         return $binded;
     }
     
-    public function build(PatternInterface $pattern, array $values = array())
+    public function build(Pattern $pattern, array $values = array())
     {
         $names = $this->names($pattern);
         foreach($names as $name)
@@ -296,7 +292,7 @@ class Compiler implements CompilerInterface
         return $pattern;
     }
     
-    public function delimit(CompiledPatternInterface $value)
+    public function delimit(CompiledPattern $value)
     {
         return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }

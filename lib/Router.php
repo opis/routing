@@ -22,12 +22,8 @@ namespace Opis\Routing;
 
 use Opis\Routing\Collections\RouteCollection;
 use Opis\Routing\Collections\FilterCollection;
-use Opis\Routing\Contracts\DispatcherResolverInterface;
-use Opis\Routing\Contracts\PathInterface;
-use Opis\Routing\Contracts\RouterInterface;
-use Opis\Routing\Contracts\RouteInterface;
 
-class Router implements RouterInterface
+class Router
 {
     
     protected $routes;
@@ -37,7 +33,7 @@ class Router implements RouterInterface
     protected $resolver;
     
     public function __construct(RouteCollection $routes,
-                                DispatcherResolverInterface $resolver = null,
+                                DispatcherResolver $resolver = null,
                                 FilterCollection $filters = null)
     {
         $this->routes = $routes;
@@ -72,7 +68,7 @@ class Router implements RouterInterface
         return $this->resolver;
     }
     
-    public function route(PathInterface $path)
+    public function route(Path $path)
     {
         foreach($this->routes->toArray() as $route)
         {
@@ -86,7 +82,7 @@ class Router implements RouterInterface
         }
     }
     
-    protected function pass(PathInterface $path, RouteInterface $route)
+    protected function pass(Path $path, Route $route)
     {
         foreach($this->filters->toArray() as $filter)
         {
@@ -95,6 +91,7 @@ class Router implements RouterInterface
                 return false;
             }
         }
+        
         return true;
     }
     

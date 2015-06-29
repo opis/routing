@@ -21,16 +21,16 @@
 namespace Opis\Routing\Collections;
 
 use InvalidArgumentException;
-use Opis\Routing\Contracts\DispatcherInterface;
+use Opis\Routing\Dispatcher;
 
 class DispatcherCollection extends AbstractCollection
 {
     
     protected function checkType($value)
     {
-        if(!($value instanceof DispatcherInterface))
+        if(!($value instanceof Dispatcher))
         {
-            throw new InvalidArgumentException('Expected \Opis\Routing\Contracts\DispatcherInterface');
+            throw new InvalidArgumentException('Expected \Opis\Routing\Dispatcher');
         }
     }
 

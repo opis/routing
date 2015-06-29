@@ -20,25 +20,14 @@
 
 namespace Opis\Routing;
 
-use Closure;
-use InvalidArgumentException;
-use ReflectionFunction;
-use Opis\Routing\Contracts\DispatcherInterface;
-use Opis\Routing\Contracts\PathInterface;
-use Opis\Routing\Contracts\RouteInterface;
-
-class Dispatcher implements DispatcherInterface
+class Dispatcher
 {
     
-    public function dispatch(PathInterface $path, RouteInterface $route)
+    public function dispatch(Path $path, Route $route)
     {
-        return $this->invokeAction($route->getAction(), $route->compile()->bind($path));
-    }
-    
-    public function invokeAction(Closure $action, array $values = array())
-    {
+        $callback = new Callback($route->getAction());
         
-        $callback = new ReflectionFunction($action);
+        $values = $route->compile()->bind($path);
         
         $parameters = $callback->getParameters();
         $arguments = array();
@@ -61,6 +50,7 @@ class Dispatcher implements DispatcherInterface
             }
         }
         
-        return $callback->invokeArgs($arguments);
+        return $callback->invoke($arguments);
+        
     }
 }

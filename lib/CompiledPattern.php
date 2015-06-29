@@ -20,9 +20,7 @@
 
 namespace Opis\Routing;
 
-use Opis\Routing\Contracts\CompiledPatternInterface;
-
-class CompiledPattern implements CompiledPatternInterface
+class CompiledPattern
 {
     protected $pattern;
     
