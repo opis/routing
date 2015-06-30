@@ -21,7 +21,6 @@
 namespace Opis\Routing;
 
 use Closure;
-use InvalidArgumentException;
 use ReflectionFunction;
 use ReflectionMethod;
 
@@ -35,7 +34,7 @@ class Callback
     {
         if(!is_callable($callback))
         {
-            throw new InvalidArgumentException('$callback must be a valid callable value');
+            throw new CallableExpectedException();
         }
         
         $reflection = null;
