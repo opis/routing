@@ -29,8 +29,9 @@ class Dispatcher
         
         $values = $route->compile()->bind($path);
         
-        $parameters = $callback->getParameters();
         $arguments = array();
+        
+        $parameters = $callback->getParameters();
         
         foreach($parameters as $param)
         {
