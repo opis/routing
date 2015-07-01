@@ -20,7 +20,7 @@
 
 namespace Opis\Routing;
 
-abstract class Filter
+abstract class Filter implements FilterInterface
 {
     public final function pass(Path $path, Route $route)
     {

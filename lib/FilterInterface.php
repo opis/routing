@@ -18,20 +18,9 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing\Collections;
+namespace Opis\Routing;
 
-use InvalidArgumentException;
-use Opis\Routing\FilterInterface;
-
-class FilterCollection extends AbstractCollection
+interface FilterInterface
 {
-    
-    protected function checkType($value)
-    {
-        if(!($value instanceof FilterInterface))
-        {
-            throw new InvalidArgumentException('Expected \Opis\Routing\FilterInterface');
-        }
-    }
-
+    public function pass(Path $path, Route $route);
 }
