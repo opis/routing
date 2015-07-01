@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis Routing 3.0.1, 2015.07.01
+
+* Fixed a major bug. `Route`, `Compiler`, `Pattern` and `CompiledPattern` classes weren't serializable.
+
 ### Opis Routing 3.0.0, 2015.06.30
 
 * `FilterInterface` was moved to `Opis\Routing` namespace
