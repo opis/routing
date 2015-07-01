@@ -20,11 +20,9 @@
 
 namespace Opis\Routing;
 
-use Opis\Routing\FilterInterface;
-
-class PathFilter implements FilterInterface
+class PathFilter extends Filter
 {
-    public function pass(Path $path, Route $route)
+    protected function filter($path, $route)
     {
         return preg_match($route->getDelimitedPattern(), (string) $path);
     }

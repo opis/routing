@@ -20,17 +20,17 @@
 
 namespace Opis\Routing\Collections;
 
+use Opis\Routing\Filter;
 use InvalidArgumentException;
-use Opis\Routing\FilterInterface;
 
 class FilterCollection extends AbstractCollection
 {
     
     protected function checkType($value)
     {
-        if(!($value instanceof FilterInterface))
+        if(!($value instanceof Filter))
         {
-            throw new InvalidArgumentException('Expected \Opis\Routing\FilterInterface');
+            throw new InvalidArgumentException('Expected \Opis\Routing\Filter');
         }
     }
 
