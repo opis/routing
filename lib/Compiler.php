@@ -20,7 +20,9 @@
 
 namespace Opis\Routing;
 
-class Compiler
+use Serializable;
+
+class Compiler implements Serializable
 {    
     
     const CAPTURE_LEFT = 0;

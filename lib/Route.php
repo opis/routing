@@ -21,9 +21,10 @@
 namespace Opis\Routing;
 
 use Closure;
+use Serializable;
 use Opis\Closure\SerializableClosure;
 
-class Route
+class Route implements Serializable
 {
     protected $routePattern;
     

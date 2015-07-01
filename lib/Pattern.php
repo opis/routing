@@ -20,7 +20,9 @@
 
 namespace Opis\Routing;
 
-class Pattern
+use Serializable;
+
+class Pattern implements Serializable
 {
     protected $pattern;
     
