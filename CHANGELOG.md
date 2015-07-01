@@ -1,10 +1,6 @@
 CHANGELOG
 -------------
-### Opis Routing 3.0.1, 2015.07.01
-
-* Fixed a major bug. `Route`, `Compiler`, `Pattern` and `CompiledPattern` classes weren't serializable.
-
-### Opis Routing 3.0.0, 2015.06.30
+### Opis Routing 3.0.x-dev
 
 * `FilterInterface` was moved to `Opis\Routing` namespace
 * All other interfaces that were under the `Opis\Routing\Contracts` namespace have been removed
@@ -12,6 +8,7 @@ CHANGELOG
 * The new `Opis\Routing\Callback` class was added
 * Added new exception class `Opis\Routing\CallableExpectedException`
 * Routes supports now all types of callable
+* Fixed a major bug. `Route`, `Compiler`, `Pattern` and `CompiledPattern` classes weren't serializable.
 
 ### Opis Routing 2.5.0, 2015.03.20
 
