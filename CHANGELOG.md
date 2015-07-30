@@ -1,6 +1,6 @@
 CHANGELOG
 -------------
-### Opis Routing 3.0.x-dev
+### Opis Routing 3.0.0, 2015.07.31
 
 * `FilterInterface` was moved to `Opis\Routing` namespace
 * All other interfaces that were under the `Opis\Routing\Contracts` namespace have been removed

@@ -19,7 +19,7 @@ standalone library; although the usage of this library as a standalone library i
 ### Requirements
 
 * PHP 5.3.* or higher
-* [Opis Closure](http://www.opis.io/closure) 1.3.*
+* [Opis Closure](http://www.opis.io/closure) ~2.0
 
 ### Installation
 
