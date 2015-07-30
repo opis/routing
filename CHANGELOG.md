@@ -9,6 +9,7 @@ CHANGELOG
 * Added new exception class `Opis\Routing\CallableExpectedException`
 * Routes supports now all types of callable
 * Fixed a major bug. `Route`, `Compiler`, `Pattern` and `CompiledPattern` classes weren't serializable.
+* Updated `opis/closure` library dependency to version `~2.0`
 
 ### Opis Routing 2.5.0, 2015.03.20
 
