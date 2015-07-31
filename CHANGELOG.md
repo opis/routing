@@ -1,5 +1,10 @@
 CHANGELOG
 -------------
+### Opis Routing
+
+* Removed `branch-alias` property from `composer.json` file
+* Updated `opis/closure` library dependency to version `^2.0.0`
+
 ### Opis Routing 3.0.0, 2015.07.31
 
 * `FilterInterface` was moved to `Opis\Routing` namespace
