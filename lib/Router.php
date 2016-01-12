@@ -84,7 +84,7 @@ class Router
             $this->specials['self'] = $route;
 
             if ($this->pass($path, $route)) {
-                $dispatcher = $this->resolver->resolve($path, $route);
+                $dispatcher = $this->resolver->resolve($this, $path, $route);
                 return $dispatcher->dispatch($this, $path, $route);
             }
         }
