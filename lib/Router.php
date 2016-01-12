@@ -25,14 +25,32 @@ use Opis\Routing\Collections\FilterCollection;
 
 class Router
 {
+    /** @var    \Opis\Routing\Collections\RouteCollection */
     protected $routes;
+
+    /** @var    \Opis\Routing\Collections\FilterCollection */
     protected $filters;
+
+    /** @var    \Opis\Routing\DispatcherResolver */
     protected $resolver;
+
+    /** @var    array */
     protected $specials = array();
 
+    /**
+     * Constructor
+     * 
+     * @param   \Opis\Routing\Collections\RouteCollection   $routes
+     * @param   \Opis\Routing\DispatcherResolver|null       $resolver   (optional)
+     * @param   \Opis\Routing\PathFilter|null               $filters    (optional)
+     * @param   \Opis\Routing\Compiler|null                 $compiler   (optional)
+     */
     public function __construct(
-    RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, Compiler $compiler = null)
-    {
+    RouteCollection $routes, 
+        DispatcherResolver $resolver = null,
+        FilterCollection $filters = null, 
+        Compiler $compiler = null
+    ) {
         $this->routes = $routes;
 
         if ($resolver === null) {
@@ -53,26 +71,52 @@ class Router
         $this->compiler = $compiler;
     }
 
+    /**
+     * Get the route collection
+     * 
+     * @return  \Opis\Routing\Collections\RouteCollection
+     */
     public function getRouteCollection()
     {
         return $this->routes;
     }
 
+    /**
+     * Get the filter collection
+     * 
+     * @return  \Opis\Routing\Collections\FilterCollection
+     */
     public function getFilterCollection()
     {
         return $this->filters;
     }
 
+    /**
+     * Get the dispatcher resolver
+     * 
+     * @return  \Opis\Routing\DispatcherResolver
+     */
     public function getDispatcherResolver()
     {
         return $this->resolver;
     }
 
+    /**
+     * Get special values
+     * 
+     * @return  array
+     */
     public function getSpecialValues()
     {
         return $this->specials;
     }
 
+    /**
+     * 
+     * @param   \Opis\Routing\Path  $path
+     * 
+     * @return  mixed
+     */
     public function route(Path $path)
     {
         $this->specials = array(
@@ -90,6 +134,13 @@ class Router
         }
     }
 
+    /**
+     * 
+     * @param   \Opis\Routing\Path  $path
+     * @param   \Opis\Routing\Route $route
+     * 
+     * @return  boolean
+     */
     protected function pass(Path $path, Route $route)
     {
         foreach ($this->filters->toArray() as $filter) {

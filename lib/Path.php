@@ -22,13 +22,24 @@ namespace Opis\Routing;
 
 class Path
 {
+    /** @var    string */
     protected $path;
-    
+
+    /**
+     * Constructor
+     * 
+     * @param   string  $path
+     */
     public function __construct($path)
     {
         $this->path = $path;
     }
-    
+
+    /**
+     * Stringify
+     * 
+     * @return  string
+     */
     public function __toString()
     {
         return $this->path;
