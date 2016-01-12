@@ -22,10 +22,10 @@ namespace Opis\Routing;
 
 abstract class Filter implements FilterInterface
 {
-    public final function pass(Path $path, Route $route)
+    public function pass(Router $router, Path $path, Route $route)
     {
-        return $this->filter($path, $route);
+        return $this->filter($router, $path, $route);
     }
     
-    protected abstract function filter($path, $route);
+    abstract public function filter($router, $path, $route);
 }

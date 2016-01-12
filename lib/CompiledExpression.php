@@ -23,25 +23,20 @@ namespace Opis\Routing;
 class CompiledExpression
 {
     protected $compiler;
-    
     protected $pattern;
-    
     protected $compiledPattern;
-    
     protected $wildcards;
-    
     protected $bindings;
-    
     protected $defaults;
-    
     protected $cache = array();
-    
-    public function __construct(Compiler $compiler,
-                                Pattern $pattern,
-                                CompiledPattern $compiledPattern = null,
-                                array $wildcards = array(),
-                                array $defaults = array(),
-                                array $bindings = array())
+
+    public function __construct(
+        Compiler $compiler,
+        Pattern $pattern, 
+        $compiledPattern = null,
+        array $wildcards = array(), 
+        array $defaults = array(), 
+        array $bindings = array())
     {
         $this->compiler = $compiler;
         $this->pattern = $pattern;
@@ -50,92 +45,91 @@ class CompiledExpression
         $this->defaults = $defaults;
         $this->bindings = $bindings;
     }
-    
+
     public function pattern()
     {
         return $this->pattern;
     }
-    
+
     public function wildcards()
     {
         return $this->wildcards;
     }
-    
+
     public function defaults()
     {
         return $this->defaults;
     }
-    
+
+    public function specials()
+    {
+        return $this->specials;
+    }
+
     public function bindings()
     {
         return $this->bindings;
     }
-    
+
     public function names()
     {
-        if(!isset($this->cache['names']))
-        {
+        if (!isset($this->cache['names'])) {
             $this->cache['names'] = $this->compiler->names($this->pattern());
         }
-        
+
         return $this->cache['names'];
     }
-    
+
     public function compile()
     {
-        if($this->compiledPattern === null)
-        {
+        if ($this->compiledPattern === null) {
             $this->compiledPattern = $this->compiler->compile($this->pattern(), $this->wildcards());
         }
-        
+
         return $this->compiledPattern;
     }
-    
+
     public function values(Path $path)
     {
         $id = (string) $path;
-        
-        if(!isset($this->cache['values'][$id]))
-        {
+
+        if (!isset($this->cache['values'][$id])) {
             $this->cache['values'][$id] = $this->compiler->values($this->compile(), $path);
         }
-        
+
         return $this->cache['values'][$id];
     }
-    
+
     public function extract(Path $path)
     {
         $id = (string) $path;
-        
-        if(!isset($this->cache['extract'][$id]))
-        {
+
+        if (!isset($this->cache['extract'][$id])) {
             $this->cache['extract'][$id] = $this->compiler->extract($this->names(), $this->values($path), $this->defaults());
         }
-        
+
         return $this->cache['extract'][$id];
     }
-    
+
     public function bind(Path $path)
     {
         $id = (string) $path;
-        
-        if(!isset($this->cache['bind'][$id]))
-        {
+
+        if (!isset($this->cache['bind'][$id])) {
             $this->cache['bind'][$id] = $this->compiler->bind($this->extract($path), $this->bindings());
         }
-        
+
         return $this->cache['bind'][$id];
     }
-    
+
     public function delimit()
-    {   
-        if(!isset($this->cache['delimit']))
-        {
+    {
+        if (!isset($this->cache['delimit'])) {
             $this->cache['delimit'] = $this->compiler->delimit($this->compile());
         }
         return $this->cache['delimit'];
     }
-    
+
     public function match(Path $value)
     {
         return preg_match($this->delimit(), (string) $value);

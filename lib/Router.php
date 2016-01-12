@@ -25,74 +25,79 @@ use Opis\Routing\Collections\FilterCollection;
 
 class Router
 {
-    
     protected $routes;
-    
     protected $filters;
-    
     protected $resolver;
-    
-    public function __construct(RouteCollection $routes,
-                                DispatcherResolver $resolver = null,
-                                FilterCollection $filters = null)
+    protected $specials = array();
+
+    public function __construct(
+    RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, Compiler $compiler = null)
     {
         $this->routes = $routes;
-        
-        if($resolver === null)
-        {
+
+        if ($resolver === null) {
             $resolver = new DispatcherResolver();
         }
-        
-        if($filters === null)
-        {
+
+        if ($filters === null) {
             $filters = new FilterCollection();
             $filters[] = new PathFilter();
         }
-        
+
+        if ($compiler === null) {
+            $compiler = new Compiler();
+        }
+
         $this->resolver = $resolver;
         $this->filters = $filters;
+        $this->compiler = $compiler;
     }
-    
+
     public function getRouteCollection()
     {
         return $this->routes;
     }
-    
+
     public function getFilterCollection()
     {
         return $this->filters;
     }
-    
+
     public function getDispatcherResolver()
     {
         return $this->resolver;
     }
-    
+
+    public function getSpecialValues()
+    {
+        return $this->specials;
+    }
+
     public function route(Path $path)
     {
-        foreach($this->routes->toArray() as $route)
-        {
-            $route->implicit('path', $path);
-            
-            if($this->pass($path, $route))
-            {
+        $this->specials = array(
+            'path' => $path,
+            'self' => null,
+        );
+
+        foreach ($this->routes->toArray() as $route) {
+            $this->specials['self'] = $route;
+
+            if ($this->pass($path, $route)) {
                 $dispatcher = $this->resolver->resolve($path, $route);
-                return $dispatcher->dispatch($path, $route);
+                return $dispatcher->dispatch($this, $path, $route);
             }
         }
     }
-    
+
     protected function pass(Path $path, Route $route)
     {
-        foreach($this->filters->toArray() as $filter)
-        {
-            if(!$filter->pass($path, $route))
-            {
+        foreach ($this->filters->toArray() as $filter) {
+            if (!$filter->pass($this, $path, $route)) {
                 return false;
             }
         }
-        
+
         return true;
     }
-    
 }

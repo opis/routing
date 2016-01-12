@@ -22,30 +22,17 @@ namespace Opis\Routing;
 
 class CompiledRoute extends CompiledExpression
 {
-    
     protected $route;
     
     public function __construct(Route $route)
     {
         parent::__construct($route->getCompiler(),
                             $route->getPattern(),
-                            $route->getCompiledPattern());
+                            $route->getCompiledPattern(),
+                            $route->getWildcards(),
+                            $route->getDefaults(),
+                            $route->getBindings());
         
         $this->route = $route;
-    }
-    
-    public function wildcards()
-    {
-        return $this->route->getWildcards();
-    }
-    
-    public function defaults()
-    {
-        return $this->route->getDefaults();
-    }
-    
-    public function bindings()
-    {
-        return $this->route->getBindings();
     }
 }

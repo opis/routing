@@ -86,11 +86,6 @@ class Compiler implements Serializable
         );
     }
     
-    protected function compilePattern($value)
-    {
-        return new CompiledPattern($value);
-    }
-    
     public function compile(Pattern $value, array $placeholders = array())
     {
         $names = $this->names($value);
@@ -193,7 +188,7 @@ class Compiler implements Serializable
             
         }
         
-        return $this->compilePattern($value);
+        return $value;
     }
     
     public function names(Pattern $pattern)
@@ -209,7 +204,7 @@ class Compiler implements Serializable
         return array_map(function($m) use(&$optional) { return trim($m, $optional); }, $matches[1]);
     }
     
-    public function values(CompiledPattern $pattern, Path $path)
+    public function values($pattern, Path $path)
     {
         
         preg_match($this->delimit($pattern), $path, $parameters);
@@ -294,7 +289,7 @@ class Compiler implements Serializable
         return $pattern;
     }
     
-    public function delimit(CompiledPattern $value)
+    public function delimit($value)
     {
         return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }
