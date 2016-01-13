@@ -1,5 +1,6 @@
 Opis Routing
 =================
+[![Build Status](https://travis-ci.org/opis/routing.svg?branch=master)](https://travis-ci.org/opis/routing)
 [![Latest Stable Version](https://poser.pugx.org/opis/routing/version.png)](https://packagist.org/packages/opis/routing)
 [![Latest Unstable Version](https://poser.pugx.org/opis/routing/v/unstable.png)](//packagist.org/packages/opis/routing)
 [![License](https://poser.pugx.org/opis/routing/license.png)](https://packagist.org/packages/opis/routing)
