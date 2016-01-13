@@ -1,6 +1,6 @@
 CHANGELOG
 -------------
-### Opis Routing
+### Opis Routing, 2016.01.13
 
 * Removed `branch-alias` property from `composer.json` file
 * Added `phpunit/phpunit` version `4.8.*` as a dependency to `require-dev`
