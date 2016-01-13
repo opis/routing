@@ -43,13 +43,11 @@ class Router
      * @param   \Opis\Routing\Collections\RouteCollection   $routes
      * @param   \Opis\Routing\DispatcherResolver|null       $resolver   (optional)
      * @param   \Opis\Routing\PathFilter|null               $filters    (optional)
-     * @param   \Opis\Routing\Compiler|null                 $compiler   (optional)
      */
     public function __construct(
-    RouteCollection $routes, 
+        RouteCollection $routes, 
         DispatcherResolver $resolver = null,
-        FilterCollection $filters = null, 
-        Compiler $compiler = null
+        FilterCollection $filters = null
     ) {
         $this->routes = $routes;
 
@@ -62,13 +60,8 @@ class Router
             $filters[] = new PathFilter();
         }
 
-        if ($compiler === null) {
-            $compiler = new Compiler();
-        }
-
         $this->resolver = $resolver;
         $this->filters = $filters;
-        $this->compiler = $compiler;
     }
 
     /**
