@@ -4,6 +4,7 @@ CHANGELOG
 
 * Removed `branch-alias` property from `composer.json` file
 * Added `phpunit/phpunit` version `4.8.*` as a dependency to `require-dev`
+* Added tests
 * Updated `opis/closure` library dependency to version `^2.0.0`
 * Removed `Opis\Routing\CompiledPattern` class
 * The `Opis\Routing\Route::getCompiler` is no longer a static method
