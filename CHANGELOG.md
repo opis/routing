@@ -3,7 +3,20 @@ CHANGELOG
 ### Opis Routing
 
 * Removed `branch-alias` property from `composer.json` file
+* Added `phpunit/phpunit` version `5.1.*` as a dependency to `require-dev`
 * Updated `opis/closure` library dependency to version `^2.0.0`
+* Removed `Opis\Routing\CompiledPattern` class
+* The `Opis\Routing\Route::getCompiler` is no longer a static method
+* Removed `Opis\Routing\Route::getUnmapFunction` and `Opis\Routing\Route::getMapFunction` methods
+* Added `Opis\Routing\Route::wrapClosures` and `Opis\Routing\Route::unwrapClosures` methods
+* Changed the way an instance of `Opis\Routing\Route` is serialized
+* The `Opis\Routing\DispatcherResolver::resolve`, `Opis\Routing\Dispatcher::dispatch` and the
+`Opis\Routing\FilterInterface::pass` methods, now receive as their first argument an instance
+of `Opis\Routing\Router`. All the classes implementing the `Opis\Routing\FilterInterface` interface 
+were modified to support these changes.
+* Added the `Opis\Routing\Router::getSpecialValues` method
+* Modifed the `Opis\Routing\Router::route` method
+* The way the `Opis\Routing\Dispatcher` executes a route's callback was modified
 
 ### Opis Routing 3.0.0, 2015.07.31
 
