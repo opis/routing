@@ -233,23 +233,19 @@ class Compiler implements Serializable
         $binded = array();
         
         foreach($bindings as $key => $callback)
-        {
-            $arguments = array();
-            
+        {   
             $callback = new Callback($callback);
             $arguments = $callback->getArguments($values, $specials, false);
             $binded[$key] = new Binding($callback, $arguments);
         }
         
-        foreach($values as $key => &$value)
+        foreach($values as $key => $value)
         {
             if(!isset($binded[$key]))
             {
-                $value = new Binding(null, null, $value);
+                $binded[$key] = new Binding(null, null, $value);
             }
         }
-        
-        $binded += $values;
         
         return $binded;
     }
