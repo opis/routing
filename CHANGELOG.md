@@ -6,6 +6,8 @@ CHANGELOG
 * Modified `Opis\Routing\Dispatcher` class
 * `Opis\Routing\Router::__construct` accepts now 4th optional argument representing an array
 of special values.
+* Added a 3rd optional argument to `Opis\Routing\Compiler::bind` method
+* Added a 2nd optional argument to `Opis\Routing\CompiledExpression::bind` method
 
 ### v4.0.0, 2016.01.13
 
