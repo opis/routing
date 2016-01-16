@@ -109,10 +109,11 @@ class Callback
      * 
      * @param   array   $values
      * @param   array   $specials   (optional)
+     * @param   boolean $bind       (optional)
      * 
      * @return  array
      */
-    public function getArguments(array $values, array $specials = array())
+    public function getArguments(array $values, array $specials = array(), $bind = true)
     {
         $arguments = array();
         $parameters = $this->getParameters();
@@ -122,7 +123,7 @@ class Callback
             $name = $param->getName();
 
             if (isset($values[$name])) {
-                $arguments[] = $values[$name]->value();
+                $arguments[] = $bind ? $values[$name]->value() : $values[$name];
             } elseif (isset($specials[$name])) {
                 $arguments[] = $specials[$name];
             } elseif ($param->isOptional()) {
