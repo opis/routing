@@ -25,29 +25,8 @@ class Dispatcher
 
     public function dispatch(Router $router, Path $path, Route $route)
     {
-        return $this->call($route->getAction(), $route->compile()->bind($path), $router->getSpecialValues());
-    }
-
-    protected function call($action, array $values, array $specials = array())
-    {
-        $arguments = array();
-        $callback = new Callback($action);
-        $parameters = $callback->getParameters();
-
-        foreach ($parameters as $param) {
-            $name = $param->getName();
-            
-            if (isset($values[$name])) {
-                $arguments[] = $values[$name]->value();
-            } elseif (isset($specials[$name])) {
-                $arguments[] = $specials[$name];
-            } elseif ($param->isOptional()) {
-                $arguments[] = $param->getDefaultValue();
-            } else {
-                $arguments[] = null;
-            }
-        }
-        
+        $callback = new Callback($route->getAction());
+        $arguments = $callback->getArguments($route->compile()->bind($path), $router->getSpecialValues());
         return $callback->invoke($arguments);
     }
 }
