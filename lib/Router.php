@@ -35,7 +35,7 @@ class Router
     protected $resolver;
 
     /** @var    array */
-    protected $specials = array();
+    protected $specials;
 
     /**
      * Constructor
@@ -47,7 +47,8 @@ class Router
     public function __construct(
         RouteCollection $routes, 
         DispatcherResolver $resolver = null,
-        FilterCollection $filters = null
+        FilterCollection $filters = null,
+        array $specials = array()
     ) {
         $this->routes = $routes;
 
@@ -62,6 +63,7 @@ class Router
 
         $this->resolver = $resolver;
         $this->filters = $filters;
+        $this->specials = $specials;
     }
 
     /**
@@ -112,11 +114,11 @@ class Router
      */
     public function route(Path $path)
     {
-        $this->specials = array(
+        $this->specials += array(
             'path' => $path,
             'self' => null,
         );
-
+        
         foreach ($this->routes->toArray() as $route) {
             $this->specials['self'] = $route;
 
