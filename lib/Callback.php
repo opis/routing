@@ -109,9 +109,12 @@ class Callback
      * 
      * @param   array   $values
      * @param   array   $specials   (optional)
+     * 
+     * @return  array
      */
     public function getArguments(array $values, array $specials = array())
     {
+        $arguments = array();
         $parameters = $this->getParameters();
 
         foreach ($parameters as $param) {
@@ -128,6 +131,8 @@ class Callback
                 $arguments[] = null;
             }
         }
+        
+        return $arguments;
     }
 
     /**
