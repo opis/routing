@@ -26,7 +26,9 @@ class Dispatcher
     public function dispatch(Router $router, Path $path, Route $route)
     {
         $callback = new Callback($route->getAction());
-        $arguments = $callback->getArguments($route->compile()->bind($path), $router->getSpecialValues());
+        $specials = $router->getSpecialValues();
+        $values = $route->compile()->bind($path, $specials);
+        $arguments = $callback->getArguments($values, $specials);
         return $callback->invoke($arguments);
     }
 }
