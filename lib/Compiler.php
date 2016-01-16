@@ -228,7 +228,7 @@ class Compiler implements Serializable
         return array_intersect_key($values, array_flip($names)) + $defaults;
     }
     
-    public function bind(array $values, array $bindings)
+    public function bind(array $values, array $bindings, array $specials = array())
     {
         $binded = array();
         
@@ -237,25 +237,7 @@ class Compiler implements Serializable
             $arguments = array();
             
             $callback = new Callback($callback);
-            
-            foreach($callback->getParameters() as $param)
-            {
-                $name = $param->getName();
-                
-                if(isset($values[$name]))
-                {
-                    $arguments[] = $values[$name];
-                }
-                elseif($param->isOptional())
-                {
-                    $arguments[] = $param->getDefaultValue();
-                }
-                else
-                {
-                    $arguments[] = null;
-                }
-            }
-            
+            $arguments = $callback->getArguments($values, $specials, false);
             $binded[$key] = new Binding($callback, $arguments);
         }
         

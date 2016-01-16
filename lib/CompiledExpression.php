@@ -111,12 +111,12 @@ class CompiledExpression
         return $this->cache['extract'][$id];
     }
 
-    public function bind(Path $path)
+    public function bind(Path $path, array $specials = array())
     {
         $id = (string) $path;
 
         if (!isset($this->cache['bind'][$id])) {
-            $this->cache['bind'][$id] = $this->compiler->bind($this->extract($path), $this->bindings());
+            $this->cache['bind'][$id] = $this->compiler->bind($this->extract($path), $this->bindings(), $specials);
         }
 
         return $this->cache['bind'][$id];
