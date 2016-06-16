@@ -18,13 +18,16 @@
  * limitations under the License.
  * ============================================================================ */
 
+namespace Opis\Routing\Test;
+
 use Opis\Routing\Path;
 use Opis\Routing\Route;
 use Opis\Routing\Router;
 use Opis\Routing\Pattern;
 use Opis\Routing\Collections\RouteCollection;
+use PHPUnit\Framework\TestCase;
 
-class RoutingTest extends PHPUnit_Framework_TestCase
+class RoutingTest extends TestCase
 {
     protected $router;
 
