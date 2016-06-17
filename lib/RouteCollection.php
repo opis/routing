@@ -20,8 +20,9 @@
 
 namespace Opis\Routing;
 
+use Serializable;
 
-class RouteCollection
+class RouteCollection implements Serializable
 {
     /** @var Route[] */
     protected $routes = array();
@@ -107,6 +108,38 @@ class RouteCollection
     public function getRegex(string $id)
     {
         return $this->regex[$id] ?? false;
+    }
+
+    /**
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     * @since 5.1.0
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'routes' => $this->routes,
+            'namedRoutes' => $this->namedRoutes,
+            'regex' => $this->regex,
+        ));
+    }
+
+    /**
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function unserialize($serialized)
+    {
+        $object = unserialize($serialized);
+        $this->routes = $object['routes'];
+        $this->namedRoutes = $object['namedRoutes'];
+        $this->regex = $object['regex'];
     }
 
 }
