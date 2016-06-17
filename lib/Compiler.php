@@ -104,10 +104,10 @@ class Compiler
 
     /**
      * @param string $pattern
-     * @param array $placeholders
+     * @param array $wildcards
      * @return string
      */
-    public function getRegex(string $pattern, array $placeholders = array()): string
+    public function getRegex(string $pattern, array $wildcards = array()): string
     {
         $names = $this->getNames($pattern);
         list($st, $et, $sep, $opt) = $this->comp;
@@ -116,19 +116,17 @@ class Compiler
         if(empty($names)) {
             goto TRAIL;
         }
-        
-        $wildcard = $this->wildcard;
 
         foreach($names as $name) {
-            if (!isset($placeholders[$name])){
-                $placeholders[$name] = $wildcard;
+            if (!isset($wildcards[$name])){
+                $wildcards[$name] = $this->wildcard;
             }
         }
 
         $unmatched = array();
         $position = -1;
         
-        foreach($placeholders as $key => $value)
+        foreach($wildcards as $key => $value)
         {
             $original = $key;
             $key = preg_quote($key, $this->delimiter);
