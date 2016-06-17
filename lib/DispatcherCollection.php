@@ -22,6 +22,41 @@ namespace Opis\Routing;
 
 class DispatcherCollection
 {
+    /** @var Dispatcher[] */
+    protected $dispatchers = array();
+
+    /** @var  Dispatcher */
+    protected $defaultDispatcher;
+
+    /**
+     * @param string $name
+     * @param Dispatcher $dispatcher
+     * @return DispatcherCollection
+     */
+    public function register(string $name, Dispatcher $dispatcher): self
+    {
+        $this->dispatchers[$name] = $dispatcher;
+        return $this;
+    }
 
 
+    /**
+     * @return Dispatcher
+     */
+    public function defaultDispatcher(): Dispatcher
+    {
+        if($this->defaultDispatcher === null){
+            $this->defaultDispatcher = new Dispatcher();
+        }
+        return $this->dispatchers;
+    }
+
+    /**
+     * @param string $name
+     * @return false|Dispatcher
+     */
+    public function get(string $name)
+    {
+        return $this->dispatchers[$name] ?? $this->defaultDispatcher();
+    }
 }
