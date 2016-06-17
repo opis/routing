@@ -89,7 +89,7 @@ class Compiler
         $this->optional = $optional = (string) ($options[self::OPTIONAL_TAG] ?? '?');
         $this->delimiter = $delimiter = (string) ($options[self::REGEX_DELIMITER] ?? '`');
         $this->modifier = $modifier = (string) ($options[self::REGEX_MODIFIER] ?? 'u');
-        $this->wildcard = $wildcard = (string) ($options[self::WILDCARD] ?? '[a-zA-Z0-9\.\,\-_%=]+');
+        $this->wildcard = $wildcard = (string) ($options[self::WILDCARD] ?? '[^'.preg_quote($separator, $delimiter).']+');
         $this->captureLeft = ($capture & Compiler::CAPTURE_RIGHT) === Compiler::CAPTURE_LEFT;
         $this->captureTrail = ($capture & Compiler::CAPTURE_TRAIL) === Compiler::CAPTURE_TRAIL;
         $this->addOptionalSeparator = ($capture & Compiler::OPT_SEPARATOR_TRAIL) === Compiler::OPT_SEPARATOR_TRAIL;
