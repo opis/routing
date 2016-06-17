@@ -11,13 +11,24 @@ use PHPUnit\Framework\TestCase;
 
 class CompilerTest extends TestCase
 {
-    public function testRouting()
+    public function testNames()
     {
-        $routes = new RouteCollection();
-        $routes->addRoute(new Route('/foo/{bar}/{car?}', function ($bar){
-            return $bar;
-        }));
-        $router = new Router($routes);
-        var_dump($router->route(new Path('/foo/dar')));die;
+        $c = new Compiler();
+        $n = $c->getNames('/a/{b}/c/{d?}');
+        $this->assertEquals(['b', 'd'], $n);
+    }
+
+    public function testValues()
+    {
+        $c = new Compiler();
+        $n = $c->getValues($c->getRegex('/a/{b}/c/{d}'), '/a/2/c/d');
+        $this->assertEquals(['b' => '2', 'd' => 'd'], $n);
+    }
+
+    public function testOptValues()
+    {
+        $c = new Compiler();
+        $n = $c->getValues($c->getRegex('/a/{b}/c/{d?}'), '/a/2/c');
+        $this->assertEquals(['b' => '2'], $n);
     }
 }
