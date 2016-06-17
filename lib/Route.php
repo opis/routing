@@ -35,6 +35,9 @@ class Route implements Serializable
     /** @var  string|null */
     protected $routeName;
 
+    /** @var  string|null */
+    protected $routeID;
+
     /** @var    array */
     protected $wildcards = array();
 
@@ -58,6 +61,15 @@ class Route implements Serializable
         $this->routePattern = $pattern;
         $this->routeAction = $action;
         $this->routeName = $name;
+    }
+
+    public function getID()
+    {
+        if($this->routeID === null){
+            $this->routeID = md5(spl_object_hash($this) . uniqid());
+        }
+
+        return $this->routeID;
     }
 
     /**

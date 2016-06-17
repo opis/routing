@@ -82,7 +82,7 @@ class RouteCollection
      */
     public function addRoute(Route $route): self
     {
-        $id = uniqid();
+        $id = $route->getID();
         $this->routes[$id] = $route;
         $this->regex[$id] = $this->compiler->getRegex($route->getPattern(), $route->getWildcards());
         if(null !== $name = $route->getName()){
@@ -92,12 +92,21 @@ class RouteCollection
     }
 
     /**
-     * @param string $name
+     * @param string $id
      * @return bool|Route
      */
-    public function getRoute(string $name)
+    public function getRoute(string $id)
     {
-        return $this->routes[$name] ?? false;
+        return $this->routes[$id] ?? false;
+    }
+
+    /**
+     * @param string $id
+     * @return bool|string
+     */
+    public function getRegex(string $id)
+    {
+        return $this->regex[$id] ?? false;
     }
 
 }

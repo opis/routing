@@ -40,6 +40,8 @@ class Router
     /** @var  Route|null */
     protected $currentRoute;
 
+    /** @var array */
+    protected $names = array();
 
     public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, array $specials = array())
     {
@@ -146,7 +148,10 @@ class Router
      */
     public function extractValues(Path $path, Route $route): array
     {
-        $names = $this->getRouteCollection()->getCompiler()->getNames($route->getPattern());
+        $routes = $this->getRouteCollection();
+        $names = $routes->getCompiler()->getNames($route->getPattern());
+
+        return array_intersect_key($values, array_flip($names)) + $route->getDefaults();
     }
 
     /**
@@ -187,4 +192,24 @@ class Router
 
         return true;
     }
+
+    /**
+     * @param Route $route
+     * @return string[]
+     */
+    protected function getNames(Route $route): array
+    {
+        $pattern = $route->getPattern();
+        if(!isset($this->names[$pattern])){
+            $this->names[$pattern] = $this->getRouteCollection()->getCompiler()->getNames($pattern);
+        }
+        return $this->names[$pattern];
+    }
+
+    protected function getValues(Path $path, Route $route)
+    {
+        $regex = $this->getRouteCollection()->getRegex($route->getID());
+
+    }
+
 }
