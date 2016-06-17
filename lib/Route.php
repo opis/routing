@@ -26,10 +26,10 @@ use Opis\Closure\SerializableClosure;
 
 class Route implements Serializable
 {
-    /** @var    \Opis\Routing\Pattern */
+    /** @var string */
     protected $routePattern;
 
-    /** @var    callable */
+    /** @var callable */
     protected $routeAction;
 
     /** @var    \Opis\Routing\CompiledRoute */
@@ -56,20 +56,15 @@ class Route implements Serializable
     /** @var    \Opis\Routing\Router */
     protected $router;
 
-    /**
-     * Constructor
-     * 
-     * @param   \Opis\Routing\Pattern   $pattern
-     * @param   callable                $action
-     * 
-     * @throws  \Opis\Routing\CallableExpectedException
-     */
-    public function __construct(Pattern $pattern, $action)
-    {
-        if (!is_callable($action)) {
-            throw new CallableExpectedException();
-        }
 
+    /**
+     * Route constructor
+     *
+     * @param string $pattern
+     * @param callable $action
+     */
+    public function __construct(string $pattern, callable $action)
+    {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
     }
@@ -77,9 +72,9 @@ class Route implements Serializable
     /**
      * Get the route's pattern
      * 
-     * @return  \Opis\Routing\Pattern
+     * @return string
      */
-    public function getPattern()
+    public function getPattern(): string
     {
         return $this->routePattern;
     }
@@ -89,7 +84,7 @@ class Route implements Serializable
      * 
      * @return  callable
      */
-    public function getAction()
+    public function getAction(): callable
     {
         return $this->routeAction;
     }
@@ -99,7 +94,7 @@ class Route implements Serializable
      * 
      * @return  array
      */
-    public function getWildcards()
+    public function getWildcards(): array
     {
         return $this->wildcards;
     }
@@ -107,9 +102,9 @@ class Route implements Serializable
     /**
      * Get the route's bindings
      * 
-     * @return  array
+     * @return callable[]
      */
-    public function getBindings()
+    public function getBindings(): array
     {
         return $this->bindings;
     }
@@ -119,7 +114,7 @@ class Route implements Serializable
      * 
      * @return  array
      */
-    public function getDefaults()
+    public function getDefaults(): array
     {
         return $this->defaults;
     }
@@ -129,7 +124,7 @@ class Route implements Serializable
      * 
      * @return  array
      */
-    public function getProperties()
+    public function getProperties(): array 
     {
         return $this->properties;
     }
