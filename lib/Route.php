@@ -55,6 +55,7 @@ class Route implements Serializable
      *
      * @param string $pattern
      * @param callable $action
+     * @param string|null $name
      */
     public function __construct(string $pattern, callable $action, string $name = null)
     {
@@ -63,7 +64,10 @@ class Route implements Serializable
         $this->routeName = $name;
     }
 
-    public function getID()
+    /**
+     * @return string
+     */
+    public function getID(): string
     {
         if($this->routeID === null){
             $this->routeID = md5(spl_object_hash($this) . uniqid());
