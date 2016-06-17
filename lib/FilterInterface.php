@@ -22,5 +22,5 @@ namespace Opis\Routing;
 
 interface FilterInterface
 {
-    public function pass(Router $router, Path $path, Route $route);
+    public function pass(Path $path, Route $route, Router $router);
 }

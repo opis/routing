@@ -22,7 +22,7 @@ namespace Opis\Routing;
 
 class DispatcherResolver
 {
-    public function resolve(Router $router, Path $path, Route $route)
+    public function resolve(Path $path, Route $route, Router $router)
     {
         return new Dispatcher();
     }

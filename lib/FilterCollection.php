@@ -18,20 +18,28 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing\Collections;
+namespace Opis\Routing;
 
-use InvalidArgumentException;
-use Opis\Routing\Dispatcher;
-
-class DispatcherCollection extends AbstractCollection
+class FilterCollection
 {
-    
-    protected function checkType($value)
+    /** @var FilterInterface[] */
+    protected $filters = array();
+
+    /**
+     * @param FilterInterface $filter
+     * @return FilterCollection
+     */
+    public function addFilter(FilterInterface $filter): self
     {
-        if(!($value instanceof Dispatcher))
-        {
-            throw new InvalidArgumentException('Expected \Opis\Routing\Dispatcher');
-        }
+        $this->filters[] = $filter;
+        return $this;
     }
 
+    /**
+     * @return FilterInterface[]
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
 }

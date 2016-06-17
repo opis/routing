@@ -20,12 +20,8 @@
 
 namespace Opis\Routing;
 
-abstract class Filter implements FilterInterface
+class DispatcherCollection
 {
-    public function pass(Router $router, Path $path, Route $route)
-    {
-        return $this->filter($router, $path, $route);
-    }
-    
-    abstract public function filter($router, $path, $route);
+
+
 }

@@ -23,7 +23,7 @@ namespace Opis\Routing;
 class Dispatcher
 {
 
-    public function dispatch(Router $router, Path $path, Route $route)
+    public function dispatch(Path $path, Route $route, Router $router)
     {
         $callback = new Callback($route->getAction());
         $specials = $router->getSpecialValues();

@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Scalar type hints
 - New constants to `Opis\Routing\Compiler` class
 - Method `Opis\Routing\Compiler::getOptions`
+- Method `Opis\Routing\Router::match`
+- Method `Opis\Routing\Router::extractValues`
+- Method `Opis\Routing\Router::bind`
+- Method `Opis\Routing\Router::buildArguments`
+- New methods to `Opis\Routing\Route` class
+- `Opis\Routing\DispatcherCollection` class
+- `Opis\Routing\FilterCollection` class
+- `Opis\Routing\RouteCollection` class
 
 ### Removed
 - `Opis\Routing\Pattern` class
@@ -17,6 +25,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\Route::getCompiledPattern` method
 - `Opis\Routing\Route::getDelimitedPattern` method
 - `Opis\Routing\Route::compile` method
+- `Opis\Routing\Filter` class
+- `Opis\Routing\PathFilter` class
+- `Opis\Routing\Collections\AbstractCollection` class
+- `Opis\Routing\Collections\DispatcherCollection` class
+- `Opis\Routing\Collections\FilterCollection` class
+- `Opis\Routing\Collections\RouteCollection` class
 
 ### Changed
 - The constructor of `Opis\Routing\Compiler` class now takes as an argument a single array of options
@@ -26,6 +40,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\Compiler` no longer implements the `Serializable` interface
 - Protected method `Opis\Routing\Compiler::wrapClosures` is now static
 - Protected method `Opis\Routing\Compiler::unwrapClosures` is now static
+- `Opis\Routing\FilterInterface::pass` method
+- The constructor of the`Opis\Routing\Router` class
 
 ### Fixed
 - Nothing

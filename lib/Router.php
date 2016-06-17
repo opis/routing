@@ -20,18 +20,15 @@
 
 namespace Opis\Routing;
 
-use Opis\Routing\Collections\RouteCollection;
-use Opis\Routing\Collections\FilterCollection;
-
 class Router
 {
-    /** @var \Opis\Routing\RouteCollection*/
+    /** @var RouteCollection */
     protected $routes;
 
-    /** @var    \Opis\Routing\Collections\FilterCollection */
+    /** @var FilterCollection */
     protected $filters;
 
-    /** @var    \Opis\Routing\DispatcherResolver */
+    /** @var DispatcherResolver */
     protected $resolver;
 
     /** @var    array */
@@ -43,30 +40,10 @@ class Router
     /** @var  Route|null */
     protected $currentRoute;
 
-    /**
-     * Constructor
-     * 
-     * @param   \Opis\Routing\Collections\RouteCollection   $routes
-     * @param   \Opis\Routing\DispatcherResolver|null       $resolver   (optional)
-     * @param   \Opis\Routing\PathFilter|null               $filters    (optional)
-     */
-    public function __construct(
-        RouteCollection $routes, 
-        DispatcherResolver $resolver = null,
-        FilterCollection $filters = null,
-        array $specials = array()
-    ) {
+
+    public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, array $specials = array())
+    {
         $this->routes = $routes;
-
-        if ($resolver === null) {
-            $resolver = new DispatcherResolver();
-        }
-
-        if ($filters === null) {
-            $filters = new FilterCollection();
-            $filters[] = new PathFilter();
-        }
-
         $this->resolver = $resolver;
         $this->filters = $filters;
         $this->specials = $specials;
@@ -75,7 +52,7 @@ class Router
     /**
      * Get the route collection
      * 
-     * @return  \Opis\Routing\RouteCollection
+     * @return  RouteCollection
      */
     public function getRouteCollection()
     {
@@ -85,20 +62,26 @@ class Router
     /**
      * Get the filter collection
      * 
-     * @return  \Opis\Routing\Collections\FilterCollection
+     * @return  FilterCollection
      */
     public function getFilterCollection()
     {
+        if($this->filters === null){
+            $this->filters = new FilterCollection();
+        }
         return $this->filters;
     }
 
     /**
      * Get the dispatcher resolver
      * 
-     * @return  \Opis\Routing\DispatcherResolver
+     * @return DispatcherResolver
      */
     public function getDispatcherResolver()
     {
+        if($this->resolver === null){
+            $this->resolver = new DispatcherResolver();
+        }
         return $this->resolver;
     }
 
@@ -109,7 +92,10 @@ class Router
      */
     public function getSpecialValues()
     {
-        return $this->specials;
+        return $this->specials + array(
+            'path' => $this->currentPath,
+            'self' => $this->currentRoute,
+        );
     }
 
     /**
@@ -120,27 +106,18 @@ class Router
      */
     public function route(Path $path)
     {
-        $routes = $this->match($path);
-
-        if(empty($routes)) {
-            return false;
-        }
-
         $this->currentPath = $path;
 
-        foreach ($routes as $route) {
+        foreach ($this->match($path) as $route) {
             $this->currentRoute = $route;
-            // if pass filter
-        }
-
-        foreach ($this->routes->toArray() as $route) {
-            $this->specials['self'] = $route;
-
-            if ($this->pass($path, $route)) {
-                $dispatcher = $this->resolver->resolve($this, $path, $route);
-                return $dispatcher->dispatch($this, $path, $route);
+            if(!$this->pass($path, $route)){
+                continue;
             }
+            $dispatcher = $this->getDispatcherResolver()->resolve($path, $route, $this);
+            return $dispatcher->dispatch($path, $route, $this);
         }
+        
+        return false;
     }
 
     /**
@@ -151,15 +128,11 @@ class Router
     {
         $results = [];
         $path = (string) $path;
-        $routes = null;
-        $collection = $this->getRouteCollection();
+        $routes = $this->getRouteCollection();
 
-        foreach ($collection->getRegexPatterns() as $routeID => $pattern){
+        foreach ($routes->getRegexPatterns() as $routeID => $pattern){
             if(preg_match($pattern, $path)){
-                if($routes === null){
-                    $routes = $collection->getRoutes();
-                }
-                $results[$routeID] = $routes[$routeID];
+                $results[$routeID] = $routes->getRoute($routeID);
             }
         }
 
@@ -206,8 +179,8 @@ class Router
      */
     protected function pass(Path $path, Route $route)
     {
-        foreach ($this->filters->toArray() as $filter) {
-            if (!$filter->pass($this, $path, $route)) {
+        foreach ($this->getFilterCollection()->getFilters() as $filter) {
+            if (!$filter->pass($path, $route, $this)) {
                 return false;
             }
         }

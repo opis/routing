@@ -91,4 +91,13 @@ class RouteCollection
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return bool|Route
+     */
+    public function getRoute(string $name)
+    {
+        return $this->routes[$name] ?? false;
+    }
+
 }
