@@ -99,4 +99,18 @@ class RoutingTest extends  TestCase
         $this->assertEquals('BAR', $this->router->route(new Path('/foo/bar')));
     }
 
+    public function testSerialization()
+    {
+        $route = (new Route('/foo/{bar}', function ($bar){
+            return $bar;
+        }))->bind('bar', function($bar){
+            return strtoupper($bar);
+        });
+
+        $routes = new RouteCollection();
+        $routes->addRoute($route);
+        $router = new Router(unserialize(serialize($routes)));
+        $this->assertEquals('BAR', $router->route(new Path('/foo/bar')));
+    }
+
 }
