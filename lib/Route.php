@@ -26,6 +26,8 @@ use Opis\Closure\SerializableClosure;
 
 class Route implements Serializable
 {
+    use ClosureWrapperTrait;
+    
     /** @var string */
     protected $routePattern;
 
@@ -331,41 +333,4 @@ class Route implements Serializable
         $this->properties = array_map($map, $object['properties']);
     }
 
-    /**
-     * Wrap all closures
-     * 
-     * @param   mixed   $value
-     * 
-     * @return  mixed
-     */
-    protected static function wrapClosures($value)
-    {
-        if ($value instanceof Closure) {
-            return SerializableClosure::from($value);
-        } elseif (is_array($value)) {
-            return array_map(__METHOD__, $value);
-        } elseif ($value instanceof \stdClass) {
-            return (object) array_map(__METHOD__, (array) $value);
-        }
-        return $value;
-    }
-
-    /**
-     * Unwrap closures
-     * 
-     * @param   mixed   $value
-     * 
-     * @return  mixed
-     */
-    protected static function unwrapClosures($value)
-    {
-        if ($value instanceof SerializableClosure) {
-            return $value->getClosure();
-        } elseif (is_array($value)) {
-            return array_map(__METHOD__, $value);
-        } elseif ($value instanceof \stdClass) {
-            return (object) array_map(__METHOD__, (array) $value);
-        }
-        return $value;
-    }
 }
