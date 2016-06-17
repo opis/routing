@@ -137,23 +137,21 @@ class Router
         return false;
     }
 
+
     /**
      * @param Path $path
-     * @return Route[]
+     * @return \Generator
      */
-    public function match(Path $path): array
+    public function match(Path $path): \Generator
     {
-        $results = [];
         $path = (string) $path;
         $routes = $this->getRouteCollection();
 
         foreach ($routes->getRegexPatterns() as $routeID => $pattern){
             if(preg_match($pattern, $path)){
-                $results[$routeID] = $routes->getRoute($routeID);
+                yield $routes->getRoute($routeID);
             }
         }
-
-        return $results;
     }
 
     /**
