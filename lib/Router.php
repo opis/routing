@@ -123,6 +123,20 @@ class Router
      */
     public function route(Path $path)
     {
+        if(false === $route = $this->findRoute($path)){
+            return false;
+        }
+
+        $dispatcher = $this->getDispatcherResolver()->resolve($path, $route, $this);
+        return $dispatcher->dispatch($path, $route, $this);
+    }
+
+    /**
+     * @param Path $path
+     * @return bool|Route
+     */
+    public function findRoute(Path $path)
+    {
         $this->currentPath = $path;
 
         foreach ($this->match($path) as $route) {
@@ -130,10 +144,9 @@ class Router
             if(!$this->pass($path, $route)){
                 continue;
             }
-            $dispatcher = $this->getDispatcherResolver()->resolve($path, $route, $this);
-            return $dispatcher->dispatch($path, $route, $this);
+            return $route;
         }
-        
+
         return false;
     }
 
