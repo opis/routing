@@ -3,32 +3,21 @@
 namespace Opis\Routing\Test;
 
 use Opis\Routing\Compiler;
+use Opis\Routing\Path;
+use Opis\Routing\Route;
+use Opis\Routing\RouteCollection;
+use Opis\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
 class CompilerTest extends TestCase
 {
-
-
-    public function testNames()
+    public function testRouting()
     {
-        $c = new Compiler();
-        $names = $c->getNames('/{a}/b/c/{d}');
-        $this->assertEquals(['a', 'd'], $names);
-    }
-
-    public function testOptionalNames()
-    {
-        $c = new Compiler();
-        $names = $c->getNames('/{a?}/b/c/{d}/{e?}');
-        $this->assertEquals(['a', 'd', 'e'], $names);
-    }
-
-    public function testValues()
-    {
-        
-        $c = new Compiler();
-        $r = $c->getRegex('/{a}/{b}/{c}/{d}/{e}/{f}/{g}/{h}/{j}/{k}/{l}');
-        die($r);
-
+        $routes = new RouteCollection();
+        $routes->addRoute(new Route('/foo/{bar}/{car?}', function ($bar){
+            return $bar;
+        }));
+        $router = new Router($routes);
+        var_dump($router->route(new Path('/foo/dar')));die;
     }
 }
