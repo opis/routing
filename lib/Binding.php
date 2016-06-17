@@ -22,21 +22,37 @@ namespace Opis\Routing;
 
 class Binding
 {
+    /** @var mixed|null  */
     protected $value;
+
+    /** @var array|null */
     protected $arguments;
+
+    /** @var callable|null */
     protected $callback;
-    
-    public function __construct(Callback $callback = null, array $arguments = null, $value = null)
+
+    /**
+     * Binding constructor.
+     * @param callable|null $callback
+     * @param array|null $arguments
+     * @param mixed|null $value
+     */
+    public function __construct(callable $callback = null, array $arguments = null, $value = null)
     {
         $this->callback = $callback;
         $this->arguments = $arguments;
-        $this->value = $value === null ? $this : $value;
+        $this->value = $value;
     }
-    
+
+    /**
+     * @return mixed|null
+     */
     public function value()
     {
-        if($this->value === $this) {
-            $this->value = $this->callback->invoke($this->arguments);
+        if($this->value === null && $this->callback !== null) {
+            $callback = $this->callback;
+            $arguments = $this->arguments ?? array();
+            $this->value = $callback(...$arguments);
         }
         
         return $this->value;

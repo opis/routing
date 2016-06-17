@@ -289,6 +289,8 @@ class Route implements Serializable
         $object = serialize(array(
             'routePattern' => $this->routePattern,
             'routeAction' => $routeAction,
+            'routeName' => $this->routeName,
+            'routeID' => $this->routeID,
             'wildcards' => $this->wildcards,
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
@@ -317,6 +319,8 @@ class Route implements Serializable
 
         $this->routePattern = $object['routePattern'];
         $this->routeAction = $object['routeAction'];
+        $this->routeName = $object['routeName'];
+        $this->routeID = $object['routeID'];
         $this->wildcards = $object['wildcards'];
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);

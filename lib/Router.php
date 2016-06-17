@@ -43,6 +43,9 @@ class Router
     /** @var array */
     protected $names = array();
 
+    /** @var  Compiler */
+    protected $compiler;
+
     public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, array $specials = array())
     {
         $this->routes = $routes;
@@ -101,6 +104,18 @@ class Router
     }
 
     /**
+     * @return Compiler
+     */
+    public function getCompiler(): Compiler
+    {
+        if($this->compiler === null){
+            $this->compiler = $this->getRouteCollection()->getCompiler();
+        }
+
+        return $this->compiler;
+    }
+
+    /**
      * 
      * @param   Path  $path
      * 
@@ -146,33 +161,65 @@ class Router
      * @param Route $route
      * @return array
      */
-    public function extractValues(Path $path, Route $route): array
+    public function extract(Path $path, Route $route): array
     {
-        $routes = $this->getRouteCollection();
-        $names = $routes->getCompiler()->getNames($route->getPattern());
+        $names = $this->getCompiler()->getNames($route->getPattern());
+        $regex = $this->getRouteCollection()->getRegex($route->getID());
+        $values = $this->getCompiler()->getValues($regex, (string) $path);
 
         return array_intersect_key($values, array_flip($names)) + $route->getDefaults();
     }
 
     /**
      * @param array $values
-     * @param string[] $bindings
+     * @param callable[] $bindings
      * @return Binding[]
      */
     public function bind(array $values, array $bindings): array
     {
+        $bound = array();
 
+        foreach($bindings as $key => $callback) {
+            $arguments = $this->buildArguments($callback, $values, false);
+            $bound[$key] = new Binding($callback, $arguments);
+        }
+
+        foreach($values as $key => $value) {
+            if(!isset($bound[$key])) {
+                $bound[$key] = new Binding(null, null, $value);
+            }
+        }
+
+        return $bound;
     }
 
     /**
      * @param callable $callback
-     * @param Binding[] $values
+     * @param Binding[]|array $values
      * @param bool $bind
      * @return array
      */
-    public function buildArguments(Callback $callback, array $values, bool $bind = true): array
+    public function buildArguments(callable $callback, array $values, bool $bind = true): array
     {
+        $arguments = array();
+        $parameters = (new \ReflectionFunction($callback))->getParameters();
+        $specials = $this->getSpecialValues();
 
+        foreach ($parameters as $param) {
+            $name = $param->getName();
+
+            if (isset($values[$name])) {
+                $arguments[] = $bind ? $values[$name]->value() : $values[$name];
+            } elseif (isset($specials[$name])) {
+                $arguments[] = $specials[$name];
+            } elseif ($param->isOptional()) {
+                $arguments[] = $param->getDefaultValue();
+            } else {
+                $arguments[] = null;
+            }
+        }
+
+        return $arguments;
     }
 
     /**
@@ -192,24 +239,4 @@ class Router
 
         return true;
     }
-
-    /**
-     * @param Route $route
-     * @return string[]
-     */
-    protected function getNames(Route $route): array
-    {
-        $pattern = $route->getPattern();
-        if(!isset($this->names[$pattern])){
-            $this->names[$pattern] = $this->getRouteCollection()->getCompiler()->getNames($pattern);
-        }
-        return $this->names[$pattern];
-    }
-
-    protected function getValues(Path $path, Route $route)
-    {
-        $regex = $this->getRouteCollection()->getRegex($route->getID());
-
-    }
-
 }

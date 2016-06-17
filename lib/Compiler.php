@@ -111,20 +111,19 @@ class Compiler
     {
         $names = $this->getNames($pattern);
         list($st, $et, $sep, $opt) = $this->comp;
+        $pattern = preg_quote($pattern, $this->delimiter);
 
         if(empty($names)) {
-            $pattern = preg_quote($pattern, $this->delimiter);
             goto TRAIL;
         }
         
         $wildcard = $this->wildcard;
 
-        $names = array_map(function($name) use($wildcard) {
-            return $wildcard;
-        }, array_flip($names));
-        
-        $placeholders += $names;
-        $pattern = preg_quote($pattern, $this->delimiter);
+        foreach($names as $name) {
+            if (!isset($placeholders[$name])){
+                $placeholders[$name] = $wildcard;
+            }
+        }
 
         $unmatched = array();
         $position = -1;
@@ -248,76 +247,6 @@ class Compiler
         }
 
         return $this->options;
-    }
-
-    /**
-     * @param array $names
-     * @param array $values
-     * @param array $defaults
-     * @deprecated
-     * @return array
-     */
-    public function extract(array $names, array $values, array $defaults = array()): array
-    {
-        return array_intersect_key($values, array_flip($names)) + $defaults;
-    }
-
-    /**
-     * @param array $values
-     * @param array $bindings
-     * @param array $specials
-     * @deprecated
-     * @return array
-     */
-    public function bind(array $values, array $bindings, array $specials = array()): array
-    {
-        $bound = array();
-        
-        foreach($bindings as $key => $callback) {
-            $callback = new Callback($callback);
-            $arguments = $callback->getArguments($values, $specials, false);
-            $bound[$key] = new Binding($callback, $arguments);
-        }
-        
-        foreach($values as $key => $value) {
-            if(!isset($bound[$key])) {
-                $bound[$key] = new Binding(null, null, $value);
-            }
-        }
-        
-        return $bound;
-    }
-
-    /**
-     * @param string $pattern
-     * @param array $values
-     * @return string
-     * @deprecated 
-     */
-    public function build(string $pattern, array $values = array()): string
-    {
-        $names = $this->getNames($pattern);
-
-        foreach($names as $name) {
-            if(isset($values[$name])) {
-                $pattern = str_replace($this->startTag . $name . $this->endTag, $values[$name], $pattern, $count);
-                if($count == 0) {
-                    $pattern = str_replace($this->startTag . $name . $this->optional . $this->endTag, $values[$name], $pattern);
-                }
-            }
-        }
-
-        return $pattern;
-    }
-
-    /**
-     * @param string $value
-     * @return string
-     * @deprecated
-     */
-    public function delimit(string $value): string
-    {
-        return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }
 
 }

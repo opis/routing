@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - New constants to `Opis\Routing\Compiler` class
 - Method `Opis\Routing\Compiler::getOptions`
 - Method `Opis\Routing\Router::match`
-- Method `Opis\Routing\Router::extractValues`
+- Method `Opis\Routing\Router::extract`
 - Method `Opis\Routing\Router::bind`
 - Method `Opis\Routing\Router::buildArguments`
 - New methods to `Opis\Routing\Route` class
@@ -31,6 +31,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\Collections\DispatcherCollection` class
 - `Opis\Routing\Collections\FilterCollection` class
 - `Opis\Routing\Collections\RouteCollection` class
+- `Opis\Routing\Compiler::build` method
+- `Opis\Routing\Compiler::delimit` method
+- `Opis\Routing\Compiler::extract` method
 
 ### Changed
 - The constructor of `Opis\Routing\Compiler` class now takes as an argument a single array of options
