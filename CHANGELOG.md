@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v5.0.x-dev
 ### Added
+- Support for PHP 7.0.x
 - Scalar type hints
 - New constants to `Opis\Routing\Compiler` class
 - Method `Opis\Routing\Compiler::getOptions`
@@ -17,6 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\RouteCollection` class
 
 ### Removed
+- Support for PHP 5.x
 - `Opis\Routing\Pattern` class
 - `Opis\Routing\CallableExpectedException` class
 - `Opis\Routing\CompiledExpression` class
