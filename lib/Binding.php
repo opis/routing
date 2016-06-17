@@ -35,8 +35,7 @@ class Binding
     
     public function value()
     {
-        if($this->value === $this)
-        {
+        if($this->value === $this) {
             $this->value = $this->callback->invoke($this->arguments);
         }
         

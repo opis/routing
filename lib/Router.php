@@ -25,7 +25,7 @@ use Opis\Routing\Collections\FilterCollection;
 
 class Router
 {
-    /** @var    \Opis\Routing\Collections\RouteCollection */
+    /** @var \Opis\Routing\RouteCollection*/
     protected $routes;
 
     /** @var    \Opis\Routing\Collections\FilterCollection */
@@ -35,7 +35,13 @@ class Router
     protected $resolver;
 
     /** @var    array */
-    protected $specials;
+    protected $specials = array();
+
+    /** @var  Path|null */
+    protected $currentPath;
+
+    /** @var  Route|null */
+    protected $currentRoute;
 
     /**
      * Constructor
@@ -69,7 +75,7 @@ class Router
     /**
      * Get the route collection
      * 
-     * @return  \Opis\Routing\Collections\RouteCollection
+     * @return  \Opis\Routing\RouteCollection
      */
     public function getRouteCollection()
     {
@@ -108,17 +114,25 @@ class Router
 
     /**
      * 
-     * @param   \Opis\Routing\Path  $path
+     * @param   Path  $path
      * 
      * @return  mixed
      */
     public function route(Path $path)
     {
-        $this->specials += array(
-            'path' => $path,
-            'self' => null,
-        );
-        
+        $routes = $this->match($path);
+
+        if(empty($routes)) {
+            return false;
+        }
+
+        $this->currentPath = $path;
+
+        foreach ($routes as $route) {
+            $this->currentRoute = $route;
+            // if pass filter
+        }
+
         foreach ($this->routes->toArray() as $route) {
             $this->specials['self'] = $route;
 
@@ -127,6 +141,60 @@ class Router
                 return $dispatcher->dispatch($this, $path, $route);
             }
         }
+    }
+
+    /**
+     * @param Path $path
+     * @return Route[]
+     */
+    public function match(Path $path): array
+    {
+        $results = [];
+        $path = (string) $path;
+        $routes = null;
+        $collection = $this->getRouteCollection();
+
+        foreach ($collection->getRegexPatterns() as $routeID => $pattern){
+            if(preg_match($pattern, $path)){
+                if($routes === null){
+                    $routes = $collection->getRoutes();
+                }
+                $results[$routeID] = $routes[$routeID];
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param Path $path
+     * @param Route $route
+     * @return array
+     */
+    public function extractValues(Path $path, Route $route): array
+    {
+        $names = $this->getRouteCollection()->getCompiler()->getNames($route->getPattern());
+    }
+
+    /**
+     * @param array $values
+     * @param string[] $bindings
+     * @return Binding[]
+     */
+    public function bind(array $values, array $bindings): array
+    {
+
+    }
+
+    /**
+     * @param callable $callback
+     * @param Binding[] $values
+     * @param bool $bind
+     * @return array
+     */
+    public function buildArguments(Callback $callback, array $values, bool $bind = true): array
+    {
+
     }
 
     /**

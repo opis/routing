@@ -39,15 +39,9 @@ class Callback
      * Constructor
      * 
      * @param   callable    $callback
-     * 
-     * @throws  CallableExpectedException
      */
-    public function __construct($callback)
+    public function __construct(callable $callback)
     {
-        if (!is_callable($callback)) {
-            throw new CallableExpectedException();
-        }
-
         if (is_array($callback)) {
             list($object, $method) = $callback;
             $this->thisObject = is_string($object) ? null : $object;
@@ -73,7 +67,7 @@ class Callback
      * 
      * @return  boolean
      */
-    public function isMethod()
+    public function isMethod(): bool 
     {
         return $this->isMethod;
     }

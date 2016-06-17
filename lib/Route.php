@@ -32,14 +32,8 @@ class Route implements Serializable
     /** @var callable */
     protected $routeAction;
 
-    /** @var    \Opis\Routing\CompiledRoute */
-    protected $compiledRoute;
-
-    /** @var    \Opis\Routing\CompiledPattern */
-    protected $compiledPattern;
-
-    /** @var    string */
-    protected $delimitedPattern;
+    /** @var  string|null */
+    protected $routeName;
 
     /** @var    array */
     protected $wildcards = array();
@@ -53,20 +47,17 @@ class Route implements Serializable
     /** @var    array */
     protected $properties = array();
 
-    /** @var    \Opis\Routing\Router */
-    protected $router;
-
-
     /**
      * Route constructor
      *
      * @param string $pattern
      * @param callable $action
      */
-    public function __construct(string $pattern, callable $action)
+    public function __construct(string $pattern, callable $action, string $name = null)
     {
         $this->routePattern = $pattern;
         $this->routeAction = $action;
+        $this->routeName = $name;
     }
 
     /**
@@ -87,6 +78,16 @@ class Route implements Serializable
     public function getAction(): callable
     {
         return $this->routeAction;
+    }
+
+    /**
+     * Get the name of the route
+     *
+     * @return null|string
+     */
+    public function getName()
+    {
+        return $this->routeName;
     }
 
     /**
@@ -129,105 +130,53 @@ class Route implements Serializable
         return $this->properties;
     }
 
-    /**
-     * Get the route's compiler
-     * 
-     * @staticvar   \Opis\Routing\Compiler  $compiler
-     * 
-     * @return      \Opis\Routing\Compiler
-     */
-    public function getCompiler()
-    {
-        static $compiler;
-
-        if ($compiler === null) {
-            $compiler = new Compiler();
-        }
-
-        return $compiler;
-    }
-
-    /**
-     * Get the compiled pattern of this route
-     * 
-     * @return  string|null
-     */
-    public function getCompiledPattern()
-    {
-        return $this->compiledPattern;
-    }
-
-    /**
-     * Get the delimited pattern of this route
-     * 
-     * @return  string|null
-     */
-    public function getDelimitedPattern()
-    {
-        if ($this->delimitedPattern === null) {
-            $this->delimitedPattern = $this->compile()->delimit();
-        }
-
-        return $this->delimitedPattern;
-    }
-
-    /**
-     * Compile this route
-     * 
-     * @return  \Opis\Routing\CompiledRoute
-     */
-    public function compile()
-    {
-        if ($this->compiledRoute === null) {
-            $this->compiledRoute = new CompiledRoute($this);
-        }
-
-        return $this->compiledRoute;
-    }
 
     /**
      * Bind a value to a name
-     * 
-     * @param   string      $name
-     * @param   callable    $callback
-     * 
-     * @return  $this
-     * 
-     * @throws  \Opis\Routing\CallableExpectedException
+     *
+     * @param   string $name
+     * @param   callable $callback
+     * @return $this|Route
      */
-    public function bind($name, $callback)
+    public function bind(string $name, callable $callback): self
     {
-        if (!is_callable($callback)) {
-            throw new CallableExpectedException();
-        }
-
         $this->bindings[$name] = $callback;
         return $this;
     }
 
     /**
      * Define a new wildcard
-     * 
-     * @param   string  $name
-     * @param   string  $value
-     * 
-     * @return  $this
+     *
+     * @param   string $name
+     * @param   string $value
+     * @return $this|Route
      */
-    public function wildcard($name, $value)
+    public function wildcard(string $name, string $value): self
     {
         $this->wildcards[$name] = $value;
         return $this;
     }
 
     /**
-     * Define a new implicit value
-     * 
-     * @param   string  $name
-     * @param   mixed   $value
-     * 
-     * @return  $this
+     * Define a new wildcard
+     *
+     * @param   string $name
+     * @param   string $value
+     * @return $this|Route
      */
-    public function implicit($name, $value)
+    public function where(string $name, string $value): self
+    {
+        return $this->wildcard($name, $value);
+    }
+
+    /**
+     * Define a new implicit value
+     *
+     * @param   string $name
+     * @param   mixed $value
+     * @return $this|Route
+     */
+    public function implicit(string $name, $value): self
     {
         $this->defaults[$name] = $value;
         return $this;
@@ -235,26 +184,25 @@ class Route implements Serializable
 
     /**
      * Set a property
-     * 
-     * @param   string  $name
-     * @param   mixed   $value
-     * 
-     * @return  $this
+     *
+     * @param   string $name
+     * @param   mixed $value
+     * @return $this|Route
      */
-    public function set($name, $value)
+    public function set(string $name, $value): self
     {
         $this->properties[$name] = $value;
         return $this;
     }
 
     /**
-     * Chack if a property was set
+     * Check if a property was set
      * 
      * @param   string  $name
      * 
      * @return  boolean
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return isset($this->properties[$name]);
     }
@@ -267,9 +215,9 @@ class Route implements Serializable
      * 
      * @return  mixed
      */
-    public function get($name, $default = null)
+    public function get(string $name, $default = null)
     {
-        return isset($this->properties[$name]) ? $this->properties[$name] : $default;
+        return $this->properties[$name] ?? $default;
     }
 
     /**
@@ -279,7 +227,7 @@ class Route implements Serializable
      * 
      * @return  mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->get($name);
     }
@@ -292,20 +240,19 @@ class Route implements Serializable
      * 
      * @return  $this
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         return $this->set($name, $value);
     }
 
     /**
      * Set a property
-     * 
-     * @param   string  $name
-     * @param   array   $arguments
-     * 
-     * @return  $this
+     *
+     * @param   string $name
+     * @param   array $arguments
+     * @return $this|Route
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments): self 
     {
         return $this->set($name, array_shift($arguments));
     }
@@ -325,14 +272,11 @@ class Route implements Serializable
             $routeAction = SerializableClosure::from($routeAction);
         }
 
-        $map = array($this, 'wrapClosures');
-        $croute = $this->compile();
+        $map = array(static::class, 'wrapClosures');
         
         $object = serialize(array(
             'routePattern' => $this->routePattern,
             'routeAction' => $routeAction,
-            'compiledPattern' => $croute->compile(),
-            'delimitedPattern' => $croute->delimit(),
             'wildcards' => $this->wildcards,
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
@@ -351,18 +295,16 @@ class Route implements Serializable
      */
     public function unserialize($data)
     {
-        $object = SerializableClosure::unserializeData($data);
+        $object = unserialize($data);
 
         if ($object['routeAction'] instanceof SerializableClosure) {
             $object['routeAction'] = $object['routeAction']->getClosure();
         }
 
-        $map = array($this, 'unwrapClosures');
+        $map = array(static::class, 'unwrapClosures');
 
         $this->routePattern = $object['routePattern'];
         $this->routeAction = $object['routeAction'];
-        $this->delimitedPattern = $object['delimitedPattern'];
-        $this->compiledPattern = $object['compiledPattern'];
         $this->wildcards = $object['wildcards'];
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
@@ -376,16 +318,14 @@ class Route implements Serializable
      * 
      * @return  mixed
      */
-    protected function wrapClosures(&$value)
+    protected static function wrapClosures($value)
     {
         if ($value instanceof Closure) {
             return SerializableClosure::from($value);
         } elseif (is_array($value)) {
-            return array_map(array($this, __FUNCTION__), $value);
+            return array_map(__METHOD__, $value);
         } elseif ($value instanceof \stdClass) {
-            $object = (array) $value;
-            $object = array_map(array($this, __FUNCTION__), $object);
-            return (object) $object;
+            return (object) array_map(__METHOD__, (array) $value);
         }
         return $value;
     }
@@ -397,16 +337,14 @@ class Route implements Serializable
      * 
      * @return  mixed
      */
-    protected function unwrapClosures(&$value)
+    protected static function unwrapClosures($value)
     {
         if ($value instanceof SerializableClosure) {
             return $value->getClosure();
         } elseif (is_array($value)) {
-            return array_map(array($this, __FUNCTION__), $value);
+            return array_map(__METHOD__, $value);
         } elseif ($value instanceof \stdClass) {
-            $object = (array) $value;
-            $object = array_map(array($this, __FUNCTION__), $object);
-            return (object) $object;
+            return (object) array_map(__METHOD__, (array) $value);
         }
         return $value;
     }

@@ -12,14 +12,14 @@ class CompilerTest extends TestCase
     public function testNames()
     {
         $c = new Compiler();
-        $names = $c->names('/{a}/b/c/{d}');
+        $names = $c->getNames('/{a}/b/c/{d}');
         $this->assertEquals(['a', 'd'], $names);
     }
 
     public function testOptionalNames()
     {
         $c = new Compiler();
-        $names = $c->names('/{a?}/b/c/{d}/{e?}');
+        $names = $c->getNames('/{a?}/b/c/{d}/{e?}');
         $this->assertEquals(['a', 'd', 'e'], $names);
     }
 

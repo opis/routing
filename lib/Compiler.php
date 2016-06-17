@@ -20,9 +20,7 @@
 
 namespace Opis\Routing;
 
-use Serializable;
-
-class Compiler implements Serializable
+class Compiler
 {
     const CAPTURE_LEFT = 0;
     const CAPTURE_RIGHT = 1;
@@ -48,6 +46,9 @@ class Compiler implements Serializable
     /** @var string  */
     protected $separator;
 
+    /** @var  int */
+    protected $captureMode;
+
     /** @var bool  */
     protected $captureLeft;
 
@@ -71,10 +72,17 @@ class Compiler implements Serializable
 
     /** @var array */
     protected $comp;
-    
+
+    /** @var  null|array */
+    protected $options;
+
+    /**
+     * Compiler constructor.
+     * @param array $options
+     */
     public function __construct(array $options = array()) {
 
-        $capture = (int) ($options[self::CAPTURE_MODE] ?? self::STANDARD_MODE);
+        $this->captureMode = $capture = (int) ($options[self::CAPTURE_MODE] ?? self::STANDARD_MODE);
         $this->startTag = $startTag = (string) ($options[self::START_TAG] ?? '{');
         $this->endTag = $endTag = (string) ($options[self::END_TAG] ?? '}');
         $this->separator = $separator = (string) ($options[self::TAG_SEPARATOR] ?? '/');
@@ -93,14 +101,19 @@ class Compiler implements Serializable
             preg_quote($optional, $delimiter)
         );
     }
-    
-    public function compile(string $value, array $placeholders = array())
+
+    /**
+     * @param string $pattern
+     * @param array $placeholders
+     * @return string
+     */
+    public function getRegex(string $pattern, array $placeholders = array()): string
     {
-        $names = $this->names($value);
+        $names = $this->getNames($pattern);
         list($st, $et, $sep, $opt) = $this->comp;
 
         if(empty($names)) {
-            $value = preg_quote($value, $this->delimiter);
+            $pattern = preg_quote($pattern, $this->delimiter);
             goto TRAIL;
         }
         
@@ -111,50 +124,50 @@ class Compiler implements Serializable
         }, array_flip($names));
         
         $placeholders += $names;
-        $value = preg_quote($value, $this->delimiter);
+        $pattern = preg_quote($pattern, $this->delimiter);
 
         $unmatched = array();
         $position = -1;
         
-        foreach($placeholders as $key => $pattern)
+        foreach($placeholders as $key => $value)
         {
             $original = $key;
             $key = preg_quote($key, $this->delimiter);
-            $pattern = '(?P<' . $key . '>(' . $pattern .'))';
+            $value = '(?P<' . $key . '>(' . $value .'))';
             $count = 0;
             $position++;
             if($this->captureLeft) {
-                $value = str_replace($sep . $st . $key . $et, $sep . $pattern, $value, $count);
+                $pattern = str_replace($sep . $st . $key . $et, $sep . $value, $pattern, $count);
                 
                 if($count == 0) {
-                    if($position === 0 && strpos($value, $sep . $st . $key . $opt . $et) === 0) {
-                        $value = str_replace($sep . $st . $key . $opt . $et, '(' . $sep . $pattern .'?)?', $value, $count);
+                    if($position === 0 && strpos($pattern, $sep . $st . $key . $opt . $et) === 0) {
+                        $pattern = str_replace($sep . $st . $key . $opt . $et, '(' . $sep . $value .'?)?', $pattern, $count);
                     } else {
-                        $value = str_replace($sep . $st . $key . $opt . $et, '(?:' . $sep . $pattern .')?', $value, $count);
+                        $pattern = str_replace($sep . $st . $key . $opt . $et, '(?:' . $sep . $value .')?', $pattern, $count);
                     }
                 }
             } else {
-                $value = str_replace($st . $key . $et . $sep, $pattern . $sep, $value, $count);
+                $pattern = str_replace($st . $key . $et . $sep, $value . $sep, $pattern, $count);
                 if($count == 0) {
-                    $value = str_replace($st . $key . $opt . $et . $sep, '(' . $pattern . $sep . ')?', $value, $count);
+                    $pattern = str_replace($st . $key . $opt . $et . $sep, '(' . $value . $sep . ')?', $pattern, $count);
                 }
             }
 
             if($count == 0) {
-                $unmatched[$original] = $pattern;
+                $unmatched[$original] = $value;
             }
         }
         
         if(!empty($unmatched)) {
-            foreach($unmatched as $key => $pattern) {
+            foreach($unmatched as $key => $value) {
                 if($this->addOptionalSeparator) {
-                    $pattern = $this->captureLeft ?  '(' . $sep . ')?' . $pattern : $pattern . '(' . $sep . ')?';
+                    $value = $this->captureLeft ?  '(' . $sep . ')?' . $value : $value . '(' . $sep . ')?';
                 }
 
-                $value = str_replace($st . $key . $et, $pattern, $value, $count);
+                $pattern = str_replace($st . $key . $et, $value, $pattern, $count);
                 
                 if($count == 0) {
-                    $value = str_replace($st . $key . $opt . $et, '('. $pattern . ')?', $value);
+                    $pattern = str_replace($st . $key . $opt . $et, '('. $value . ')?', $pattern);
                 }
             }
         }
@@ -163,20 +176,24 @@ class Compiler implements Serializable
         
         if($this->captureTrail) {
             if($this->captureLeft) {
-                if(substr($value, strlen($value) - strlen($sep)) !== $sep) {
-                    $value = $value . '(' . $sep . ')?';
+                if(substr($pattern, strlen($pattern) - strlen($sep)) !== $sep) {
+                    $pattern = $pattern . '(' . $sep . ')?';
                 }
             } else {
-                if(substr($value, 0, strlen($sep)) !== $sep) {
-                    $value = '(' . $sep . ')?' . $value;
+                if(substr($pattern, 0, strlen($sep)) !== $sep) {
+                    $pattern = '(' . $sep . ')?' . $pattern;
                 }
             }
         }
-        
-        return $value;
+
+        return $this->delimiter . '^' . $pattern . '$' . $this->delimiter . $this->modifier;
     }
-    
-    public function names(string $pattern): array
+
+    /**
+     * @param string $pattern
+     * @return array
+     */
+    public function getNames(string $pattern): array
     {
         list($st, $et) = $this->comp;
         
@@ -190,10 +207,15 @@ class Compiler implements Serializable
             return trim($m, $optional);
         }, $matches[1]);
     }
-    
-    public function values(string $pattern, string $path): array
+
+    /**
+     * @param string $regex
+     * @param string $path
+     * @return array
+     */
+    public function getValues(string $regex, string $path): array
     {
-        preg_match($this->delimit($pattern), $path, $parameters);
+        preg_match($regex, $path, $parameters);
 
         $parameters = array_slice($parameters, 1);
         
@@ -201,18 +223,52 @@ class Compiler implements Serializable
             return array();
         }
         
-        $keys = array_filter(array_keys($parameters), function($value) use (&$parameters){
+        $keys = array_filter(array_keys($parameters), function($value) use ($parameters){
             return is_string($value) && strlen($value) > 0 && $parameters[$value] != null;
         });
         
         return array_intersect_key($parameters, array_flip($keys));
     }
-    
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        if($this->options === null){
+            $this->options = [
+                self::CAPTURE_MODE => $this->captureMode,
+                self::START_TAG => $this->startTag,
+                self::END_TAG => $this->endTag,
+                self::OPTIONAL_TAG => $this->optional,
+                self::REGEX_DELIMITER => $this->delimiter,
+                self::REGEX_MODIFIER => $this->modifier,
+                self::WILDCARD => $this->wildcard,
+            ];
+        }
+
+        return $this->options;
+    }
+
+    /**
+     * @param array $names
+     * @param array $values
+     * @param array $defaults
+     * @deprecated
+     * @return array
+     */
     public function extract(array $names, array $values, array $defaults = array()): array
     {
         return array_intersect_key($values, array_flip($names)) + $defaults;
     }
-    
+
+    /**
+     * @param array $values
+     * @param array $bindings
+     * @param array $specials
+     * @deprecated
+     * @return array
+     */
     public function bind(array $values, array $bindings, array $specials = array()): array
     {
         $bound = array();
@@ -231,10 +287,16 @@ class Compiler implements Serializable
         
         return $bound;
     }
-    
+
+    /**
+     * @param string $pattern
+     * @param array $values
+     * @return string
+     * @deprecated 
+     */
     public function build(string $pattern, array $values = array()): string
     {
-        $names = $this->names($pattern);
+        $names = $this->getNames($pattern);
 
         foreach($names as $name) {
             if(isset($values[$name])) {
@@ -247,41 +309,15 @@ class Compiler implements Serializable
 
         return $pattern;
     }
-    
+
+    /**
+     * @param string $value
+     * @return string
+     * @deprecated
+     */
     public function delimit(string $value): string
     {
         return $this->delimiter . '^' . $value . '$' . $this->delimiter . $this->modifier;
     }
 
-    /**
-     * @return string
-     */
-    public function serialize()
-    {
-        return serialize(array(
-            'startTag' => $this->startTag,
-            'endTag' => $this->endTag,
-            'separator' => $this->separator,
-            'captureLeft' => $this->captureLeft,
-            'captureTrail' => $this->captureTrail,
-            'addOptionalSeparator' => $this->addOptionalSeparator,
-            'optional' => $this->optional,
-            'delimiter' => $this->delimiter,
-            'modifier' => $this->modifier,
-            'wildcard' => $this->wildcard,
-            'comp' => $this->comp,
-        ));
-    }
-
-    /**
-     * @param string $data
-     */
-    public function unserialize($data)
-    {
-        $object = unserialize($data);
-        
-        foreach($object as $key => $value) {
-            $this->{$key} = $value;
-        }
-    }
 }
