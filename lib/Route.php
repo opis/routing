@@ -27,7 +27,10 @@ use Opis\Closure\SerializableClosure;
 class Route implements Serializable
 {
     use ClosureWrapperTrait;
-    
+
+    /** @var  RouteCollection */
+    protected $collection;
+
     /** @var string */
     protected $routePattern;
 
@@ -148,6 +151,15 @@ class Route implements Serializable
         return $this->properties;
     }
 
+    /**
+     * @param RouteCollection $collection
+     * @return Route
+     */
+    public function setRouteCollection(RouteCollection $collection): self
+    {
+        $this->collection = $collection;
+        return $this;
+    }
 
     /**
      * Bind a value to a name

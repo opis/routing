@@ -83,7 +83,7 @@ class RouteCollection implements Serializable
      */
     public function addRoute(Route $route): self
     {
-        $id = $route->getID();
+        $id = $route->setRouteCollection($this)->getID();
         $this->routes[$id] = $route;
         $this->regex[$id] = $this->compiler->getRegex($route->getPattern(), $route->getWildcards());
         if(null !== $name = $route->getName()){
