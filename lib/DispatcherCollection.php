@@ -62,7 +62,7 @@ class DispatcherCollection
 
     /**
      * @param string $name
-     * @return false|Dispatcher
+     * @return Dispatcher
      */
     public function get(string $name)
     {
