@@ -29,6 +29,15 @@ class DispatcherCollection
     protected $defaultDispatcher;
 
     /**
+     * DispatcherCollection constructor.
+     * @param Dispatcher|null $dispatcher
+     */
+    public function __construct(Dispatcher $dispatcher = null)
+    {
+        $this->defaultDispatcher = $dispatcher;
+    }
+
+    /**
      * @param string $name
      * @param Dispatcher $dispatcher
      * @return DispatcherCollection
