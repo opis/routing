@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Method `Opis\Routing\Router::extract`
 - Method `Opis\Routing\Router::bind`
 - Method `Opis\Routing\Router::buildArguments`
+- Method `Opis\Routing\Route::setRouteCollection`
 - New methods to `Opis\Routing\Route` class
 - `Opis\Routing\DispatcherCollection` class
 - `Opis\Routing\FilterCollection` class
