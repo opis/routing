@@ -119,6 +119,7 @@ class RouteCollection implements Serializable
     public function serialize()
     {
         return serialize(array(
+            'compiler' => $this->compiler,
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
             'regex' => $this->regex,
@@ -137,6 +138,7 @@ class RouteCollection implements Serializable
     public function unserialize($serialized)
     {
         $object = unserialize($serialized);
+        $this->compiler = $object['compiler'];
         $this->routes = $object['routes'];
         $this->namedRoutes = $object['namedRoutes'];
         $this->regex = $object['regex'];
