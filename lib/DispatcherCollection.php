@@ -57,7 +57,7 @@ class DispatcherCollection
         if($this->defaultDispatcher === null){
             $this->defaultDispatcher = new Dispatcher();
         }
-        return $this->dispatchers;
+        return $this->defaultDispatcher;
     }
 
     /**
