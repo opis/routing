@@ -139,6 +139,7 @@ class Router
     {
         $this->currentPath = $path;
 
+        /** @var Route $route */
         foreach ($this->match($path) as $route) {
             $this->currentRoute = $route;
             if(!$this->pass($path, $route)){
