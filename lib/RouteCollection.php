@@ -85,7 +85,6 @@ class RouteCollection implements Serializable
     {
         $id = $route->setRouteCollection($this)->getID();
         $this->routes[$id] = $route;
-        $this->regex[$id] = $this->compiler->getRegex($route->getPattern(), $route->getWildcards());
         if(null !== $name = $route->getName()){
             $this->namedRoutes[$name] = $id;
         }
@@ -107,7 +106,13 @@ class RouteCollection implements Serializable
      */
     public function getRegex(string $id)
     {
-        return $this->regex[$id] ?? false;
+        if(!isset($this->regex[$id])){
+            if(false === $route = $this->routes[$id] ?? false){
+                return false;
+            }
+            $this->regex[$id] = $this->compiler->getRegex($route->getPattern(), $route->getWildcards());
+        }
+        return $this->regex[$id];
     }
 
     /**

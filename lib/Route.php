@@ -162,6 +162,14 @@ class Route implements Serializable
     }
 
     /**
+     * @return RouteCollection
+     */
+    public function getRouteCollection(): RouteCollection
+    {
+        return $this->collection;
+    }
+
+    /**
      * Bind a value to a name
      *
      * @param   string $name
