@@ -27,8 +27,8 @@ class RouteCollection implements Serializable
     /** @var Route[] */
     protected $routes = array();
 
-    /** @var string[] */
-    protected $regex = array();
+    /** @var null|string[] */
+    protected $regex;
 
     /** @var string[] */
     protected $namedRoutes = array();
@@ -66,6 +66,12 @@ class RouteCollection implements Serializable
      */
     public function getRegexPatterns(): array
     {
+        if($this->regex === null){
+            $this->regex = array();
+            foreach($this->routes as $route){
+                $this->regex[$route->getID()] = $this->compiler->getRegex($route->getPattern(), $route->getWildcards());
+            }
+        }
         return $this->regex;
     }
 
@@ -106,13 +112,10 @@ class RouteCollection implements Serializable
      */
     public function getRegex(string $id)
     {
-        if(!isset($this->regex[$id])){
-            if(false === $route = $this->routes[$id] ?? false){
-                return false;
-            }
-            $this->regex[$id] = $this->compiler->getRegex($route->getPattern(), $route->getWildcards());
+        if($this->regex === null){
+            $this->getRegexPatterns();
         }
-        return $this->regex[$id];
+        return $this->regex[$id] ?? false;
     }
 
     /**
@@ -127,7 +130,7 @@ class RouteCollection implements Serializable
             'compiler' => $this->compiler,
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
-            'regex' => $this->regex,
+            'regex' => $this->getRegexPatterns(),
         ));
     }
 
