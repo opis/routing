@@ -45,9 +45,9 @@ class DispatcherCollection implements Serializable
 
     /**
      * @param string $name
-     * @return Dispatcher|false
+     * @return Dispatcher
      */
-    public function get(string $name)
+    public function get(string $name): Dispatcher
     {
         return $this->dispatchers[$name] ?? $this->buildDispatcher($name);
     }
@@ -89,15 +89,15 @@ class DispatcherCollection implements Serializable
 
     /**
      * @param string $name
-     * @return Dispatcher|false
+     * @return Dispatcher
      */
-    protected function buildDispatcher(string $name)
+    protected function buildDispatcher(string $name): Dispatcher
     {
         if(isset($this->factories[$name])){
             $factory = $this->factories[$name];
             return $this->dispatchers[$name] = $factory();
         }
 
-        return false;
+        return new Dispatcher();
     }
 }
