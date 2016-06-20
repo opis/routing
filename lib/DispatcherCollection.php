@@ -20,52 +20,87 @@
 
 namespace Opis\Routing;
 
-class DispatcherCollection
+use Closure;
+use Opis\Closure\SerializableClosure;
+use RuntimeException;
+use Serializable;
+
+class DispatcherCollection implements Serializable
 {
+    /** @var callable[] */
+    protected $factories = [];
+
     /** @var Dispatcher[] */
-    protected $dispatchers = array();
-
-    /** @var  Dispatcher */
-    protected $defaultDispatcher;
-
-    /**
-     * DispatcherCollection constructor.
-     * @param Dispatcher|null $dispatcher
-     */
-    public function __construct(Dispatcher $dispatcher = null)
-    {
-        $this->defaultDispatcher = $dispatcher;
-    }
+    protected $dispatchers = [];
 
     /**
      * @param string $name
-     * @param Dispatcher $dispatcher
+     * @param callable $factory
      * @return DispatcherCollection
      */
-    public function register(string $name, Dispatcher $dispatcher): self
+    public function register(string $name, callable $factory): self
     {
-        $this->dispatchers[$name] = $dispatcher;
+        $this->dispatchers[$name] = $factory;
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return Dispatcher
+     * @throws RuntimeException
+     */
+    public function get(string $name): Dispatcher
+    {
+        return $this->dispatchers[$name] ?? $this->buildDispatcher($name);
+    }
 
     /**
-     * @return Dispatcher
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     * @since 5.1.0
      */
-    public function defaultDispatcher(): Dispatcher
+    public function serialize()
     {
-        if($this->defaultDispatcher === null){
-            $this->defaultDispatcher = new Dispatcher();
-        }
-        return $this->defaultDispatcher;
+        SerializableClosure::enterContext();
+
+        $object = serialize(array_map(function($value){
+            return $value instanceof Closure ? SerializableClosure::from($value) : $value;
+        }, $this->factories));
+
+        SerializableClosure::exitContext();
+
+        return $object;
+    }
+
+    /**
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function unserialize($serialized)
+    {
+        $this->factories = array_map(function($value){
+            return $value instanceof SerializableClosure ? $value->getClosure() : $value;
+        }, unserialize($serialized));
     }
 
     /**
      * @param string $name
      * @return Dispatcher
+     * @throws RuntimeException
      */
-    public function get(string $name)
+    protected function buildDispatcher(string $name): Dispatcher
     {
-        return $this->dispatchers[$name] ?? $this->defaultDispatcher();
+        if(isset($this->factories[$name])){
+            $factory = $this->factories[$name];
+            return $this->dispatchers[$name] = $factory();
+        }
+
+        throw new RuntimeException("Unknown dispatcher `$name`");
     }
 }
