@@ -22,7 +22,6 @@ namespace Opis\Routing;
 
 use Closure;
 use Opis\Closure\SerializableClosure;
-use RuntimeException;
 use Serializable;
 
 class DispatcherCollection implements Serializable
@@ -46,10 +45,9 @@ class DispatcherCollection implements Serializable
 
     /**
      * @param string $name
-     * @return Dispatcher
-     * @throws RuntimeException
+     * @return Dispatcher|false
      */
-    public function get(string $name): Dispatcher
+    public function get(string $name)
     {
         return $this->dispatchers[$name] ?? $this->buildDispatcher($name);
     }
@@ -91,16 +89,15 @@ class DispatcherCollection implements Serializable
 
     /**
      * @param string $name
-     * @return Dispatcher
-     * @throws RuntimeException
+     * @return Dispatcher|false
      */
-    protected function buildDispatcher(string $name): Dispatcher
+    protected function buildDispatcher(string $name)
     {
         if(isset($this->factories[$name])){
             $factory = $this->factories[$name];
             return $this->dispatchers[$name] = $factory();
         }
 
-        throw new RuntimeException("Unknown dispatcher `$name`");
+        return false;
     }
 }
