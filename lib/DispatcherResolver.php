@@ -22,6 +22,18 @@ namespace Opis\Routing;
 
 class DispatcherResolver
 {
+    /** @var  DispatcherCollection */
+    protected $collection;
+
+    public function __construct(DispatcherCollection $collection = null)
+    {
+        if($collection === null){
+            $collection = new DispatcherCollection();
+        }
+        
+        $this->collection = $collection;
+    }
+
     /**
      * @param Path $path
      * @param Route $route
@@ -30,6 +42,6 @@ class DispatcherResolver
      */
     public function resolve(Path $path, Route $route, Router $router): Dispatcher
     {
-        return new Dispatcher();
+        return $this->collection->defaultDispatcher();
     }
 }

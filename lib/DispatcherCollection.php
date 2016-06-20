@@ -53,6 +53,14 @@ class DispatcherCollection implements Serializable
     }
 
     /**
+     * @return Dispatcher
+     */
+    public function defaultDispatcher(): Dispatcher
+    {
+        return new Dispatcher();
+    }
+
+    /**
      * String representation of object
      * @link http://php.net/manual/en/serializable.serialize.php
      * @return string the string representation of the object or null
@@ -98,6 +106,7 @@ class DispatcherCollection implements Serializable
             return $this->dispatchers[$name] = $factory();
         }
 
-        return new Dispatcher();
+        return $this->defaultDispatcher();
     }
+
 }
