@@ -34,6 +34,15 @@ class DispatcherResolver
         $this->collection = $collection;
     }
 
+
+    /**
+     * @return DispatcherCollection
+     */
+    public function getDispatcherCollection(): DispatcherCollection
+    {
+        return $this->collection;
+    }
+
     /**
      * @param Path $path
      * @param Route $route
