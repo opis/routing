@@ -214,7 +214,23 @@ class Router
     public function buildArguments(callable $callback, array $values, bool $bind = true): array
     {
         $arguments = array();
-        $parameters = (new \ReflectionFunction($callback))->getParameters();
+
+        if(is_string($callback)){
+            if(function_exists($callback)){
+                $parameters = (new \ReflectionFunction($callback))->getParameters();
+            } else {
+                $parameters = (new \ReflectionMethod($callback))->getParameters();
+            }
+        } elseif (is_object($callback)){
+            if($callback instanceof \Closure){
+                $parameters = (new \ReflectionFunction($callback))->getParameters();
+            } else {
+                $parameters = (new \ReflectionMethod($callback, '__invoke'))->getParameters();
+            }
+        } else {
+            $parameters = (new \ReflectionMethod(reset($callback), end($callback)))->getParameters();
+        }
+
         $specials = $this->getSpecialValues();
 
         foreach ($parameters as $param) {
