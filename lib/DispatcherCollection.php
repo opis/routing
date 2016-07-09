@@ -39,7 +39,7 @@ class DispatcherCollection implements Serializable
      */
     public function register(string $name, callable $factory): self
     {
-        $this->dispatchers[$name] = $factory;
+        $this->factories[$name] = $factory;
         return $this;
     }
 
