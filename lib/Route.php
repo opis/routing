@@ -321,6 +321,7 @@ class Route implements Serializable
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
             'properties' => array_map($map, $this->properties),
+            'collection' => $this->collection,
         ));
 
         SerializableClosure::exitContext();
@@ -351,6 +352,7 @@ class Route implements Serializable
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
         $this->properties = array_map($map, $object['properties']);
+        $this->collection = $object['collection'];
     }
 
 }
