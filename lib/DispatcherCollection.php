@@ -29,9 +29,6 @@ class DispatcherCollection implements Serializable
     /** @var callable[] */
     protected $factories = [];
 
-    /** @var Dispatcher[] */
-    protected $dispatchers = [];
-
     /**
      * @param string $name
      * @param callable $factory
@@ -45,19 +42,21 @@ class DispatcherCollection implements Serializable
 
     /**
      * @param string $name
-     * @return Dispatcher
+     * @return callable
      */
-    public function get(string $name): Dispatcher
+    public function get(string $name): callable
     {
-        return $this->dispatchers[$name] ?? $this->buildDispatcher($name);
+        return $this->factories[$name] ?? $this->defaultDispatcher();
     }
 
     /**
-     * @return Dispatcher
+     * @return callable
      */
-    public function defaultDispatcher(): Dispatcher
+    public function defaultDispatcher(): callable
     {
-        return new Dispatcher();
+        return function () {
+            return new Dispatcher();
+        };
     }
 
     /**
@@ -93,20 +92,6 @@ class DispatcherCollection implements Serializable
         $this->factories = array_map(function($value){
             return $value instanceof SerializableClosure ? $value->getClosure() : $value;
         }, unserialize($serialized));
-    }
-
-    /**
-     * @param string $name
-     * @return Dispatcher
-     */
-    protected function buildDispatcher(string $name): Dispatcher
-    {
-        if(isset($this->factories[$name])){
-            $factory = $this->factories[$name];
-            return $this->dispatchers[$name] = $factory();
-        }
-
-        return $this->defaultDispatcher();
     }
 
 }

@@ -51,6 +51,7 @@ class DispatcherResolver
      */
     public function resolve(Path $path, Route $route, Router $router): Dispatcher
     {
-        return $this->collection->defaultDispatcher();
+        $factory = $this->collection->get('default');
+        return $factory();
     }
 }
