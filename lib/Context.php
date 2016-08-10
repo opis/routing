@@ -36,14 +36,6 @@ class Context
     }
 
     /**
-     * @return string
-     */
-    public function path(): string
-    {
-        return $this->path;
-    }
-
-    /**
      * Stringify
      * 
      * @return  string
