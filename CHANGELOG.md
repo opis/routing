@@ -18,6 +18,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\FilterCollection` class
 - `Opis\Routing\RouteCollection` class
 - `Opis\Routing\ClosureWrapperTrait` trait
+- `Opis\Routing\DispatcherTrait` trait
+- `Opis\Routing\DispatcherInterface` interface
 
 ### Removed
 - Support for PHP 5.x
