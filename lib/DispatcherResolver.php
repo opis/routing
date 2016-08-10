@@ -44,12 +44,12 @@ class DispatcherResolver
     }
 
     /**
-     * @param Path $path
+     * @param Context $path
      * @param Route $route
      * @param Router $router
      * @return DispatcherInterface
      */
-    public function resolve(Path $path, Route $route, Router $router): DispatcherInterface
+    public function resolve(Context $path, Route $route, Router $router): DispatcherInterface
     {
         $factory = $this->collection->get('default');
         return $factory();

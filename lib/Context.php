@@ -20,7 +20,7 @@
 
 namespace Opis\Routing;
 
-class Path
+class Context
 {
     /** @var    string */
     protected $path;
@@ -33,6 +33,14 @@ class Path
     public function __construct(string $path)
     {
         $this->path = $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function path(): string
+    {
+        return $this->path;
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Opis\Routing\Test;
 
-use Opis\Routing\Path;
+use Opis\Routing\Context;
 use Opis\Routing\Route;
 use Opis\Routing\RouteCollection;
 use Opis\Routing\Router;
@@ -33,7 +33,7 @@ class RoutingTest extends  TestCase
             return 'ok';
         }));
 
-        $this->assertEquals('ok', $this->router->route(new Path('/foo')));
+        $this->assertEquals('ok', $this->router->route(new Context('/foo')));
     }
 
     public function testRouteArgument()
@@ -42,7 +42,7 @@ class RoutingTest extends  TestCase
             return $bar;
         }));
 
-        $this->assertEquals('baz', $this->router->route(new Path('/foo/baz')));
+        $this->assertEquals('baz', $this->router->route(new Context('/foo/baz')));
     }
 
     public function testOptionalArgument()
@@ -51,7 +51,7 @@ class RoutingTest extends  TestCase
             return $bar;
         }));
 
-        $this->assertEquals('baz', $this->router->route(new Path('/foo')));
+        $this->assertEquals('baz', $this->router->route(new Context('/foo')));
     }
 
     public function testImplicitArgument()
@@ -62,7 +62,7 @@ class RoutingTest extends  TestCase
 
         $this->routes->addRoute($route);
 
-        $this->assertEquals('baz', $this->router->route(new Path('/foo')));
+        $this->assertEquals('baz', $this->router->route(new Context('/foo')));
     }
 
     public function testMultipleArguments()
@@ -71,7 +71,7 @@ class RoutingTest extends  TestCase
             return $foo.$bar;
         }));
 
-        $this->assertEquals('bazqux', $this->router->route(new Path('/baz/qux')));
+        $this->assertEquals('bazqux', $this->router->route(new Context('/baz/qux')));
     }
 
     public function testWildcardArgument()
@@ -82,8 +82,8 @@ class RoutingTest extends  TestCase
 
         $this->routes->addRoute($route);
 
-        $this->assertEquals(false, $this->router->route(new Path('/foo/bar')));
-        $this->assertEquals('123', $this->router->route(new Path('/foo/123')));
+        $this->assertEquals(false, $this->router->route(new Context('/foo/bar')));
+        $this->assertEquals('123', $this->router->route(new Context('/foo/123')));
     }
 
     public function testBindArgument()
@@ -96,7 +96,7 @@ class RoutingTest extends  TestCase
 
         $this->routes->addRoute($route);
 
-        $this->assertEquals('BAR', $this->router->route(new Path('/foo/bar')));
+        $this->assertEquals('BAR', $this->router->route(new Context('/foo/bar')));
     }
 
     public function testSerialization()
@@ -110,7 +110,7 @@ class RoutingTest extends  TestCase
         $routes = new RouteCollection();
         $routes->addRoute($route);
         $router = new Router(unserialize(serialize($routes)));
-        $this->assertEquals('BAR', $router->route(new Path('/foo/bar')));
+        $this->assertEquals('BAR', $router->route(new Context('/foo/bar')));
     }
 
 }

@@ -3,7 +3,7 @@
 namespace Opis\Routing\Test;
 
 use Opis\Routing\Compiler;
-use Opis\Routing\Path;
+use Opis\Routing\Context;
 use Opis\Routing\Route;
 use Opis\Routing\RouteCollection;
 use Opis\Routing\Router;

@@ -34,7 +34,7 @@ class Router
     /** @var    array */
     protected $specials = array();
 
-    /** @var  Path|null */
+    /** @var  Context|null */
     protected $currentPath;
 
     /** @var  Route|null */
@@ -117,11 +117,11 @@ class Router
 
     /**
      * 
-     * @param   Path  $path
+     * @param   Context  $path
      * 
      * @return  mixed
      */
-    public function route(Path $path)
+    public function route(Context $path)
     {
         if(false === $route = $this->findRoute($path)){
             return false;
@@ -132,10 +132,10 @@ class Router
     }
 
     /**
-     * @param Path $path
+     * @param Context $path
      * @return bool|Route
      */
-    public function findRoute(Path $path)
+    public function findRoute(Context $path)
     {
         $this->currentPath = $path;
 
@@ -153,10 +153,10 @@ class Router
 
 
     /**
-     * @param Path $path
+     * @param Context $path
      * @return \Generator
      */
-    public function match(Path $path): \Generator
+    public function match(Context $path): \Generator
     {
         $path = (string) $path;
         $routes = $this->getRouteCollection();
@@ -169,11 +169,11 @@ class Router
     }
 
     /**
-     * @param Path $path
+     * @param Context $path
      * @param Route $route
      * @return array
      */
-    public function extract(Path $path, Route $route): array
+    public function extract(Context $path, Route $route): array
     {
         $names = $this->getCompiler()->getNames($route->getPattern());
         $regex = $this->getRouteCollection()->getRegex($route->getID());
@@ -252,12 +252,12 @@ class Router
 
     /**
      * 
-     * @param   \Opis\Routing\Path  $path
+     * @param   \Opis\Routing\Context  $path
      * @param   \Opis\Routing\Route $route
      * 
      * @return  boolean
      */
-    protected function pass(Path $path, Route $route)
+    protected function pass(Context $path, Route $route)
     {
         foreach ($this->getFilterCollection()->getFilters() as $filter) {
             if (!$filter->pass($path, $route, $this)) {
