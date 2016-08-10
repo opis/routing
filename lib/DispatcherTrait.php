@@ -23,7 +23,7 @@ namespace Opis\Routing;
 
 trait DispatcherTrait
 {
-    protected function getContent(Context $context, Route $route, Router $router)
+    protected function getContent(Router $router, Context $context, Route $route)
     {
         $callback = $route->getAction();
         $values = $router->extract($context, $route);
