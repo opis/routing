@@ -127,7 +127,7 @@ class Router
             return false;
         }
 
-        $dispatcher = $this->getDispatcherResolver()->resolve($context, $route, $this);
+        $dispatcher = $this->getDispatcherResolver()->resolve($this, $context, $route);
         return $dispatcher->dispatch($this, $context, $route);
     }
 
