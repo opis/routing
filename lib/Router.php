@@ -35,7 +35,7 @@ class Router
     protected $specials = array();
 
     /** @var  Context|null */
-    protected $currentPath;
+    protected $currentContext;
 
     /** @var  Route|null */
     protected $currentRoute;
@@ -98,7 +98,7 @@ class Router
     public function getSpecialValues()
     {
         return $this->specials + array(
-            'path' => (string) $this->currentPath,
+            'path' => (string) $this->currentContext,
             'self' => $this->currentRoute,
         );
     }
@@ -117,32 +117,32 @@ class Router
 
     /**
      * 
-     * @param   Context  $path
+     * @param   Context  $context
      * 
      * @return  mixed
      */
-    public function route(Context $path)
+    public function route(Context $context)
     {
-        if(false === $route = $this->findRoute($path)){
+        if(false === $route = $this->findRoute($context)){
             return false;
         }
 
-        $dispatcher = $this->getDispatcherResolver()->resolve($path, $route, $this);
-        return $dispatcher->dispatch($path, $route, $this);
+        $dispatcher = $this->getDispatcherResolver()->resolve($context, $route, $this);
+        return $dispatcher->dispatch($context, $route, $this);
     }
 
     /**
-     * @param Context $path
+     * @param Context $context
      * @return bool|Route
      */
-    public function findRoute(Context $path)
+    public function findRoute(Context $context)
     {
-        $this->currentPath = $path;
+        $this->currentContext = $context;
 
         /** @var Route $route */
-        foreach ($this->match($path) as $route) {
+        foreach ($this->match($context) as $route) {
             $this->currentRoute = $route;
-            if(!$this->pass($path, $route)){
+            if(!$this->pass($context, $route)){
                 continue;
             }
             return $route;
@@ -153,31 +153,31 @@ class Router
 
 
     /**
-     * @param Context $path
+     * @param Context $context
      * @return \Generator
      */
-    public function match(Context $path): \Generator
+    public function match(Context $context): \Generator
     {
-        $path = (string) $path;
+        $context = (string) $context;
         $routes = $this->getRouteCollection();
 
         foreach ($routes->getRegexPatterns() as $routeID => $pattern){
-            if(preg_match($pattern, $path)){
+            if(preg_match($pattern, $context)){
                 yield $routes->getRoute($routeID);
             }
         }
     }
 
     /**
-     * @param Context $path
+     * @param Context $context
      * @param Route $route
      * @return array
      */
-    public function extract(Context $path, Route $route): array
+    public function extract(Context $context, Route $route): array
     {
         $names = $this->getCompiler()->getNames($route->getPattern());
         $regex = $this->getRouteCollection()->getRegex($route->getID());
-        $values = $this->getCompiler()->getValues($regex, (string) $path);
+        $values = $this->getCompiler()->getValues($regex, (string) $context);
 
         return array_intersect_key($values, array_flip($names)) + $route->getDefaults();
     }
@@ -252,15 +252,15 @@ class Router
 
     /**
      * 
-     * @param   \Opis\Routing\Context  $path
+     * @param   \Opis\Routing\Context  $context
      * @param   \Opis\Routing\Route $route
      * 
      * @return  boolean
      */
-    protected function pass(Context $path, Route $route)
+    protected function pass(Context $context, Route $route)
     {
         foreach ($this->getFilterCollection()->getFilters() as $filter) {
-            if (!$filter->pass($path, $route, $this)) {
+            if (!$filter->pass($context, $route, $this)) {
                 return false;
             }
         }

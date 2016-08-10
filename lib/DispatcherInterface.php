@@ -23,10 +23,10 @@ namespace Opis\Routing;
 interface DispatcherInterface
 {
     /**
-     * @param Context $path
+     * @param Context $context
      * @param Route $route
      * @param Router $router
      * @return mixed
      */
-    public function dispatch(Context $path, Route $route, Router $router);
+    public function dispatch(Context $context, Route $route, Router $router);
 }
