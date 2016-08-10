@@ -20,9 +20,8 @@
 
 namespace Opis\Routing;
 
-class Dispatcher
+class Dispatcher implements DispatcherInterface
 {
-
     public function dispatch(Path $path, Route $route, Router $router)
     {
         $callback = $route->getAction();
