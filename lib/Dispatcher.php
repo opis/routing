@@ -22,12 +22,10 @@ namespace Opis\Routing;
 
 class Dispatcher implements DispatcherInterface
 {
+    use DispatcherTrait;
+
     public function dispatch(Path $path, Route $route, Router $router)
     {
-        $callback = $route->getAction();
-        $values = $router->extract($path, $route);
-        $bindings = $router->bind($values, $route->getBindings());
-        $arguments = $router->buildArguments($callback, $bindings);
-        return $callback(...$arguments);
+        return $this->getContent($path, $route, $router);
     }
 }
