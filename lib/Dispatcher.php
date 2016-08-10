@@ -24,7 +24,7 @@ class Dispatcher implements DispatcherInterface
 {
     use DispatcherTrait;
 
-    public function dispatch(Context $context, Route $route, Router $router)
+    public function dispatch(Router $router, Context $context, Route $route)
     {
         return $this->getContent($context, $route, $router);
     }

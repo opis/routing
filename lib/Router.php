@@ -128,7 +128,7 @@ class Router
         }
 
         $dispatcher = $this->getDispatcherResolver()->resolve($context, $route, $this);
-        return $dispatcher->dispatch($context, $route, $this);
+        return $dispatcher->dispatch($this, $context, $route);
     }
 
     /**
@@ -260,7 +260,7 @@ class Router
     protected function pass(Context $context, Route $route)
     {
         foreach ($this->getFilterCollection()->getFilters() as $filter) {
-            if (!$filter->pass($context, $route, $this)) {
+            if (!$filter->pass($this, $context, $route)) {
                 return false;
             }
         }
