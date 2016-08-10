@@ -98,7 +98,7 @@ class Router
     public function getSpecialValues()
     {
         return $this->specials + array(
-            'path' => $this->currentPath,
+            'path' => (string) $this->currentPath,
             'self' => $this->currentRoute,
         );
     }
