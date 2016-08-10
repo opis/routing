@@ -51,6 +51,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Protected method `Opis\Routing\Compiler::unwrapClosures` is now static
 - `Opis\Routing\FilterInterface::pass` method
 - The constructor of the`Opis\Routing\Router` class
+- `Opis\Routing\Path` class was renamed to `Opis\Routing\Context`
 
 ### Fixed
 - Nothing
