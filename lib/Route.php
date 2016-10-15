@@ -75,7 +75,12 @@ class Route implements Serializable
     public function getID(): string
     {
         if($this->routeID === null){
-            $this->routeID = md5(spl_object_hash($this) . uniqid());
+            $this->routeID = sprintf('%012x%04x%04x%012x',
+                random_int(0, 0xffffffffffff),
+                random_int(0, 0x0fff) | 0x4000,
+                random_int(0, 0x3fff) | 0x8000,
+                random_int(0, 0xffffffffffff)
+            );
         }
 
         return $this->routeID;
