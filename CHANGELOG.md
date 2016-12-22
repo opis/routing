@@ -52,6 +52,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\FilterInterface::pass` method
 - The constructor of the`Opis\Routing\Router` class
 - `Opis\Routing\Path` class was renamed to `Opis\Routing\Context`
+- Source files were moved from `lib` to `src`
 
 ### Fixed
 - Nothing
