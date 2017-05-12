@@ -95,6 +95,7 @@ class Router
     public function getSpecialValues()
     {
         return $this->specials + array(
+            'router' => $this,
             'context' => $this->currentContext,
             'self' => $this->currentRoute,
         );
