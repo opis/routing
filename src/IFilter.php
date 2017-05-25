@@ -17,7 +17,7 @@
 
 namespace Opis\Routing;
 
-interface FilterInterface
+interface IFilter
 {
     /**
      * @param Router $router

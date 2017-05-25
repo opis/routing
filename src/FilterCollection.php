@@ -19,21 +19,21 @@ namespace Opis\Routing;
 
 class FilterCollection
 {
-    /** @var FilterInterface[] */
+    /** @var IFilter[] */
     protected $filters = array();
 
     /**
-     * @param FilterInterface $filter
+     * @param IFilter $filter
      * @return FilterCollection
      */
-    public function addFilter(FilterInterface $filter): self
+    public function addFilter(IFilter $filter): self
     {
         $this->filters[] = $filter;
         return $this;
     }
 
     /**
-     * @return FilterInterface[]
+     * @return IFilter[]
      */
     public function getFilters(): array
     {
