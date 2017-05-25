@@ -17,7 +17,9 @@
 
 namespace Opis\Routing\Test;
 
+use Opis\Routing\Compiler;
 use Opis\Routing\Context;
+use Opis\Routing\Dispatcher;
 use Opis\Routing\Route;
 use Opis\Routing\RouteCollection;
 use Opis\Routing\Router;
@@ -27,19 +29,24 @@ class RoutingTest extends  TestCase
 {
     /** @var  RouteCollection */
     protected $routes;
+
     /** @var  Router */
     protected $router;
+
+    /** @var  Dispatcher */
+    protected $dispatcher;
 
     public function setUp()
     {
         $this->routes = new RouteCollection();
-        $this->router = new Router($this->routes);
+        $this->dispatcher = new Dispatcher();
+        $this->router = new Router($this->dispatcher, $this->routes);
     }
 
     public function tearDown()
     {
         $this->routes = new RouteCollection();
-        $this->router = new Router($this->routes);
+        $this->router = new Router($this->dispatcher, $this->routes);
     }
 
     public function testBasicRouting()
@@ -97,7 +104,7 @@ class RoutingTest extends  TestCase
 
         $this->routes->addRoute($route);
 
-        $this->assertEquals(false, $this->router->route(new Context('/foo/bar')));
+        $this->assertEquals(null, $this->router->route(new Context('/foo/bar')));
         $this->assertEquals('123', $this->router->route(new Context('/foo/123')));
     }
 
@@ -124,7 +131,7 @@ class RoutingTest extends  TestCase
 
         $routes = new RouteCollection();
         $routes->addRoute($route);
-        $router = new Router(unserialize(serialize($routes)));
+        $router = new Router($this->dispatcher, unserialize(serialize($routes)));
         $this->assertEquals('BAR', $router->route(new Context('/foo/bar')));
     }
 
