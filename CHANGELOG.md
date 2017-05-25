@@ -6,19 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Support for PHP 7.0.x
 - Scalar type hints
-- New constants to `Opis\Routing\Compiler` class
-- Method `Opis\Routing\Compiler::getOptions`
-- Method `Opis\Routing\Router::match`
-- Method `Opis\Routing\Router::extract`
-- Method `Opis\Routing\Router::bind`
-- Method `Opis\Routing\Router::buildArguments`
-- Method `Opis\Routing\Route::setRouteCollection`
-- New methods to `Opis\Routing\Route` class
-- `Opis\Routing\DispatcherCollection` class
+- `Opis\Routing\Context` class
 - `Opis\Routing\FilterCollection` class
 - `Opis\Routing\RouteCollection` class
 - `Opis\Routing\ClosureWrapperTrait` trait
-- `Opis\Routing\DispatcherTrait` trait
 - `Opis\Routing\DispatcherInterface` interface
 
 ### Removed
@@ -27,31 +18,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\CallableExpectedException` class
 - `Opis\Routing\CompiledExpression` class
 - `Opis\Routing\CompiledRoute` class
-- `Opis\Routing\Route::getCompiler` method
-- `Opis\Routing\Route::getCompiledPattern` method
-- `Opis\Routing\Route::getDelimitedPattern` method
-- `Opis\Routing\Route::compile` method
 - `Opis\Routing\Filter` class
 - `Opis\Routing\PathFilter` class
 - `Opis\Routing\Collections\AbstractCollection` class
 - `Opis\Routing\Collections\DispatcherCollection` class
 - `Opis\Routing\Collections\FilterCollection` class
 - `Opis\Routing\Collections\RouteCollection` class
-- `Opis\Routing\Compiler::build` method
-- `Opis\Routing\Compiler::delimit` method
-- `Opis\Routing\Compiler::extract` method
 
 ### Changed
-- The constructor of `Opis\Routing\Compiler` class now takes as an argument a single array of options
-- Method `Opis\Routing\Compiler::compile` was renamed to `getRegex`
-- Method `Opis\Routing\Compiler::values` was renamed to `getValues`
-- Method `Opis\Routing\Compiler::names` was renamed to `getNames`
-- `Opis\Routing\Compiler` no longer implements the `Serializable` interface
-- Protected method `Opis\Routing\Compiler::wrapClosures` is now static
-- Protected method `Opis\Routing\Compiler::unwrapClosures` is now static
-- `Opis\Routing\FilterInterface::pass` method
-- The constructor of the`Opis\Routing\Router` class
-- `Opis\Routing\Path` class was renamed to `Opis\Routing\Context`
+- `Opis\Routing\Compiler`, `Opis\Routing\Route`, `Opis\Routing\Router`,
+ `Opis\Routing\Dispatcher`, `Opis\Routing\Binding`, `Opis\Routing\Callback` were refactored
 - Source files were moved from `lib` to `src`
 
 ### Fixed
