@@ -10,7 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\FilterCollection` class
 - `Opis\Routing\RouteCollection` class
 - `Opis\Routing\ClosureWrapperTrait` trait
-- `Opis\Routing\DispatcherInterface` interface
+- `Opis\Routing\IDispatcher` interface
 
 ### Removed
 - Support for PHP 5.x
@@ -28,6 +28,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - `Opis\Routing\Compiler`, `Opis\Routing\Route`, `Opis\Routing\Router`,
  `Opis\Routing\Dispatcher`, `Opis\Routing\Binding`, `Opis\Routing\Callback` were refactored
+- Renamed `Opis\Routing\FilterInterface` to `Opis\Routing\IFilter`
 - Source files were moved from `lib` to `src`
 
 ### Fixed
