@@ -17,7 +17,7 @@
 
 namespace Opis\Routing;
 
-interface DispatcherInterface
+interface IDispatcher
 {
     /**
      * @param Router $router

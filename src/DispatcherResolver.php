@@ -44,9 +44,9 @@ class DispatcherResolver
      * @param Router $router
      * @param Context $context
      * @param Route $route
-     * @return DispatcherInterface
+     * @return IDispatcher
      */
-    public function resolve(Router $router, Context $context, Route $route): DispatcherInterface
+    public function resolve(Router $router, Context $context, Route $route): IDispatcher
     {
         $factory = $this->collection->get('default');
         return $factory();

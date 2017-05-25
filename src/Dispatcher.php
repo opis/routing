@@ -17,7 +17,7 @@
 
 namespace Opis\Routing;
 
-class Dispatcher implements DispatcherInterface
+class Dispatcher implements IDispatcher
 {
     use DispatcherTrait;
 
