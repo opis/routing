@@ -17,7 +17,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\Pattern` class
 - `Opis\Routing\CallableExpectedException` class
 - `Opis\Routing\CompiledExpression` class
-- `Opis\Routing\CompiledRoute` class
 - `Opis\Routing\Filter` class
 - `Opis\Routing\PathFilter` class
 - `Opis\Routing\Collections\AbstractCollection` class
@@ -27,7 +26,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - `Opis\Routing\Compiler`, `Opis\Routing\Route`, `Opis\Routing\Router`,
- `Opis\Routing\Dispatcher`, `Opis\Routing\Binding`, `Opis\Routing\Callback` were refactored
+ `Opis\Routing\Dispatcher`, `Opis\Routing\Binding`, `Opis\Routing\Callback`, 
+  `Opis\Routing\CompiledRoute` were refactored
 - Renamed `Opis\Routing\FilterInterface` to `Opis\Routing\IFilter`
 - Source files were moved from `lib` to `src`
 

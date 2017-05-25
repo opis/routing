@@ -28,6 +28,8 @@ class Dispatcher implements IDispatcher
     /** @var  Route|null */
     protected $route;
 
+    protected $compiled = [];
+
     public function dispatch(Router $router, Context $context)
     {
         $this->router = $router;
@@ -37,7 +39,22 @@ class Dispatcher implements IDispatcher
             return null;
         }
 
-        return $this->invokeAction($route);
+        return $this->compile($route)->invokeAction();
+    }
+
+    public function compile(Route $route): CompiledRoute
+    {
+        $cid = spl_object_hash($this->context);
+        $rid = spl_object_hash($route);
+
+        if(!isset($this->compiled[$cid][$rid])){
+            $special = function (){
+                return $this->getSpecialValues();
+            };
+            return $this->compiled[$cid][$rid] = new CompiledRoute($this->context, $route, $special);
+        }
+
+        return $this->compiled[$cid][$rid];
     }
 
     /**
@@ -86,92 +103,10 @@ class Dispatcher implements IDispatcher
                 return false;
             }
         }
+
         return true;
     }
 
-    /**
-     * @param Route $route
-     * @return array
-     */
-    protected function extract(Route $route)
-    {
-        $routes = $route->getRouteCollection();
-        $compiler = $routes->getCompiler();
-
-        $names = $compiler->getNames($route->getPattern());
-        $regex = $routes->getRegex($route->getID());
-        $values = $compiler->getValues($regex, (string) $this->context);
-
-        return array_intersect_key($values, array_flip($names)) + $route->getDefaults();
-    }
-
-    /**
-     * @param array $values
-     * @param array $bindings
-     * @return Binding[]
-     */
-    protected function bind(array $values, array $bindings): array
-    {
-        $bound = array();
-
-        foreach($bindings as $key => $callback) {
-            $arguments = $this->buildArguments($callback, $values, false);
-            $bound[$key] = new Binding($callback, $arguments);
-        }
-
-        foreach($values as $key => $value) {
-            if(!isset($bound[$key])) {
-                $bound[$key] = new Binding(null, null, $value);
-            }
-        }
-
-        return $bound;
-    }
-
-    /**
-     * @param callable $callback
-     * @param array $values
-     * @param bool $bind
-     * @return array
-     */
-    protected function buildArguments(callable $callback, array $values, bool $bind = true): array
-    {
-        $arguments = array();
-
-        if(is_string($callback)){
-            if(function_exists($callback)){
-                $parameters = (new \ReflectionFunction($callback))->getParameters();
-            } else {
-                $parameters = (new \ReflectionMethod($callback))->getParameters();
-            }
-        } elseif (is_object($callback)){
-            if($callback instanceof \Closure){
-                $parameters = (new \ReflectionFunction($callback))->getParameters();
-            } else {
-                $parameters = (new \ReflectionMethod($callback, '__invoke'))->getParameters();
-            }
-        } else {
-            $parameters = (new \ReflectionMethod(reset($callback), end($callback)))->getParameters();
-        }
-
-        $specials = $this->getSpecialValues();
-
-        foreach ($parameters as $param) {
-            $name = $param->getName();
-
-            if (isset($values[$name])) {
-                $arguments[] = $bind ? $values[$name]->value() : $values[$name];
-            } elseif (isset($specials[$name])) {
-                $arguments[] = $specials[$name];
-            } elseif ($param->isOptional()) {
-                $arguments[] = $param->getDefaultValue();
-            } else {
-                $arguments[] = null;
-            }
-        }
-
-        return $arguments;
-    }
 
     /**
      * @return array
@@ -183,18 +118,5 @@ class Dispatcher implements IDispatcher
                 'route' => $this->route,
                 'context' => $this->context,
             ];
-    }
-
-    /**
-     * @param Route $route
-     * @return mixed
-     */
-    protected function invokeAction(Route $route)
-    {
-        $callback = $route->getAction();
-        $values = $this->extract($route);
-        $bindings = $this->bind($values, $route->getBindings());
-        $arguments = $this->buildArguments($callback, $bindings);
-        return $callback(...$arguments);
     }
 }
