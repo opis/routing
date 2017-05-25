@@ -43,8 +43,19 @@ class Router
     /** @var  Compiler */
     protected $compiler;
 
-    public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, array $specials = array())
-    {
+    /**
+     * Router constructor.
+     * @param RouteCollection $routes
+     * @param DispatcherResolver|null $resolver
+     * @param FilterCollection|null $filters
+     * @param array $specials
+     */
+    public function __construct(
+        RouteCollection $routes,
+        DispatcherResolver $resolver = null,
+        FilterCollection $filters = null,
+        array $specials = array()
+    ){
         $this->routes = $routes;
         $this->resolver = $resolver;
         $this->filters = $filters;
