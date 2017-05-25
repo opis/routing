@@ -33,13 +33,13 @@ class Router
 
     /**
      * Router constructor.
-     * @param Dispatcher $dispatcher
+     * @param IDispatcher $dispatcher
      * @param RouteCollection $routes
      * @param FilterCollection|null $filters
      * @param array $specials
      */
     public function __construct(
-        Dispatcher $dispatcher,
+        IDispatcher $dispatcher,
         RouteCollection $routes,
         FilterCollection $filters = null,
         array $specials = array()
