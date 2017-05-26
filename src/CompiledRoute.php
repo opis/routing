@@ -38,6 +38,22 @@ class CompiledRoute
     }
 
     /**
+     * @return Context
+     */
+    public function getContext(): Context
+    {
+        return $this->context;
+    }
+
+    /**
+     * @return Route
+     */
+    public function getRoute(): Route
+    {
+        return $this->route;
+    }
+
+    /**
      * @return string[]
      */
     public function getNames(): array
