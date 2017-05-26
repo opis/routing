@@ -19,14 +19,7 @@ namespace Opis\Routing;
 
 class Dispatcher implements IDispatcher
 {
-    /** @var  Context */
-    protected $context;
-
-    /** @var  Router */
-    protected $router;
-
-    /** @var  Route|null */
-    protected $route;
+    use DispatcherTrait;
 
     protected $compiled = [];
 
@@ -48,75 +41,9 @@ class Dispatcher implements IDispatcher
         $rid = spl_object_hash($route);
 
         if(!isset($this->compiled[$cid][$rid])){
-            $special = function (){
-                return $this->getSpecialValues();
-            };
-            return $this->compiled[$cid][$rid] = new CompiledRoute($this->context, $route, $special);
+            return $this->compiled[$cid][$rid] = new CompiledRoute($this->context, $route, $this->getSpecialValues());
         }
 
         return $this->compiled[$cid][$rid];
-    }
-
-    /**
-     * @return null|Route
-     */
-    protected function findRoute()
-    {
-        /** @var Route $route */
-        foreach ($this->match() as $route){
-            $this->route = $route;
-            if(!$this->pass($route)){
-                continue;
-            }
-            if($route === null){
-                echo  'x';
-            }
-            return $route;
-        }
-
-        return null;
-    }
-
-    /**
-     * @return \Generator
-     */
-    protected function match(): \Generator
-    {
-        $context = (string) $this->context;
-        $routes = $this->router->getRouteCollection();
-
-        foreach ($routes->getRegexPatterns() as $routeID => $pattern){
-            if(preg_match($pattern, $context)){
-                yield $routes->getRoute($routeID);
-            }
-        }
-    }
-
-    /**
-     * @param Route $route
-     * @return bool
-     */
-    protected function pass(Route $route): bool
-    {
-        foreach ($this->router->getFilterCollection()->getFilters() as $filter){
-            if(!$filter->pass($this->router, $this->context, $route)){
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    /**
-     * @return array
-     */
-    protected function getSpecialValues(): array
-    {
-        return $this->router->getSpecialValues() + [
-                'router' => $this->router,
-                'route' => $this->route,
-                'context' => $this->context,
-            ];
     }
 }
