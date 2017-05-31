@@ -33,17 +33,20 @@ class Router
 
     /**
      * Router constructor.
-     * @param IDispatcher $dispatcher
      * @param RouteCollection $routes
+     * @param IDispatcher|null $dispatcher
      * @param FilterCollection|null $filters
      * @param array $specials
      */
     public function __construct(
-        IDispatcher $dispatcher,
         RouteCollection $routes,
+        IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
         array $specials = array()
     ){
+        if($dispatcher === null){
+            $dispatcher = new Dispatcher();
+        }
         $this->routes = $routes;
         $this->dispatcher = $dispatcher;
         $this->filters = $filters;
