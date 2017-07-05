@@ -123,12 +123,7 @@ class RouteCollection implements Serializable
      */
     public function serialize()
     {
-        return serialize(array(
-            'compiler' => $this->compiler,
-            'routes' => $this->routes,
-            'namedRoutes' => $this->namedRoutes,
-            'regex' => $this->getRegexPatterns(),
-        ));
+        return serialize($this->getSerialize());
     }
 
     /**
@@ -142,7 +137,27 @@ class RouteCollection implements Serializable
      */
     public function unserialize($serialized)
     {
-        $object = unserialize($serialized);
+        $this->setUnserialize(unserialize($serialized));
+    }
+
+    /**
+     * @return array
+     */
+    protected function getSerialize()
+    {
+        return array(
+            'compiler' => $this->compiler,
+            'routes' => $this->routes,
+            'namedRoutes' => $this->namedRoutes,
+            'regex' => $this->getRegexPatterns(),
+        );
+    }
+
+    /**
+     * @param $object
+     */
+    protected function setUnserialize($object)
+    {
         $this->compiler = $object['compiler'];
         $this->routes = $object['routes'];
         $this->namedRoutes = $object['namedRoutes'];
