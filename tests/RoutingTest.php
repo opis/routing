@@ -40,13 +40,13 @@ class RoutingTest extends  TestCase
     {
         $this->routes = new RouteCollection();
         $this->dispatcher = new Dispatcher();
-        $this->router = new Router($this->dispatcher, $this->routes);
+        $this->router = new Router($this->routes, $this->dispatcher);
     }
 
     public function tearDown()
     {
         $this->routes = new RouteCollection();
-        $this->router = new Router($this->dispatcher, $this->routes);
+        $this->router = new Router($this->routes, $this->dispatcher);
     }
 
     public function testBasicRouting()
@@ -131,7 +131,7 @@ class RoutingTest extends  TestCase
 
         $routes = new RouteCollection();
         $routes->addRoute($route);
-        $router = new Router($this->dispatcher, unserialize(serialize($routes)));
+        $router = new Router(unserialize(serialize($routes)), $this->dispatcher);
         $this->assertEquals('BAR', $router->route(new Context('/foo/bar')));
     }
 
