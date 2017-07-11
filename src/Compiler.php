@@ -106,7 +106,7 @@ class Compiler
      */
     public function getRegex(string $pattern, array $wildcards = array()): string
     {
-        $names = $this->getNames($pattern);
+        $names = $this->getKeys($pattern);
         list($st, $et, $sep, $opt) = $this->comp;
         $pattern = preg_quote($pattern, $this->delimiter);
 
@@ -187,7 +187,7 @@ class Compiler
      * @param string $pattern
      * @return array
      */
-    public function getNames(string $pattern): array
+    public function getKeys(string $pattern): array
     {
         list($st, $et) = $this->comp;
         

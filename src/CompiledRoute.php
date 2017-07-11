@@ -23,7 +23,7 @@ class CompiledRoute
     protected $route;
     protected $specialValues;
 
-    protected $names;
+    protected $keys;
     protected $values;
     protected $bindings;
     protected $result;
@@ -56,13 +56,13 @@ class CompiledRoute
     /**
      * @return string[]
      */
-    public function getNames(): array
+    public function getKeys(): array
     {
-        if($this->names === null){
-            $this->names = $this->route->getRouteCollection()->getCompiler()->getNames($this->route->getPattern());
+        if($this->keys === null){
+            $this->keys = $this->route->getRouteCollection()->getCompiler()->getKeys($this->route->getPattern());
         }
 
-        return $this->names;
+        return $this->keys;
     }
 
     /**
@@ -77,7 +77,7 @@ class CompiledRoute
             $regex = $routes->getRegex($this->route->getID());
             $values = $compiler->getValues($regex, (string) $this->context);
 
-            $this->values = array_intersect_key($values, array_flip($this->getNames())) + $this->route->getDefaults();
+            $this->values = array_intersect_key($values, array_flip($this->getKeys())) + $this->route->getDefaults();
         }
 
         return $this->values;

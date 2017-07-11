@@ -29,6 +29,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
  `Opis\Routing\Dispatcher`, `Opis\Routing\Binding`, `Opis\Routing\Callback`, 
   `Opis\Routing\CompiledRoute` were refactored
 - Renamed `Opis\Routing\FilterInterface` to `Opis\Routing\IFilter`
+- Renamed `Opis\Routing\Compiler::getNames` to `Opis\Routing\Compiler::getKeys`
+- Renamed `Opis\Routing\CompiledRoute::getNames` to `Opis\Routing\CompiledRoute::getKeys`
 - Source files were moved from `lib` to `src`
 
 ### Fixed
