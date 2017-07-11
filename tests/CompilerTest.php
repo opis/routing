@@ -26,7 +26,7 @@ use PHPUnit\Framework\TestCase;
 
 class CompilerTest extends TestCase
 {
-    public function testNames()
+    public function testKeys()
     {
         $c = new Compiler();
         $n = $c->getKeys('/a/{b}/c/{d?}');
