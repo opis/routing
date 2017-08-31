@@ -22,7 +22,7 @@ class Compiler
     const CAPTURE_LEFT = 0;
     const CAPTURE_RIGHT = 1;
     const CAPTURE_TRAIL = 2;
-    const OPT_SEPARATOR_TRAIL = 4;
+    const ADD_OPT_SEPARATOR = 4;
     const STANDARD_MODE = 6;
 
     const START_TAG = 0;
@@ -89,7 +89,7 @@ class Compiler
         $this->wildcard = $wildcard = (string) ($options[self::WILDCARD] ?? '[^'.preg_quote($separator, $delimiter).']+');
         $this->captureLeft = ($capture & Compiler::CAPTURE_RIGHT) === Compiler::CAPTURE_LEFT;
         $this->captureTrail = ($capture & Compiler::CAPTURE_TRAIL) === Compiler::CAPTURE_TRAIL;
-        $this->addOptionalSeparator = ($capture & Compiler::OPT_SEPARATOR_TRAIL) === Compiler::OPT_SEPARATOR_TRAIL;
+        $this->addOptionalSeparator = ($capture & Compiler::ADD_OPT_SEPARATOR) === Compiler::ADD_OPT_SEPARATOR;
 
         $this->comp = array(
             preg_quote($startTag, $delimiter),
@@ -123,9 +123,8 @@ class Compiler
         $unmatched = array();
         $position = -1;
         
-        foreach($wildcards as $key => $value)
-        {
-            $original = $key;
+        foreach($wildcards as $key => $value) {
+            //$original = $key;
             $key = preg_quote($key, $this->delimiter);
             $value = '(?P<' . $key . '>(' . $value .'))';
             $count = 0;
@@ -148,7 +147,7 @@ class Compiler
             }
 
             if($count == 0) {
-                $unmatched[$original] = $value;
+                $unmatched[$key] = $value;
             }
         }
         
