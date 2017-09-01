@@ -27,7 +27,7 @@ class Compiler
 
     const START_TAG = 0;
     const END_TAG = 1;
-    const TAG_SEPARATOR = 2;
+    const SEPARATOR_MARK = 2;
     const OPTIONAL_TAG = 3;
     const CAPTURE_MODE = 4;
     const REGEX_DELIMITER = 5;
@@ -82,7 +82,7 @@ class Compiler
         $this->captureMode = $capture = (int) ($options[self::CAPTURE_MODE] ?? self::STANDARD_MODE);
         $this->startTag = $startTag = (string) ($options[self::START_TAG] ?? '{');
         $this->endTag = $endTag = (string) ($options[self::END_TAG] ?? '}');
-        $this->separator = $separator = (string) ($options[self::TAG_SEPARATOR] ?? '/');
+        $this->separator = $separator = (string) ($options[self::SEPARATOR_MARK] ?? '/');
         $this->optional = $optional = (string) ($options[self::OPTIONAL_TAG] ?? '?');
         $this->delimiter = $delimiter = (string) ($options[self::REGEX_DELIMITER] ?? '`');
         $this->modifier = $modifier = (string) ($options[self::REGEX_MODIFIER] ?? 'u');
