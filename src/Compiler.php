@@ -25,10 +25,10 @@ class Compiler
     const ADD_OPT_SEPARATOR = 4;
     const STANDARD_MODE = 6;
 
-    const START_TAG = 0;
-    const END_TAG = 1;
-    const SEPARATOR_MARK = 2;
-    const OPTIONAL_TAG = 3;
+    const START_TAG_MARKER = 0;
+    const END_TAG_MARKER = 1;
+    const SEGMENT_DELIMITER = 2;
+    const OPTIONAL_TAG_SYMBOL = 3;
     const CAPTURE_MODE = 4;
     const REGEX_DELIMITER = 5;
     const REGEX_MODIFIER = 6;
@@ -80,10 +80,10 @@ class Compiler
     public function __construct(array $options = array()) {
 
         $this->captureMode = $capture = (int) ($options[self::CAPTURE_MODE] ?? self::STANDARD_MODE);
-        $this->startTag = $startTag = (string) ($options[self::START_TAG] ?? '{');
-        $this->endTag = $endTag = (string) ($options[self::END_TAG] ?? '}');
-        $this->separator = $separator = (string) ($options[self::SEPARATOR_MARK] ?? '/');
-        $this->optional = $optional = (string) ($options[self::OPTIONAL_TAG] ?? '?');
+        $this->startTag = $startTag = (string) ($options[self::START_TAG_MARKER] ?? '{');
+        $this->endTag = $endTag = (string) ($options[self::END_TAG_MARKER] ?? '}');
+        $this->separator = $separator = (string) ($options[self::SEGMENT_DELIMITER] ?? '/');
+        $this->optional = $optional = (string) ($options[self::OPTIONAL_TAG_SYMBOL] ?? '?');
         $this->delimiter = $delimiter = (string) ($options[self::REGEX_DELIMITER] ?? '`');
         $this->modifier = $modifier = (string) ($options[self::REGEX_MODIFIER] ?? 'u');
         $this->wildcard = $wildcard = (string) ($options[self::WILDCARD] ?? '[^'.preg_quote($separator, $delimiter).']+');
@@ -231,9 +231,9 @@ class Compiler
         if($this->options === null){
             $this->options = [
                 self::CAPTURE_MODE => $this->captureMode,
-                self::START_TAG => $this->startTag,
-                self::END_TAG => $this->endTag,
-                self::OPTIONAL_TAG => $this->optional,
+                self::START_TAG_MARKER => $this->startTag,
+                self::END_TAG_MARKER => $this->endTag,
+                self::OPTIONAL_TAG_SYMBOL => $this->optional,
                 self::REGEX_DELIMITER => $this->delimiter,
                 self::REGEX_MODIFIER => $this->modifier,
                 self::WILDCARD => $this->wildcard,
