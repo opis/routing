@@ -274,10 +274,10 @@ class Route implements Serializable
 
     /**
      * Set a property
-     * 
+     *
      * @param   string  $name
      * @param   mixed   $value
-     * 
+     *
      * @return  $this
      */
     public function __set(string $name, $value)
@@ -294,7 +294,11 @@ class Route implements Serializable
      */
     public function __call(string $name, array $arguments): self 
     {
-        return $this->set($name, array_shift($arguments));
+        if(count($arguments) <= 1){
+            $arguments = array_shift($arguments);
+        }
+        $this->properties[$name] = $arguments;
+        return $this;
     }
 
     /**
