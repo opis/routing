@@ -244,7 +244,7 @@ class Route implements Serializable
      */
     public function has(string $name): bool
     {
-        return isset($this->properties[$name]);
+        return array_key_exists($name, $this->properties);
     }
 
     /**
