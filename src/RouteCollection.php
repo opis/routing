@@ -17,6 +17,7 @@
 
 namespace Opis\Routing;
 
+use Opis\Closure\SerializableClosure;
 use Serializable;
 
 class RouteCollection implements Serializable
@@ -123,7 +124,10 @@ class RouteCollection implements Serializable
      */
     public function serialize()
     {
-        return serialize($this->getSerialize());
+        SerializableClosure::enterContext();
+        $object = serialize($this->getSerialize());
+        SerializableClosure::exitContext();
+        return $object;
     }
 
     /**
