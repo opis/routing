@@ -149,12 +149,12 @@ class RouteCollection implements Serializable
      */
     protected function getSerialize()
     {
-        return array(
+        return [
             'compiler' => $this->compiler,
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
             'regex' => $this->getRegexPatterns(),
-        );
+        ];
     }
 
     /**
