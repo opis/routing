@@ -185,20 +185,20 @@ class Route implements Serializable
     }
 
     /**
-     * Define a new wildcard
+     * Define a new placeholder
      *
      * @param   string $name
      * @param   string $value
      * @return $this|Route
      */
-    public function wildcard(string $name, string $value): self
+    public function placeholder(string $name, string $value): self
     {
         $this->wildcards[$name] = $value;
         return $this;
     }
 
     /**
-     * Define a new wildcard
+     * Define a new placeholder
      *
      * @param   string $name
      * @param   string $value
@@ -206,7 +206,7 @@ class Route implements Serializable
      */
     public function where(string $name, string $value): self
     {
-        return $this->wildcard($name, $value);
+        return $this->placeholder($name, $value);
     }
 
     /**
