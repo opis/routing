@@ -41,7 +41,7 @@ class Route implements Serializable
     protected $routeID;
 
     /** @var    array */
-    protected $wildcards = array();
+    protected $placeholders = array();
 
     /** @var    array */
     protected $bindings = array();
@@ -118,9 +118,9 @@ class Route implements Serializable
      * 
      * @return  array
      */
-    public function getWildcards(): array
+    public function getPlaceholders(): array
     {
-        return $this->wildcards;
+        return $this->placeholders;
     }
 
     /**
@@ -193,7 +193,7 @@ class Route implements Serializable
      */
     public function placeholder(string $name, string $value): self
     {
-        $this->wildcards[$name] = $value;
+        $this->placeholders[$name] = $value;
         return $this;
     }
 
@@ -323,7 +323,7 @@ class Route implements Serializable
             'routeAction' => $routeAction,
             'routeName' => $this->routeName,
             'routeID' => $this->routeID,
-            'wildcards' => $this->wildcards,
+            'placeholders' => $this->placeholders,
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
             'properties' => array_map($map, $this->properties),
@@ -354,7 +354,7 @@ class Route implements Serializable
         $this->routeAction = $object['routeAction'];
         $this->routeName = $object['routeName'];
         $this->routeID = $object['routeID'];
-        $this->wildcards = $object['wildcards'];
+        $this->placeholders = $object['placeholders'];
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
         $this->properties = array_map($map, $object['properties']);

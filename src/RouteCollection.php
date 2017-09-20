@@ -66,7 +66,7 @@ class RouteCollection implements Serializable
         if($this->regex === null){
             $this->regex = array();
             foreach($this->routes as $route){
-                $this->regex[$route->getID()] = $this->compiler->getRegex($route->getPattern(), $route->getWildcards());
+                $this->regex[$route->getID()] = $this->compiler->getRegex($route->getPattern(), $route->getPlaceholders());
             }
         }
         return $this->regex;
