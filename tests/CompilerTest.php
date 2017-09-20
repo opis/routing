@@ -29,7 +29,7 @@ class CompilerTest extends TestCase
     public function testKeys()
     {
         $c = new Compiler();
-        $n = $c->getKeys('/a/{b}/c/{d?}');
+        $n = $c->getNames('/a/{b}/c/{d?}');
         $this->assertEquals(['b', 'd'], $n);
     }
 
