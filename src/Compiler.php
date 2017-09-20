@@ -32,7 +32,7 @@ class Compiler
     const CAPTURE_MODE = 4;
     const REGEX_DELIMITER = 5;
     const REGEX_MODIFIER = 6;
-    const DEFAULT_PLACEHOLDER_REGEX = 7;
+    const DEFAULT_REGEX_EXP = 7;
 
     /** @var string */
     protected $startMarker;
@@ -86,7 +86,7 @@ class Compiler
         $this->optional = $optional = (string) ($options[self::OPT_PLACEHOLDER_SYMBOL] ?? '?');
         $this->delimiter = $delimiter = (string) ($options[self::REGEX_DELIMITER] ?? '`');
         $this->modifier = $modifier = (string) ($options[self::REGEX_MODIFIER] ?? 'u');
-        $this->placeholder = $wildcard = (string) ($options[self::DEFAULT_PLACEHOLDER_REGEX] ?? '[^'.preg_quote($separator, $delimiter).']+');
+        $this->placeholder = $wildcard = (string) ($options[self::DEFAULT_REGEX_EXP] ?? '[^'.preg_quote($separator, $delimiter).']+');
         $this->captureLeft = ($capture & Compiler::CAPTURE_RIGHT) === Compiler::CAPTURE_LEFT;
         $this->captureTrail = ($capture & Compiler::CAPTURE_TRAIL) === Compiler::CAPTURE_TRAIL;
         $this->addOptionalSeparator = ($capture & Compiler::ADD_OPT_SEPARATOR) === Compiler::ADD_OPT_SEPARATOR;
@@ -236,7 +236,7 @@ class Compiler
                 self::OPT_PLACEHOLDER_SYMBOL => $this->optional,
                 self::REGEX_DELIMITER => $this->delimiter,
                 self::REGEX_MODIFIER => $this->modifier,
-                self::DEFAULT_PLACEHOLDER_REGEX => $this->placeholder,
+                self::DEFAULT_REGEX_EXP => $this->placeholder,
             ];
         }
 
