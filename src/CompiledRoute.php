@@ -19,20 +19,38 @@ namespace Opis\Routing;
 
 class CompiledRoute
 {
+    /** @var Context */
     protected $context;
-    protected $route;
-    protected $specialValues;
 
+    /** @var Route */
+    protected $route;
+
+    /** @var callable */
+    protected $extra;
+
+    /** @var string[] */
     protected $keys;
+
+    /** @var array */
     protected $values;
+
+    /** @var array[] */
     protected $bindings;
+
+    /** @var CompiledRoute */
     protected $result;
 
-    public function __construct(Context $context, Route $route, callable $special)
+    /**
+     * CompiledRoute constructor.
+     * @param Context $context
+     * @param Route $route
+     * @param callable $extra
+     */
+    public function __construct(Context $context, Route $route, callable $extra)
     {
         $this->context = $context;
         $this->route = $route;
-        $this->specialValues = $special;
+        $this->extra = $extra;
 
         $this->result = $this;
     }
@@ -163,15 +181,15 @@ class CompiledRoute
             $parameters = (new \ReflectionMethod(reset($callback), end($callback)))->getParameters();
         }
 
-        $specials = ($this->specialValues)();
+        $extra = ($this->extra)();
 
         foreach ($parameters as $param) {
             $name = $param->getName();
 
             if (isset($values[$name])) {
                 $arguments[] = $bind ? $values[$name]->value() : $values[$name];
-            } elseif (isset($specials[$name])) {
-                $arguments[] = $specials[$name];
+            } elseif (isset($extra[$name])) {
+                $arguments[] = $extra[$name];
             } elseif ($param->isOptional()) {
                 $arguments[] = $param->getDefaultValue();
             } else {

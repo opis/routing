@@ -41,7 +41,7 @@ class Dispatcher implements IDispatcher
         $rid = spl_object_hash($route);
 
         if(!isset($this->compiled[$cid][$rid])){
-            return $this->compiled[$cid][$rid] = new CompiledRoute($this->context, $route, $this->getSpecialValues());
+            return $this->compiled[$cid][$rid] = new CompiledRoute($this->context, $route, $this->getExtraVariables());
         }
 
         return $this->compiled[$cid][$rid];

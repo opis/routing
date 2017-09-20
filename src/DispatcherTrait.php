@@ -79,7 +79,7 @@ trait DispatcherTrait
     /**
      * @return callable
      */
-    protected function getSpecialValues(): callable
+    protected function getExtraVariables(): callable
     {
         return function (){
             $extra = [
@@ -88,7 +88,7 @@ trait DispatcherTrait
                 'context' => $this->context,
             ];
 
-            return $this->router->getSpecialValues() + $extra;
+            return $this->router->getExtraVariables() + $extra;
         };
     }
 }

@@ -25,20 +25,20 @@ class Compiler
     const ADD_OPT_SEPARATOR = 4;
     const STANDARD_MODE = 6;
 
-    const START_TAG_MARKER = 0;
-    const END_TAG_MARKER = 1;
+    const START_MARKER = 0;
+    const END_MARKER = 1;
     const SEGMENT_DELIMITER = 2;
-    const OPTIONAL_TAG_SYMBOL = 3;
+    const OPT_PLACEHOLDER_SYMBOL = 3;
     const CAPTURE_MODE = 4;
     const REGEX_DELIMITER = 5;
     const REGEX_MODIFIER = 6;
-    const WILDCARD = 7;
+    const DEFAULT_PLACEHOLDER_REGEX = 7;
 
     /** @var string */
-    protected $startTag;
+    protected $startMarker;
 
     /** @var string  */
-    protected $endTag;
+    protected $endMarker;
 
     /** @var string  */
     protected $separator;
@@ -65,7 +65,7 @@ class Compiler
     protected $modifier;
 
     /** @var string  */
-    protected $wildcard;
+    protected $placeholder;
 
     /** @var array */
     protected $comp;
@@ -80,13 +80,13 @@ class Compiler
     public function __construct(array $options = array()) {
 
         $this->captureMode = $capture = (int) ($options[self::CAPTURE_MODE] ?? self::STANDARD_MODE);
-        $this->startTag = $startTag = (string) ($options[self::START_TAG_MARKER] ?? '{');
-        $this->endTag = $endTag = (string) ($options[self::END_TAG_MARKER] ?? '}');
+        $this->startMarker = $startTag = (string) ($options[self::START_MARKER] ?? '{');
+        $this->endMarker = $endTag = (string) ($options[self::END_MARKER] ?? '}');
         $this->separator = $separator = (string) ($options[self::SEGMENT_DELIMITER] ?? '/');
-        $this->optional = $optional = (string) ($options[self::OPTIONAL_TAG_SYMBOL] ?? '?');
+        $this->optional = $optional = (string) ($options[self::OPT_PLACEHOLDER_SYMBOL] ?? '?');
         $this->delimiter = $delimiter = (string) ($options[self::REGEX_DELIMITER] ?? '`');
         $this->modifier = $modifier = (string) ($options[self::REGEX_MODIFIER] ?? 'u');
-        $this->wildcard = $wildcard = (string) ($options[self::WILDCARD] ?? '[^'.preg_quote($separator, $delimiter).']+');
+        $this->placeholder = $wildcard = (string) ($options[self::DEFAULT_PLACEHOLDER_REGEX] ?? '[^'.preg_quote($separator, $delimiter).']+');
         $this->captureLeft = ($capture & Compiler::CAPTURE_RIGHT) === Compiler::CAPTURE_LEFT;
         $this->captureTrail = ($capture & Compiler::CAPTURE_TRAIL) === Compiler::CAPTURE_TRAIL;
         $this->addOptionalSeparator = ($capture & Compiler::ADD_OPT_SEPARATOR) === Compiler::ADD_OPT_SEPARATOR;
@@ -116,7 +116,7 @@ class Compiler
 
         foreach($names as $name) {
             if (!isset($wildcards[$name])){
-                $wildcards[$name] = $this->wildcard;
+                $wildcards[$name] = $this->placeholder;
             }
         }
 
@@ -231,12 +231,12 @@ class Compiler
         if($this->options === null){
             $this->options = [
                 self::CAPTURE_MODE => $this->captureMode,
-                self::START_TAG_MARKER => $this->startTag,
-                self::END_TAG_MARKER => $this->endTag,
-                self::OPTIONAL_TAG_SYMBOL => $this->optional,
+                self::START_MARKER => $this->startMarker,
+                self::END_MARKER => $this->endMarker,
+                self::OPT_PLACEHOLDER_SYMBOL => $this->optional,
                 self::REGEX_DELIMITER => $this->delimiter,
                 self::REGEX_MODIFIER => $this->modifier,
-                self::WILDCARD => $this->wildcard,
+                self::DEFAULT_PLACEHOLDER_REGEX => $this->placeholder,
             ];
         }
 

@@ -28,21 +28,21 @@ class Router
     /** @var Dispatcher */
     protected $dispatcher;
 
-    /** @var    array */
-    protected $specials = array();
+    /** @var array */
+    protected $extra;
 
     /**
      * Router constructor.
      * @param RouteCollection $routes
      * @param IDispatcher|null $dispatcher
      * @param FilterCollection|null $filters
-     * @param array $specials
+     * @param array $extra
      */
     public function __construct(
         RouteCollection $routes,
         IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
-        array $specials = array()
+        array $extra = []
     ){
         if($dispatcher === null){
             $dispatcher = new Dispatcher();
@@ -50,7 +50,7 @@ class Router
         $this->routes = $routes;
         $this->dispatcher = $dispatcher;
         $this->filters = $filters;
-        $this->specials = $specials;
+        $this->extra = $extra;
     }
 
     /**
@@ -91,9 +91,9 @@ class Router
      * 
      * @return  array
      */
-    public function getSpecialValues()
+    public function getExtraVariables()
     {
-        return $this->specials;
+        return $this->extra;
     }
 
     /**
