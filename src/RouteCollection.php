@@ -43,7 +43,7 @@ class RouteCollection implements Serializable
 
     public function __construct(RegexBuilder $builder = null, string $sortKey = null)
     {
-        if ($builder === null){
+        if ($builder === null) {
             $builder = new RegexBuilder();
         }
 
@@ -73,9 +73,9 @@ class RouteCollection implements Serializable
      */
     public function getRegexPatterns(): array
     {
-        if($this->regex === null){
+        if ($this->regex === null) {
             $this->regex = [];
-            foreach($this->routes as $route){
+            foreach ($this->routes as $route) {
                 $this->regex[$route->getID()] = $this->builder->getRegex($route->getPattern(), $route->getPlaceholders());
             }
         }
@@ -101,7 +101,7 @@ class RouteCollection implements Serializable
         $this->routes[$id] = $route;
         $this->dirty = true;
         $this->regex = null;
-        if(null !== $name = $route->getName()){
+        if (null !== $name = $route->getName()) {
             $this->namedRoutes[$name] = $id;
         }
         return $this;
@@ -123,7 +123,7 @@ class RouteCollection implements Serializable
      */
     public function getRegex(string $id)
     {
-        if($this->regex === null){
+        if ($this->regex === null) {
             $this->getRegexPatterns();
         }
         return $this->regex[$id] ?? false;
@@ -134,7 +134,7 @@ class RouteCollection implements Serializable
      */
     public function sort($descending = true)
     {
-        if(!$this->dirty || $this->sortKey === null){
+        if (!$this->dirty || $this->sortKey === null) {
             return;
         }
 
@@ -148,9 +148,9 @@ class RouteCollection implements Serializable
 
         while (!$done) {
             $done = true;
-            for ($i = 0, $l = count($this->routes) - 1; $i < $l; $i++){
+            for ($i = 0, $l = count($this->routes) - 1; $i < $l; $i++) {
 
-                if($descending){
+                if ($descending) {
                     $invert = $values[$i]->get($sortKey) < $values[$i + 1]->get($sortKey);
                 } else {
                     $invert = $values[$i]->get($sortKey) > $values[$i + 1]->get($sortKey);

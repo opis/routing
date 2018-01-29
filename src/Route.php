@@ -72,7 +72,7 @@ class Route implements Serializable
      */
     public function getID(): string
     {
-        if($this->routeID === null){
+        if ($this->routeID === null) {
             $this->routeID = sprintf('%012x%04x%04x%012x',
                 random_int(0, 0xffffffffffff),
                 random_int(0, 0x0fff) | 0x4000,
@@ -86,7 +86,7 @@ class Route implements Serializable
 
     /**
      * Get the route's pattern
-     * 
+     *
      * @return string
      */
     public function getPattern(): string
@@ -96,7 +96,7 @@ class Route implements Serializable
 
     /**
      * Get the route's callback
-     * 
+     *
      * @return  callable
      */
     public function getAction(): callable
@@ -116,7 +116,7 @@ class Route implements Serializable
 
     /**
      * Get the route's wildcards
-     * 
+     *
      * @return  array
      */
     public function getPlaceholders(): array
@@ -126,7 +126,7 @@ class Route implements Serializable
 
     /**
      * Get the route's bindings
-     * 
+     *
      * @return callable[]
      */
     public function getBindings(): array
@@ -136,7 +136,7 @@ class Route implements Serializable
 
     /**
      * Get the route's default values
-     * 
+     *
      * @return  array
      */
     public function getDefaults(): array
@@ -146,10 +146,10 @@ class Route implements Serializable
 
     /**
      * Get the route's properties
-     * 
+     *
      * @return  array
      */
-    public function getProperties(): array 
+    public function getProperties(): array
     {
         return $this->properties;
     }
@@ -238,9 +238,9 @@ class Route implements Serializable
 
     /**
      * Check if a property was set
-     * 
-     * @param   string  $name
-     * 
+     *
+     * @param   string $name
+     *
      * @return  boolean
      */
     public function has(string $name): bool
@@ -250,10 +250,10 @@ class Route implements Serializable
 
     /**
      * Get a property
-     * 
-     * @param   string  $name
-     * @param   mixed   $default    (optional)
-     * 
+     *
+     * @param   string $name
+     * @param   mixed $default (optional)
+     *
      * @return  mixed
      */
     public function get(string $name, $default = null)
@@ -263,9 +263,9 @@ class Route implements Serializable
 
     /**
      * Get a property
-     * 
-     * @param   string  $name
-     * 
+     *
+     * @param   string $name
+     *
      * @return  mixed
      */
     public function __get(string $name)
@@ -276,8 +276,8 @@ class Route implements Serializable
     /**
      * Set a property
      *
-     * @param   string  $name
-     * @param   mixed   $value
+     * @param   string $name
+     * @param   mixed $value
      *
      * @return  $this
      */
@@ -293,9 +293,9 @@ class Route implements Serializable
      * @param   array $arguments
      * @return $this|Route
      */
-    public function __call(string $name, array $arguments): self 
+    public function __call(string $name, array $arguments): self
     {
-        if(count($arguments) <= 1){
+        if (count($arguments) <= 1) {
             $arguments = array_shift($arguments);
         }
         $this->properties[$name] = $arguments;
@@ -304,7 +304,7 @@ class Route implements Serializable
 
     /**
      * Serialize the route
-     * 
+     *
      * @return  string
      */
     public function serialize()
@@ -318,7 +318,7 @@ class Route implements Serializable
         }
 
         $map = array(static::class, 'wrapClosures');
-        
+
         $object = serialize(array(
             'routePattern' => $this->routePattern,
             'routeAction' => $routeAction,
@@ -338,8 +338,8 @@ class Route implements Serializable
 
     /**
      * Unserialize the route
-     * 
-     * @param   string  $data
+     *
+     * @param   string $data
      */
     public function unserialize($data)
     {

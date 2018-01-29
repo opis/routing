@@ -52,8 +52,9 @@ class Router
         IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
         GlobalValues $global = null
-    ){
-        if($dispatcher === null){
+    )
+    {
+        if ($dispatcher === null) {
             $dispatcher = new Dispatcher();
         }
         $this->routes = $routes;
@@ -65,7 +66,7 @@ class Router
 
     /**
      * Get the route collection
-     * 
+     *
      * @return  RouteCollection
      */
     public function getRouteCollection(): RouteCollection
@@ -75,12 +76,12 @@ class Router
 
     /**
      * Get the filter collection
-     * 
+     *
      * @return  FilterCollection
      */
     public function getFilterCollection(): FilterCollection
     {
-        if($this->filters === null){
+        if ($this->filters === null) {
             $this->filters = new FilterCollection();
         }
         return $this->filters;
@@ -93,7 +94,7 @@ class Router
      */
     public function getGlobalValues(): GlobalValues
     {
-        if($this->global === null){
+        if ($this->global === null) {
             $this->global = new GlobalValues();
         }
         return $this->global;
@@ -101,7 +102,7 @@ class Router
 
     /**
      * Get the dispatcher resolver
-     * 
+     *
      * @return IDispatcher
      */
     public function getDispatcher(): IDispatcher
@@ -115,7 +116,7 @@ class Router
      */
     public function getContext(): Context
     {
-        if($this->context === null){
+        if ($this->context === null) {
             throw new Exception("Invalid routing context");
         }
         return $this->context;
@@ -129,7 +130,7 @@ class Router
      */
     public function compact(Route $route)
     {
-        if(!isset($this->store[$route])){
+        if (!isset($this->store[$route])) {
             return $this->store[$route] = new CompactRoute($route, $this->getContext(), $this->getGlobalValues());
         }
         return $this->store[$route];

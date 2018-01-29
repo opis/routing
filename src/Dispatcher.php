@@ -28,7 +28,7 @@ class Dispatcher implements IDispatcher
      */
     public function dispatch(Router $router)
     {
-        if(null === $route = $this->findRoute($router)){
+        if (null === $route = $this->findRoute($router)) {
             return null;
         }
 

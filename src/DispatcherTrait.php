@@ -31,9 +31,9 @@ trait DispatcherTrait
         $global['router'] = $router;
         $global['context'] = $context;
         /** @var Route $route */
-        foreach ($this->match($router, $context) as $route){
+        foreach ($this->match($router, $context) as $route) {
             $global['route'] = $route;
-            if(!$this->filter($router, $route)){
+            if (!$this->filter($router, $route)) {
                 continue;
             }
             return $route;
@@ -50,11 +50,11 @@ trait DispatcherTrait
      */
     protected function match(Router $router, Context $context): \Generator
     {
-        $context = (string) $context;
+        $context = (string)$context;
         $routes = $router->getRouteCollection();
 
-        foreach ($routes->getRegexPatterns() as $routeID => $pattern){
-            if(preg_match($pattern, $context)){
+        foreach ($routes->getRegexPatterns() as $routeID => $pattern) {
+            if (preg_match($pattern, $context)) {
                 yield $routes->getRoute($routeID);
             }
         }
@@ -67,8 +67,8 @@ trait DispatcherTrait
      */
     protected function filter(Router $router, Route $route): bool
     {
-        foreach ($router->getFilterCollection()->getFilters() as $filter){
-            if(!$filter->filter($router, $route)){
+        foreach ($router->getFilterCollection()->getFilters() as $filter) {
+            if (!$filter->filter($router, $route)) {
                 return false;
             }
         }

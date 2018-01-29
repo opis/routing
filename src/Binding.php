@@ -19,7 +19,7 @@ namespace Opis\Routing;
 
 class Binding
 {
-    /** @var mixed|null  */
+    /** @var mixed|null */
     protected $value;
 
     /** @var array|null */
@@ -46,12 +46,12 @@ class Binding
      */
     public function value()
     {
-        if($this->value === null && $this->callback !== null) {
+        if ($this->value === null && $this->callback !== null) {
             $callback = $this->callback;
             $arguments = $this->arguments ?? array();
             $this->value = $callback(...$arguments);
         }
-        
+
         return $this->value;
     }
 }

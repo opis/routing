@@ -54,7 +54,7 @@ class Context
 
     /**
      * Stringify
-     * 
+     *
      * @return  string
      */
     public function __toString()

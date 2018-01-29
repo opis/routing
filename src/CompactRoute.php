@@ -75,7 +75,7 @@ class CompactRoute
      */
     public function getNames(): array
     {
-        if($this->names === null){
+        if ($this->names === null) {
             $this->names = $this->route->getRouteCollection()->getRegexBuilder()->getNames($this->route->getPattern());
         }
 
@@ -88,12 +88,12 @@ class CompactRoute
      */
     public function getValues(): array
     {
-        if($this->values === null){
+        if ($this->values === null) {
             $routes = $this->route->getRouteCollection();
             $builder = $routes->getRegexBuilder();
 
             $regex = $routes->getRegex($this->route->getID());
-            $values = $builder->getValues($regex, (string) $this->context);
+            $values = $builder->getValues($regex, (string)$this->context);
 
             $this->values = array_intersect_key($values, array_flip($this->getNames())) + $this->route->getDefaults();
         }
@@ -107,20 +107,20 @@ class CompactRoute
      */
     public function getBindings(): array
     {
-        if($this->bindings === null){
+        if ($this->bindings === null) {
 
             $values = $this->getValues();
             $bindings = $this->route->getBindings();
 
             $bound = [];
 
-            foreach($bindings as $key => $callback) {
+            foreach ($bindings as $key => $callback) {
                 $arguments = static::buildArguments($callback, $values, $this->global, false);
                 $bound[$key] = new Binding($callback, $arguments);
             }
 
-            foreach($values as $key => $value) {
-                if(!isset($bound[$key])) {
+            foreach ($values as $key => $value) {
+                if (!isset($bound[$key])) {
                     $bound[$key] = new Binding(null, null, $value);
                 }
             }
@@ -137,7 +137,7 @@ class CompactRoute
      */
     public function invokeAction()
     {
-        if($this->result === $this){
+        if ($this->result === $this) {
             $callback = $this->route->getAction();
             $arguments = $this->getArguments($callback);
             $this->result = $callback(...$arguments);
@@ -169,14 +169,14 @@ class CompactRoute
     {
         $arguments = [];
 
-        if(is_string($callback)){
-            if(function_exists($callback)){
+        if (is_string($callback)) {
+            if (function_exists($callback)) {
                 $parameters = (new \ReflectionFunction($callback))->getParameters();
             } else {
                 $parameters = (new \ReflectionMethod($callback))->getParameters();
             }
-        } elseif (is_object($callback)){
-            if($callback instanceof \Closure){
+        } elseif (is_object($callback)) {
+            if ($callback instanceof \Closure) {
                 $parameters = (new \ReflectionFunction($callback))->getParameters();
             } else {
                 $parameters = (new \ReflectionMethod($callback, '__invoke'))->getParameters();

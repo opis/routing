@@ -53,7 +53,7 @@ class RoutingTest extends TestCase
      */
     public function testBasicRouting()
     {
-        $this->routes->addRoute(new Route('/foo', function (){
+        $this->routes->addRoute(new Route('/foo', function () {
             return 'ok';
         }));
 
@@ -65,7 +65,7 @@ class RoutingTest extends TestCase
      */
     public function testRouteArgument()
     {
-        $this->routes->addRoute(new Route('/foo/{bar}', function ($bar){
+        $this->routes->addRoute(new Route('/foo/{bar}', function ($bar) {
             return $bar;
         }));
 
@@ -77,7 +77,7 @@ class RoutingTest extends TestCase
      */
     public function testOptionalArgument()
     {
-        $this->routes->addRoute(new Route('/foo/{bar?}', function ($bar = 'baz'){
+        $this->routes->addRoute(new Route('/foo/{bar?}', function ($bar = 'baz') {
             return $bar;
         }));
 
@@ -89,7 +89,7 @@ class RoutingTest extends TestCase
      */
     public function testImplicitArgument()
     {
-        $route = (new Route('/foo/{bar?}', function ($bar){
+        $route = (new Route('/foo/{bar?}', function ($bar) {
             return $bar;
         }))->implicit('bar', 'baz');
 
@@ -103,8 +103,8 @@ class RoutingTest extends TestCase
      */
     public function testMultipleArguments()
     {
-        $this->routes->addRoute(new Route('/{foo}/{bar}', function ($bar, $foo){
-            return $foo.$bar;
+        $this->routes->addRoute(new Route('/{foo}/{bar}', function ($bar, $foo) {
+            return $foo . $bar;
         }));
 
         $this->assertEquals('bazqux', $this->router->route(new Context('/baz/qux')));
@@ -115,7 +115,7 @@ class RoutingTest extends TestCase
      */
     public function testWildcardArgument()
     {
-        $route = (new Route('/foo/{bar}', function ($bar){
+        $route = (new Route('/foo/{bar}', function ($bar) {
             return $bar;
         }))->where('bar', '[0-9]+');
 
@@ -130,9 +130,9 @@ class RoutingTest extends TestCase
      */
     public function testBindArgument()
     {
-        $route = (new Route('/foo/{bar}', function ($bar){
+        $route = (new Route('/foo/{bar}', function ($bar) {
             return $bar;
-        }))->bind('bar', function($bar){
+        }))->bind('bar', function ($bar) {
             return strtoupper($bar);
         });
 
@@ -146,9 +146,9 @@ class RoutingTest extends TestCase
      */
     public function testSerialization()
     {
-        $route = (new Route('/foo/{bar}', function ($bar){
+        $route = (new Route('/foo/{bar}', function ($bar) {
             return $bar;
-        }))->bind('bar', function($bar){
+        }))->bind('bar', function ($bar) {
             return strtoupper($bar);
         });
 

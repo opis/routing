@@ -25,7 +25,7 @@ trait ClosureWrapperTrait
     /**
      * Wrap all closures
      *
-     * @param   mixed   $value
+     * @param   mixed $value
      *
      * @return  mixed
      */
@@ -36,7 +36,7 @@ trait ClosureWrapperTrait
         } elseif (is_array($value)) {
             return array_map(static::class . '::' . __FUNCTION__, $value);
         } elseif ($value instanceof \stdClass) {
-            return (object) array_map(static::class . '::' . __FUNCTION__, (array) $value);
+            return (object)array_map(static::class . '::' . __FUNCTION__, (array)$value);
         }
         return $value;
     }
@@ -44,7 +44,7 @@ trait ClosureWrapperTrait
     /**
      * Unwrap closures
      *
-     * @param   mixed   $value
+     * @param   mixed $value
      *
      * @return  mixed
      */
@@ -55,7 +55,7 @@ trait ClosureWrapperTrait
         } elseif (is_array($value)) {
             return array_map(static::class . '::' . __FUNCTION__, $value);
         } elseif ($value instanceof \stdClass) {
-            return (object) array_map(static::class . '::' . __FUNCTION__, (array) $value);
+            return (object)array_map(static::class . '::' . __FUNCTION__, (array)$value);
         }
         return $value;
     }
