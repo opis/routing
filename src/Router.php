@@ -17,6 +17,8 @@
 
 namespace Opis\Routing;
 
+use SplObjectStorage;
+
 class Router
 {
     /** @var RouteCollection */
@@ -30,6 +32,9 @@ class Router
 
     /** @var array */
     protected $global;
+
+    /** @var SplObjectStorage */
+    protected $store;
 
     /**
      * Router constructor.
@@ -51,6 +56,7 @@ class Router
         $this->dispatcher = $dispatcher;
         $this->filters = $filters;
         $this->global = $global;
+        $this->store = new SplObjectStorage();
     }
 
     /**
@@ -100,10 +106,24 @@ class Router
     }
 
     /**
-     * 
-     * @param   Context  $context
-     * 
+     * @param Route $route
+     * @param Context $context
+     * @return CompactRoute
+     */
+    public function compact(Route $route, Context $context)
+    {
+        if(!isset($this->store[$route])){
+            return $this->store[$route] = new CompactRoute($route, $context, $this->getGlobalValues());
+        }
+        return $this->store[$route];
+    }
+
+    /**
+     *
+     * @param   Context $context
+     *
      * @return  mixed
+     * @throws \Exception
      */
     public function route(Context $context)
     {
