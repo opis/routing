@@ -24,23 +24,30 @@ use Serializable;
 class RouteCollection implements Serializable
 {
     /** @var Route[] */
-    protected $routes = array();
+    protected $routes = [];
 
     /** @var null|string[] */
     protected $regex;
 
     /** @var string[] */
-    protected $namedRoutes = array();
+    protected $namedRoutes = [];
 
     /** @var  RegexBuilder */
     protected $builder;
 
-    public function __construct(RegexBuilder $builder = null)
+    /** @var bool */
+    protected $dirty = false;
+
+    /** @var string|null */
+    protected $sortKey;
+
+    public function __construct(RegexBuilder $builder = null, string $sortKey = null)
     {
         if ($builder === null){
             $builder = new RegexBuilder();
         }
 
+        $this->sortKey = $sortKey;
         $this->builder = $builder;
     }
 
@@ -92,6 +99,7 @@ class RouteCollection implements Serializable
     {
         $id = $route->setRouteCollection($this)->getID();
         $this->routes[$id] = $route;
+        $this->dirty = true;
         if(null !== $name = $route->getName()){
             $this->namedRoutes[$name] = $id;
         }
@@ -118,6 +126,49 @@ class RouteCollection implements Serializable
             $this->getRegexPatterns();
         }
         return $this->regex[$id] ?? false;
+    }
+
+    /**
+     * @param bool $descending
+     */
+    public function sort($descending = true)
+    {
+        if(!$this->dirty || $this->sortKey === null){
+            return;
+        }
+
+        $sortKey = $this->sortKey;
+        /** @var string[] $keys */
+        $keys = array_reverse(array_keys($this->routes));
+        /** @var Route[] $values */
+        $values = array_reverse(array_values($this->routes));
+
+        $done = false;
+
+        while (!$done) {
+            $done = true;
+            for ($i = 0, $l = count($this->routes) - 1; $i < $l; $i++){
+
+                if($descending){
+                    $invert = $values[$i]->get($sortKey) < $values[$i + 1]->get($sortKey);
+                } else {
+                    $invert = $values[$i]->get($sortKey) > $values[$i + 1]->get($sortKey);
+                }
+
+                if ($invert) {
+                    $done = false;
+                    $vtmp = $values[$i];
+                    $ktmp = $keys[$i];
+                    $values[$i] = $values[$i + 1];
+                    $keys[$i] = $keys[$i + 1];
+                    $values[$i + 1] = $vtmp;
+                    $keys[$i + 1] = $ktmp;
+                }
+            }
+        }
+
+        $this->dirty = false;
+        $this->routes = array_combine($keys, $values);
     }
 
     /**
@@ -150,6 +201,7 @@ class RouteCollection implements Serializable
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
             'regex' => $this->getRegexPatterns(),
+            'dirty' => $this->dirty,
         ];
     }
 
@@ -162,5 +214,6 @@ class RouteCollection implements Serializable
         $this->routes = $object['routes'];
         $this->namedRoutes = $object['namedRoutes'];
         $this->regex = $object['regex'];
+        $this->dirty = $object['dirty'];
     }
 }
