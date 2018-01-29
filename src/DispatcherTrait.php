@@ -22,7 +22,6 @@ trait DispatcherTrait
     /**
      * @param Router $router
      * @return null|Route
-     * @throws \Exception
      */
     protected function findRoute(Router $router)
     {
@@ -46,7 +45,6 @@ trait DispatcherTrait
      * @param Router $router
      * @param Context $context
      * @return \Generator
-     * @throws \Exception
      */
     protected function match(Router $router, Context $context): \Generator
     {

@@ -48,9 +48,6 @@ class RoutingTest extends TestCase
         $this->router = new Router($this->routes, $this->dispatcher);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testBasicRouting()
     {
         $this->routes->addRoute(new Route('/foo', function () {
@@ -60,9 +57,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('ok', $this->router->route(new Context('/foo')));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testRouteArgument()
     {
         $this->routes->addRoute(new Route('/foo/{bar}', function ($bar) {
@@ -72,9 +66,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('baz', $this->router->route(new Context('/foo/baz')));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testOptionalArgument()
     {
         $this->routes->addRoute(new Route('/foo/{bar?}', function ($bar = 'baz') {
@@ -84,9 +75,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('baz', $this->router->route(new Context('/foo')));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testImplicitArgument()
     {
         $route = (new Route('/foo/{bar?}', function ($bar) {
@@ -98,9 +86,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('baz', $this->router->route(new Context('/foo')));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testMultipleArguments()
     {
         $this->routes->addRoute(new Route('/{foo}/{bar}', function ($bar, $foo) {
@@ -110,9 +95,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('bazqux', $this->router->route(new Context('/baz/qux')));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testWildcardArgument()
     {
         $route = (new Route('/foo/{bar}', function ($bar) {
@@ -125,9 +107,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('123', $this->router->route(new Context('/foo/123')));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testBindArgument()
     {
         $route = (new Route('/foo/{bar}', function ($bar) {
@@ -141,9 +120,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('BAR', $this->router->route(new Context('/foo/bar')));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testSerialization()
     {
         $route = (new Route('/foo/{bar}', function ($bar) {

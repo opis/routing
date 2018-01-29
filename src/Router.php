@@ -18,7 +18,6 @@
 namespace Opis\Routing;
 
 use SplObjectStorage;
-use Exception;
 
 class Router
 {
@@ -112,13 +111,9 @@ class Router
 
     /**
      * @return Context
-     * @throws Exception
      */
     public function getContext(): Context
     {
-        if ($this->context === null) {
-            throw new Exception("Invalid routing context");
-        }
         return $this->context;
     }
 
@@ -126,7 +121,6 @@ class Router
     /**
      * @param Route $route
      * @return CompactRoute
-     * @throws Exception
      */
     public function compact(Route $route)
     {
@@ -141,7 +135,6 @@ class Router
      * @param   Context $context
      *
      * @return  mixed
-     * @throws \Exception
      */
     public function route(Context $context)
     {

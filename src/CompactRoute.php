@@ -84,7 +84,6 @@ class CompactRoute
 
     /**
      * @return array
-     * @throws \Exception
      */
     public function getValues(): array
     {
@@ -103,7 +102,6 @@ class CompactRoute
 
     /**
      * @return Binding[]
-     * @throws \Exception
      */
     public function getBindings(): array
     {
@@ -133,7 +131,6 @@ class CompactRoute
 
     /**
      * @return mixed
-     * @throws \Exception
      */
     public function invokeAction()
     {
@@ -150,7 +147,6 @@ class CompactRoute
      * @param callable $callback
      * @param bool $bind
      * @return array
-     * @throws \Exception
      */
     public function getArguments(callable $callback, bool $bind = true): array
     {

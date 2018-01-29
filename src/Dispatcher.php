@@ -24,7 +24,6 @@ class Dispatcher implements IDispatcher
     /**
      * @param Router $router
      * @return mixed|null
-     * @throws \Exception
      */
     public function dispatch(Router $router)
     {
