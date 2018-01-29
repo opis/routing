@@ -17,7 +17,6 @@
 
 namespace Opis\Routing\Test;
 
-use Opis\Routing\Compiler;
 use Opis\Routing\Context;
 use Opis\Routing\Dispatcher;
 use Opis\Routing\Route;
@@ -25,7 +24,7 @@ use Opis\Routing\RouteCollection;
 use Opis\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
-class RoutingTest extends  TestCase
+class RoutingTest extends TestCase
 {
     /** @var  RouteCollection */
     protected $routes;

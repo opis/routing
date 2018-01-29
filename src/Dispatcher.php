@@ -21,29 +21,12 @@ class Dispatcher implements IDispatcher
 {
     use DispatcherTrait;
 
-    protected $compiled = [];
-
     public function dispatch(Router $router, Context $context)
     {
-        $this->router = $router;
-        $this->context = $context;
-
-        if(null === $route = $this->findRoute()){
+        if(null === $route = $this->findRoute($router, $context)){
             return null;
         }
 
-        return $this->compile($route)->invokeAction();
-    }
-
-    public function compile(Route $route): CompiledRoute
-    {
-        $cid = spl_object_hash($this->context);
-        $rid = spl_object_hash($route);
-
-        if(!isset($this->compiled[$cid][$rid])){
-            return $this->compiled[$cid][$rid] = new CompiledRoute($this->context, $route, $this->getExtraVariables());
-        }
-
-        return $this->compiled[$cid][$rid];
+        return (new CompactRoute($route, $context, $router->getGlobalValues()))->invokeAction();
     }
 }

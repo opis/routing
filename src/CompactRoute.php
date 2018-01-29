@@ -17,7 +17,7 @@
 
 namespace Opis\Routing;
 
-class CompiledRoute
+class CompactRoute
 {
     /** @var Context */
     protected $context;
@@ -25,8 +25,8 @@ class CompiledRoute
     /** @var Route */
     protected $route;
 
-    /** @var callable */
-    protected $extra;
+    /** @var GlobalValues */
+    protected $global;
 
     /** @var string[] */
     protected $names;
@@ -37,21 +37,20 @@ class CompiledRoute
     /** @var array[] */
     protected $bindings;
 
-    /** @var CompiledRoute */
+    /** @var CompactRoute */
     protected $result;
 
     /**
-     * CompiledRoute constructor.
+     * CompactRoute constructor.
      * @param Context $context
      * @param Route $route
-     * @param callable $extra
+     * @param GlobalValues $global
      */
-    public function __construct(Context $context, Route $route, callable $extra)
+    public function __construct(Route $route, Context $context, GlobalValues $global)
     {
         $this->context = $context;
         $this->route = $route;
-        $this->extra = $extra;
-
+        $this->global = $global;
         $this->result = $this;
     }
 
@@ -77,7 +76,7 @@ class CompiledRoute
     public function getNames(): array
     {
         if($this->names === null){
-            $this->names = $this->route->getRouteCollection()->getCompiler()->getNames($this->route->getPattern());
+            $this->names = $this->route->getRouteCollection()->getRegexBuilder()->getNames($this->route->getPattern());
         }
 
         return $this->names;
@@ -85,15 +84,16 @@ class CompiledRoute
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getValues(): array
     {
         if($this->values === null){
             $routes = $this->route->getRouteCollection();
-            $compiler = $routes->getCompiler();
+            $builder = $routes->getRegexBuilder();
 
             $regex = $routes->getRegex($this->route->getID());
-            $values = $compiler->getValues($regex, (string) $this->context);
+            $values = $builder->getValues($regex, (string) $this->context);
 
             $this->values = array_intersect_key($values, array_flip($this->getNames())) + $this->route->getDefaults();
         }
@@ -103,6 +103,7 @@ class CompiledRoute
 
     /**
      * @return Binding[]
+     * @throws \Exception
      */
     public function getBindings(): array
     {
@@ -111,10 +112,10 @@ class CompiledRoute
             $values = $this->getValues();
             $bindings = $this->route->getBindings();
 
-            $bound = array();
+            $bound = [];
 
             foreach($bindings as $key => $callback) {
-                $arguments = $this->buildArguments($callback, $values, false);
+                $arguments = static::buildArguments($callback, $values, $this->global, false);
                 $bound[$key] = new Binding($callback, $arguments);
             }
 
@@ -132,6 +133,7 @@ class CompiledRoute
 
     /**
      * @return mixed
+     * @throws \Exception
      */
     public function invokeAction()
     {
@@ -148,22 +150,24 @@ class CompiledRoute
      * @param callable $callback
      * @param bool $bind
      * @return array
+     * @throws \Exception
      */
     public function getArguments(callable $callback, bool $bind = true): array
     {
         $values = $bind ? $this->getBindings() : $this->getValues();
-        return $this->buildArguments($callback, $values, $bind);
+        return static::buildArguments($callback, $values, $this->global, $bind);
     }
 
     /**
      * @param callable $callback
      * @param array $values
+     * @param GlobalValues $global
      * @param bool $bind
      * @return array
      */
-    protected function buildArguments(callable $callback, array $values, bool $bind = true): array
+    public static function buildArguments(callable $callback, array $values, GlobalValues $global, bool $bind = true): array
     {
-        $arguments = array();
+        $arguments = [];
 
         if(is_string($callback)){
             if(function_exists($callback)){
@@ -178,18 +182,18 @@ class CompiledRoute
                 $parameters = (new \ReflectionMethod($callback, '__invoke'))->getParameters();
             }
         } else {
+            /** @var array $callback */
             $parameters = (new \ReflectionMethod(reset($callback), end($callback)))->getParameters();
         }
 
-        $extra = ($this->extra)();
 
         foreach ($parameters as $param) {
             $name = $param->getName();
 
             if (isset($values[$name])) {
                 $arguments[] = $bind ? $values[$name]->value() : $values[$name];
-            } elseif (isset($extra[$name])) {
-                $arguments[] = $extra[$name];
+            } elseif (isset($global[$name])) {
+                $arguments[] = $global[$name];
             } elseif ($param->isOptional()) {
                 $arguments[] = $param->getDefaultValue();
             } else {

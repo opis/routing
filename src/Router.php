@@ -29,20 +29,20 @@ class Router
     protected $dispatcher;
 
     /** @var array */
-    protected $extra;
+    protected $global;
 
     /**
      * Router constructor.
      * @param RouteCollection $routes
      * @param IDispatcher|null $dispatcher
      * @param FilterCollection|null $filters
-     * @param array $extra
+     * @param GlobalValues|null $global
      */
     public function __construct(
         RouteCollection $routes,
         IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
-        array $extra = []
+        GlobalValues $global = null
     ){
         if($dispatcher === null){
             $dispatcher = new Dispatcher();
@@ -50,7 +50,7 @@ class Router
         $this->routes = $routes;
         $this->dispatcher = $dispatcher;
         $this->filters = $filters;
-        $this->extra = $extra;
+        $this->global = $global;
     }
 
     /**
@@ -77,6 +77,19 @@ class Router
     }
 
     /**
+     * Get global values
+     *
+     * @return  GlobalValues
+     */
+    public function getGlobalValues(): GlobalValues
+    {
+        if($this->global === null){
+            $this->global = new GlobalValues();
+        }
+        return $this->global;
+    }
+
+    /**
      * Get the dispatcher resolver
      * 
      * @return Dispatcher
@@ -84,16 +97,6 @@ class Router
     public function getDispatcher()
     {
         return $this->dispatcher;
-    }
-
-    /**
-     * Get special values
-     * 
-     * @return  array
-     */
-    public function getExtraVariables()
-    {
-        return $this->extra;
     }
 
     /**

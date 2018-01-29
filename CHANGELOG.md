@@ -23,15 +23,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\Routing\Collections\DispatcherCollection` class
 - `Opis\Routing\Collections\FilterCollection` class
 - `Opis\Routing\Collections\RouteCollection` class
+- `Opis\Routing\Compiler` class
 
 ### Changed
-- `Opis\Routing\Compiler`, `Opis\Routing\Route`, `Opis\Routing\Router`,
+-  `Opis\Routing\Route`, `Opis\Routing\Router`,
  `Opis\Routing\Dispatcher`, `Opis\Routing\Binding`, `Opis\Routing\Callback`, 
   `Opis\Routing\CompiledRoute` were refactored
 - Renamed `Opis\Routing\FilterInterface` to `Opis\Routing\IFilter`
 - Renamed `Opis\Routing\Compiler::getNames` to `Opis\Routing\Compiler::getKeys`
 - Renamed `Opis\Routing\CompiledRoute::getNames` to `Opis\Routing\CompiledRoute::getKeys`
 - Source files were moved from `lib` to `src`
+- Added dependency to `opis/pattern`
 
 ### Fixed
 - Nothing

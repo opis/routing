@@ -68,6 +68,7 @@ class Route implements Serializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getID(): string
     {

@@ -18,6 +18,7 @@
 namespace Opis\Routing;
 
 use Opis\Closure\SerializableClosure;
+use Opis\Pattern\Builder as RegexBuilder;
 use Serializable;
 
 class RouteCollection implements Serializable
@@ -31,24 +32,24 @@ class RouteCollection implements Serializable
     /** @var string[] */
     protected $namedRoutes = array();
 
-    /** @var  Compiler */
-    protected $compiler;
+    /** @var  RegexBuilder */
+    protected $builder;
 
-    public function __construct(Compiler $compiler = null)
+    public function __construct(RegexBuilder $builder = null)
     {
-        if ($compiler === null){
-            $compiler = new Compiler();
+        if ($builder === null){
+            $builder = new RegexBuilder();
         }
 
-        $this->compiler = $compiler;
+        $this->builder = $builder;
     }
 
     /**
-     * @return Compiler
+     * @return RegexBuilder
      */
-    public function getCompiler(): Compiler
+    public function getRegexBuilder(): RegexBuilder
     {
-        return $this->compiler;
+        return $this->builder;
     }
 
     /**
@@ -67,7 +68,7 @@ class RouteCollection implements Serializable
         if($this->regex === null){
             $this->regex = array();
             foreach($this->routes as $route){
-                $this->regex[$route->getID()] = $this->compiler->getRegex($route->getPattern(), $route->getPlaceholders());
+                $this->regex[$route->getID()] = $this->builder->getRegex($route->getPattern(), $route->getPlaceholders());
             }
         }
         return $this->regex;
@@ -117,10 +118,7 @@ class RouteCollection implements Serializable
     }
 
     /**
-     * String representation of object
-     * @link http://php.net/manual/en/serializable.serialize.php
-     * @return string the string representation of the object or null
-     * @since 5.1.0
+     * @inheritdoc
      */
     public function serialize()
     {
@@ -131,13 +129,7 @@ class RouteCollection implements Serializable
     }
 
     /**
-     * Constructs the object
-     * @link http://php.net/manual/en/serializable.unserialize.php
-     * @param string $serialized <p>
-     * The string representation of the object.
-     * </p>
-     * @return void
-     * @since 5.1.0
+     * @inheritdoc
      */
     public function unserialize($serialized)
     {
@@ -150,7 +142,7 @@ class RouteCollection implements Serializable
     protected function getSerialize()
     {
         return [
-            'compiler' => $this->compiler,
+            'builder' => $this->builder,
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
             'regex' => $this->getRegexPatterns(),
@@ -162,10 +154,9 @@ class RouteCollection implements Serializable
      */
     protected function setUnserialize($object)
     {
-        $this->compiler = $object['compiler'];
+        $this->builder = $object['builder'];
         $this->routes = $object['routes'];
         $this->namedRoutes = $object['namedRoutes'];
         $this->regex = $object['regex'];
     }
-
 }

@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2014-2017 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,48 +17,59 @@
 
 namespace Opis\Routing;
 
-class Context
+use ArrayAccess;
+
+class GlobalValues implements ArrayAccess
 {
-    /** @var    string */
-    protected $path;
-
-    /** @var mixed|null */
-    protected $data;
+    /** @var array */
+    protected $items;
 
     /**
-     * Context constructor.
-     * @param string $path
-     * @param null|mixed $data
+     * GlobalValues constructor.
+     * @param array $items
      */
-    public function __construct(string $path, $data = null)
+    public function __construct(array $items = [])
     {
-        $this->path = $path;
-        $this->data = $data;
+        $this->items = $items;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function path(): string
+    public function getItems(): array
     {
-        return $this->path;
+        return $this->items;
     }
 
     /**
-     * @return mixed|null
+     * @inheritdoc
      */
-    public function data()
+    public function offsetExists($offset)
     {
-        return $this->data;
+        return array_key_exists($offset, $this->items);
     }
 
     /**
-     * Stringify
-     * 
-     * @return  string
+     * @inheritdoc
      */
-    public function __toString()
+    public function offsetGet($offset)
     {
-        return $this->path;
+        return $this->items[$offset];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->items[$offset] = $value;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->items[$offset]);
     }
 }

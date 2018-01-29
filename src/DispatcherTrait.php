@@ -19,40 +19,37 @@ namespace Opis\Routing;
 
 trait DispatcherTrait
 {
-    /** @var  Context */
-    protected $context;
-
-    /** @var  Router */
-    protected $router;
-
-    /** @var  Route|null */
-    protected $route;
-
     /**
+     * @param Router $router
+     * @param Context $context
      * @return null|Route
      */
-    protected function findRoute()
+    protected function findRoute(Router $router, Context $context)
     {
+        $global = $router->getGlobalValues();
+        $global['router'] = $router;
+        $global['context'] = $context;
         /** @var Route $route */
-        foreach ($this->match() as $route){
-            $this->route = $route;
-            if(!$this->pass($route)){
+        foreach ($this->match($router, $context) as $route){
+            $global['route'] = $route;
+            if(!$this->filter($router, $context, $route)){
                 continue;
             }
-
             return $route;
         }
-
+        $global['route'] = null;
         return null;
     }
 
     /**
+     * @param Router $router
+     * @param Context $context
      * @return \Generator
      */
-    protected function match(): \Generator
+    protected function match(Router $router, Context $context): \Generator
     {
-        $context = (string) $this->context;
-        $routes = $this->router->getRouteCollection();
+        $context = (string) $context;
+        $routes = $router->getRouteCollection();
 
         foreach ($routes->getRegexPatterns() as $routeID => $pattern){
             if(preg_match($pattern, $context)){
@@ -62,33 +59,19 @@ trait DispatcherTrait
     }
 
     /**
+     * @param Router $router
+     * @param Context $context
      * @param Route $route
      * @return bool
      */
-    protected function pass(Route $route): bool
+    protected function filter(Router $router, Context $context, Route $route): bool
     {
-        foreach ($this->router->getFilterCollection()->getFilters() as $filter){
-            if(!$filter->pass($this->router, $this->context, $route)){
+        foreach ($router->getFilterCollection()->getFilters() as $filter){
+            if(!$filter->filter($router, $context, $route)){
                 return false;
             }
         }
 
         return true;
-    }
-
-    /**
-     * @return callable
-     */
-    protected function getExtraVariables(): callable
-    {
-        return function (){
-            $extra = [
-                'router' => $this->router,
-                'route' => $this->route,
-                'context' => $this->context,
-            ];
-
-            return $this->router->getExtraVariables() + $extra;
-        };
     }
 }
