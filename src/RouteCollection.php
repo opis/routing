@@ -91,6 +91,22 @@ class RouteCollection implements Serializable
     }
 
     /**
+     * @return null|string
+     */
+    public function getSortKey()
+    {
+        return $this->sortKey;
+    }
+
+    /**
+     * @param string $key
+     */
+    public function setSortKey(string $key)
+    {
+        $this->sortKey = $key;
+    }
+
+    /**
      * @param Route $route
      * @return RouteCollection
      * @throws \Exception
