@@ -21,8 +21,7 @@ interface IDispatcher
 {
     /**
      * @param Router $router
-     * @param Context $context
      * @return mixed
      */
-    public function dispatch(Router $router, Context $context);
+    public function dispatch(Router $router);
 }

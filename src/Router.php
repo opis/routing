@@ -18,6 +18,7 @@
 namespace Opis\Routing;
 
 use SplObjectStorage;
+use Exception;
 
 class Router
 {
@@ -35,6 +36,9 @@ class Router
 
     /** @var SplObjectStorage */
     protected $store;
+
+    /** @var Context|null */
+    protected $context;
 
     /**
      * Router constructor.
@@ -64,7 +68,7 @@ class Router
      * 
      * @return  RouteCollection
      */
-    public function getRouteCollection()
+    public function getRouteCollection(): RouteCollection
     {
         return $this->routes;
     }
@@ -74,7 +78,7 @@ class Router
      * 
      * @return  FilterCollection
      */
-    public function getFilterCollection()
+    public function getFilterCollection(): FilterCollection
     {
         if($this->filters === null){
             $this->filters = new FilterCollection();
@@ -98,22 +102,35 @@ class Router
     /**
      * Get the dispatcher resolver
      * 
-     * @return Dispatcher
+     * @return IDispatcher
      */
-    public function getDispatcher()
+    public function getDispatcher(): IDispatcher
     {
         return $this->dispatcher;
     }
 
     /**
-     * @param Route $route
-     * @param Context $context
-     * @return CompactRoute
+     * @return Context
+     * @throws Exception
      */
-    public function compact(Route $route, Context $context)
+    public function getContext(): Context
+    {
+        if($this->context === null){
+            throw new Exception("Invalid routing context");
+        }
+        return $this->context;
+    }
+
+
+    /**
+     * @param Route $route
+     * @return CompactRoute
+     * @throws Exception
+     */
+    public function compact(Route $route)
     {
         if(!isset($this->store[$route])){
-            return $this->store[$route] = new CompactRoute($route, $context, $this->getGlobalValues());
+            return $this->store[$route] = new CompactRoute($route, $this->getContext(), $this->getGlobalValues());
         }
         return $this->store[$route];
     }
@@ -127,6 +144,7 @@ class Router
      */
     public function route(Context $context)
     {
-        return $this->getDispatcher()->dispatch($this, $context);
+        $this->context = $context;
+        return $this->getDispatcher()->dispatch($this);
     }
 }

@@ -21,18 +21,19 @@ trait DispatcherTrait
 {
     /**
      * @param Router $router
-     * @param Context $context
      * @return null|Route
+     * @throws \Exception
      */
-    protected function findRoute(Router $router, Context $context)
+    protected function findRoute(Router $router)
     {
+        $context = $router->getContext();
         $global = $router->getGlobalValues();
         $global['router'] = $router;
         $global['context'] = $context;
         /** @var Route $route */
         foreach ($this->match($router, $context) as $route){
             $global['route'] = $route;
-            if(!$this->filter($router, $context, $route)){
+            if(!$this->filter($router, $route)){
                 continue;
             }
             return $route;
@@ -60,14 +61,13 @@ trait DispatcherTrait
 
     /**
      * @param Router $router
-     * @param Context $context
      * @param Route $route
      * @return bool
      */
-    protected function filter(Router $router, Context $context, Route $route): bool
+    protected function filter(Router $router, Route $route): bool
     {
         foreach ($router->getFilterCollection()->getFilters() as $filter){
-            if(!$filter->filter($router, $context, $route)){
+            if(!$filter->filter($router, $route)){
                 return false;
             }
         }

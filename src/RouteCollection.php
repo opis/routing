@@ -62,6 +62,7 @@ class RouteCollection implements Serializable
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getRegexPatterns(): array
     {
@@ -85,6 +86,7 @@ class RouteCollection implements Serializable
     /**
      * @param Route $route
      * @return RouteCollection
+     * @throws \Exception
      */
     public function addRoute(Route $route): self
     {
@@ -108,6 +110,7 @@ class RouteCollection implements Serializable
     /**
      * @param string $id
      * @return bool|string
+     * @throws \Exception
      */
     public function getRegex(string $id)
     {
@@ -138,6 +141,7 @@ class RouteCollection implements Serializable
 
     /**
      * @return array
+     * @throws \Exception
      */
     protected function getSerialize()
     {

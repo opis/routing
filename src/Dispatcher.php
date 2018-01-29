@@ -21,30 +21,17 @@ class Dispatcher implements IDispatcher
 {
     use DispatcherTrait;
 
-    /** @var \SplObjectStorage */
-    protected $store;
-
-    /**
-     * Dispatcher constructor.
-     */
-    public function __construct()
-    {
-        $this->store = new \SplObjectStorage();
-    }
-
     /**
      * @param Router $router
-     * @param Context $context
      * @return mixed|null
      * @throws \Exception
      */
-    public function dispatch(Router $router, Context $context)
+    public function dispatch(Router $router)
     {
-        if(null === $route = $this->findRoute($router, $context)){
+        if(null === $route = $this->findRoute($router)){
             return null;
         }
 
-        return $router->compact($route, $context)->invokeAction();
+        return $router->compact($route)->invokeAction();
     }
-
 }
