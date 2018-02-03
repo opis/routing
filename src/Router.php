@@ -33,8 +33,8 @@ class Router
     /** @var array */
     protected $global;
 
-    /** @var SplObjectStorage */
-    protected $store;
+    /** @var array */
+    protected $compacted = [];
 
     /** @var Context|null */
     protected $context;
@@ -60,7 +60,6 @@ class Router
         $this->dispatcher = $dispatcher;
         $this->filters = $filters;
         $this->global = $global;
-        $this->store = new SplObjectStorage();
     }
 
     /**
@@ -117,17 +116,20 @@ class Router
         return $this->context;
     }
 
-
     /**
      * @param Route $route
      * @return CompactRoute
      */
     public function compact(Route $route)
     {
-        if (!isset($this->store[$route])) {
-            return $this->store[$route] = new CompactRoute($route, $this->getContext(), $this->getGlobalValues());
+        $cid = spl_object_hash($this->context);
+        $rid = spl_object_hash($route);
+
+        if (!isset($this->compacted[$cid][$rid])) {
+            return $this->compacted[$cid][$rid] = new CompactRoute($route, $this->context, $this->getGlobalValues());
         }
-        return $this->store[$route];
+
+        return $this->compacted[$cid][$rid];
     }
 
     /**
