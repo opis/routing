@@ -134,4 +134,19 @@ class RoutingTest extends TestCase
         $this->assertEquals('BAR', $router->route(new Context('/foo/bar')));
     }
 
+    public function testWhereIn()
+    {
+        $route = (new Route('/foo/{bar}', function ($bar) {
+            return $bar;
+        }))->whereIn('bar', ['a', 'b', 'car']);
+
+        $this->routes->addRoute($route);
+
+        $this->assertEquals(null, $this->router->route(new Context('/foo/bar')));
+        $this->assertEquals('a', $this->router->route(new Context('/foo/a')));
+        $this->assertEquals('b', $this->router->route(new Context('/foo/b')));
+        $this->assertEquals(null, $this->router->route(new Context('/foo/ab')));
+        $this->assertEquals('car', $this->router->route(new Context('/foo/car')));
+    }
+
 }

@@ -18,6 +18,7 @@
 namespace Opis\Routing;
 
 use Closure;
+use Opis\Pattern\Builder;
 use Serializable;
 use Opis\Closure\SerializableClosure;
 
@@ -219,6 +220,32 @@ class Route implements Serializable
     }
 
     /**
+     * @param string $name
+     * @param string[] $values
+     * @return Route
+     */
+    public function whereIn(string $name, array $values): self
+    {
+        if (empty($values)) {
+            return $this;
+        }
+
+        // TODO: Modify this
+
+        if ($this->collection !== null) {
+            $delimiter = $this->collection->getRegexBuilder()->getOptions()[Builder::REGEX_DELIMITER];
+        } else {
+            $delimiter = '`';
+        }
+
+        $value = implode('|', array_map(function ($value) use ($delimiter) {
+            return preg_quote($value, $delimiter);
+        }, $values));
+
+        return $this->placeholder($name, $value);
+    }
+
+    /**
      * Define a new implicit value
      *
      * @param   string $name
@@ -369,5 +396,4 @@ class Route implements Serializable
         $this->properties = array_map($map, $object['properties']);
         $this->collection = $object['collection'];
     }
-
 }
