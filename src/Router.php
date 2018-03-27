@@ -122,11 +122,12 @@ class Router
      */
     public function resolveInvoker(Route $route)
     {
-        $cid = spl_object_hash($this->context);
+        $context = $this->getContext();
+        $cid = spl_object_hash($context);
         $rid = spl_object_hash($route);
 
         if (!isset($this->compacted[$cid][$rid])) {
-            return $this->compacted[$cid][$rid] = new RouteInvoker($route, $this->context, $this->getGlobalValues());
+            return $this->compacted[$cid][$rid] = $this->createInvoker($route, $context);
         }
 
         return $this->compacted[$cid][$rid];
@@ -142,5 +143,15 @@ class Router
     {
         $this->context = $context;
         return $this->getDispatcher()->dispatch($this);
+    }
+
+    /**
+     * @param Route $route
+     * @param Context $context
+     * @return RouteInvoker
+     */
+    protected function createInvoker(Route $route, Context $context): RouteInvoker
+    {
+        return new RouteInvoker($route, $context, $this->getGlobalValues());
     }
 }
