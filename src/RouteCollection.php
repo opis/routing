@@ -41,14 +41,47 @@ class RouteCollection implements Serializable
     /** @var string|null */
     protected $sortKey;
 
-    public function __construct(RegexBuilder $builder = null, string $sortKey = null)
+    /** @var callable */
+    protected $factory;
+
+    /**
+     * RouteCollection constructor.
+     * @param callable|null $factory
+     * @param RegexBuilder|null $builder
+     * @param string|null $sortKey
+     */
+    public function __construct(callable $factory = null, RegexBuilder $builder = null, string $sortKey = null)
     {
-        if ($builder === null) {
-            $builder = new RegexBuilder();
+        $this->factory = $factory ?? function ($collection, $id, $pattern, $action, $name) {
+            return new Route($collection, $id, $pattern, $action, $name);
+        };
+        $this->builder = $builder ?? new RegexBuilder();
+        $this->sortKey = $sortKey;
+    }
+
+    /**
+     * @param string $pattern
+     * @param callable $action
+     * @param string|null $name
+     * @return Route
+     */
+    public function createRoute(string $pattern, callable $action, string $name = null): Route
+    {
+        $id = $this->generateRouteId();
+        /** @var Route $route */
+        $route = ($this->factory)($this, $id, $pattern, $action, $name);
+        if (!($route instanceof Route)) {
+            throw new \RuntimeException("Invalid return value from factory. Expected instance of " . Route::class);
         }
 
-        $this->sortKey = $sortKey;
-        $this->builder = $builder;
+        $this->routes[$id] = $route;
+        $this->dirty = true;
+        $this->regex = null;
+        if (null !== $name = $route->getName()) {
+            $this->namedRoutes[$name] = $id;
+        }
+
+        return $route;
     }
 
     /**
@@ -87,22 +120,6 @@ class RouteCollection implements Serializable
     public function getNamedRoutes(): array
     {
         return $this->namedRoutes;
-    }
-
-    /**
-     * @param Route $route
-     * @return RouteCollection
-     */
-    public function addRoute(Route $route): self
-    {
-        $id = $route->setRouteCollection($this)->getID();
-        $this->routes[$id] = $route;
-        $this->dirty = true;
-        $this->regex = null;
-        if (null !== $name = $route->getName()) {
-            $this->namedRoutes[$name] = $id;
-        }
-        return $this;
     }
 
     /**
@@ -213,5 +230,27 @@ class RouteCollection implements Serializable
         $this->namedRoutes = $object['namedRoutes'];
         $this->regex = $object['regex'];
         $this->dirty = $object['dirty'];
+    }
+
+    /**
+     * @return string
+     */
+    protected function generateRouteId(): string
+    {
+        try {
+            return sprintf('%012x%04x%04x%012x',
+                random_int(0, 0xffffffffffff),
+                random_int(0, 0x0fff) | 0x4000,
+                random_int(0, 0x3fff) | 0x8000,
+                random_int(0, 0xffffffffffff)
+            );
+        } catch (\Throwable $e) {
+            return sprintf('%012x%04x%04x%012x',
+                rand(0, 0xffffffffffff),
+                rand(0, 0x0fff) | 0x4000,
+                rand(0, 0x3fff) | 0x8000,
+                rand(0, 0xffffffffffff)
+            );
+        }
     }
 }

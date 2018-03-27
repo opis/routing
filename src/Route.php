@@ -38,7 +38,7 @@ class Route implements Serializable
     /** @var  string|null */
     protected $routeName;
 
-    /** @var  string|null */
+    /** @var  string */
     protected $routeID;
 
     /** @var    array */
@@ -54,14 +54,16 @@ class Route implements Serializable
     protected $properties = array();
 
     /**
-     * Route constructor
-     *
+     * @param RouteCollection $collection
+     * @param string $id
      * @param string $pattern
      * @param callable $action
      * @param string|null $name
      */
-    public function __construct(string $pattern, callable $action, string $name = null)
+    public function __construct(RouteCollection $collection, string $id, string $pattern, callable $action, string $name = null)
     {
+        $this->collection = $collection;
+        $this->routeID = $id;
         $this->routePattern = $pattern;
         $this->routeAction = $action;
         $this->routeName = $name;
@@ -72,24 +74,6 @@ class Route implements Serializable
      */
     public function getID(): string
     {
-        if ($this->routeID === null) {
-            try {
-                $this->routeID = sprintf('%012x%04x%04x%012x',
-                    random_int(0, 0xffffffffffff),
-                    random_int(0, 0x0fff) | 0x4000,
-                    random_int(0, 0x3fff) | 0x8000,
-                    random_int(0, 0xffffffffffff)
-                );
-            } catch (\Exception $e) {
-                $this->routeID = sprintf('%012x%04x%04x%012x',
-                    rand(0, 0xffffffffffff),
-                    rand(0, 0x0fff) | 0x4000,
-                    rand(0, 0x3fff) | 0x8000,
-                    rand(0, 0xffffffffffff)
-                );
-            }
-        }
-
         return $this->routeID;
     }
 
@@ -164,16 +148,6 @@ class Route implements Serializable
     }
 
     /**
-     * @param RouteCollection $collection
-     * @return Route
-     */
-    public function setRouteCollection(RouteCollection $collection): self
-    {
-        $this->collection = $collection;
-        return $this;
-    }
-
-    /**
      * @return RouteCollection
      */
     public function getRouteCollection(): RouteCollection
@@ -230,13 +204,7 @@ class Route implements Serializable
             return $this;
         }
 
-        // TODO: Modify this
-
-        if ($this->collection !== null) {
-            $delimiter = $this->collection->getRegexBuilder()->getOptions()[Builder::REGEX_DELIMITER];
-        } else {
-            $delimiter = '`';
-        }
+        $delimiter = $this->collection->getRegexBuilder()->getOptions()[Builder::REGEX_DELIMITER];
 
         $value = implode('|', array_map(function ($value) use ($delimiter) {
             return preg_quote($value, $delimiter);
