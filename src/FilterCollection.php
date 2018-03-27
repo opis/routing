@@ -20,7 +20,7 @@ namespace Opis\Routing;
 class FilterCollection
 {
     /** @var IFilter[] */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * @param IFilter $filter

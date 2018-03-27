@@ -97,13 +97,13 @@ class ArgumentResolver
 
         try {
             $parameters = $this->getParameters($callback);
-        }
-        catch (\ReflectionException $e) {
+        } catch (\ReflectionException $e) {
             return $arguments;
         }
 
         foreach ($parameters as $param) {
-            $arguments[] = $this->getArgumentValue($param->getName(), $bind,$param->isOptional() ? $param->getDefaultValue() : null);
+            $arguments[] = $this->getArgumentValue($param->getName(), $bind,
+                $param->isOptional() ? $param->getDefaultValue() : null);
         }
 
         return $arguments;

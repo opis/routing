@@ -42,16 +42,16 @@ class Route implements Serializable
     protected $routeID;
 
     /** @var    array */
-    protected $placeholders = array();
+    protected $placeholders = [];
 
     /** @var    array */
-    protected $bindings = array();
+    protected $bindings = [];
 
     /** @var    array */
-    protected $defaults = array();
+    protected $defaults = [];
 
     /** @var    array */
-    protected $properties = array();
+    protected $properties = [];
 
     /**
      * @param RouteCollection $collection
@@ -60,8 +60,13 @@ class Route implements Serializable
      * @param callable $action
      * @param string|null $name
      */
-    public function __construct(RouteCollection $collection, string $id, string $pattern, callable $action, string $name = null)
-    {
+    public function __construct(
+        RouteCollection $collection,
+        string $id,
+        string $pattern,
+        callable $action,
+        string $name = null
+    ) {
         $this->collection = $collection;
         $this->routeID = $id;
         $this->routePattern = $pattern;
@@ -320,9 +325,9 @@ class Route implements Serializable
             $routeAction = SerializableClosure::from($routeAction);
         }
 
-        $map = array(static::class, 'wrapClosures');
+        $map = [static::class, 'wrapClosures'];
 
-        $object = serialize(array(
+        $object = serialize([
             'routePattern' => $this->routePattern,
             'routeAction' => $routeAction,
             'routeName' => $this->routeName,
@@ -332,7 +337,7 @@ class Route implements Serializable
             'defaults' => array_map($map, $this->defaults),
             'properties' => array_map($map, $this->properties),
             'collection' => $this->collection,
-        ));
+        ]);
 
         SerializableClosure::exitContext();
 
@@ -352,7 +357,7 @@ class Route implements Serializable
             $object['routeAction'] = $object['routeAction']->getClosure();
         }
 
-        $map = array(static::class, 'unwrapClosures');
+        $map = [static::class, 'unwrapClosures'];
 
         $this->routePattern = $object['routePattern'];
         $this->routeAction = $object['routeAction'];

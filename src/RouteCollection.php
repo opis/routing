@@ -52,9 +52,15 @@ class RouteCollection implements Serializable
      */
     public function __construct(callable $factory = null, RegexBuilder $builder = null, string $sortKey = null)
     {
-        $this->factory = $factory ?? function ($collection, $id, $pattern, $action, $name) {
-            return new Route($collection, $id, $pattern, $action, $name);
-        };
+        $this->factory = $factory ?? function (
+                RouteCollection $collection,
+                string $id,
+                string $pattern,
+                callable $action,
+                string $name = null
+            ) {
+                return new Route($collection, $id, $pattern, $action, $name);
+            };
         $this->builder = $builder ?? new RegexBuilder();
         $this->sortKey = $sortKey;
     }
@@ -108,7 +114,8 @@ class RouteCollection implements Serializable
         if ($this->regex === null) {
             $this->regex = [];
             foreach ($this->routes as $route) {
-                $this->regex[$route->getID()] = $this->builder->getRegex($route->getPattern(), $route->getPlaceholders());
+                $this->regex[$route->getID()] = $this->builder->getRegex($route->getPattern(),
+                    $route->getPlaceholders());
             }
         }
         return $this->regex;
