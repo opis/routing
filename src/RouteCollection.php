@@ -218,12 +218,19 @@ class RouteCollection implements Serializable
      */
     protected function getSerialize()
     {
+        $factory = $this->factory;
+
+        if ($factory instanceof \Closure) {
+            $factory = SerializableClosure::from($factory);
+        }
+
         return [
             'builder' => $this->builder,
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
             'regex' => $this->getRegexPatterns(),
             'dirty' => $this->dirty,
+            'factory' => $factory,
         ];
     }
 
@@ -237,6 +244,11 @@ class RouteCollection implements Serializable
         $this->namedRoutes = $object['namedRoutes'];
         $this->regex = $object['regex'];
         $this->dirty = $object['dirty'];
+        $this->factory = $object['factory'];
+
+        if ($this->factory instanceof SerializableClosure) {
+            $this->factory = $this->factory->getClosure();
+        }
     }
 
     /**
