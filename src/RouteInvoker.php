@@ -17,7 +17,9 @@
 
 namespace Opis\Routing;
 
-class CompactRoute
+use ArrayAccess;
+
+class RouteInvoker
 {
     /** @var Context */
     protected $context;
@@ -25,7 +27,7 @@ class CompactRoute
     /** @var Route */
     protected $route;
 
-    /** @var GlobalValues */
+    /** @var ArrayAccess */
     protected $global;
 
     /** @var string[] */
@@ -37,16 +39,19 @@ class CompactRoute
     /** @var array[] */
     protected $bindings;
 
-    /** @var CompactRoute */
+    /** @var RouteInvoker */
     protected $result;
+
+    /** @var ArgumentResolver */
+    protected $argumentResolver;
 
     /**
      * CompactRoute constructor.
      * @param Context $context
      * @param Route $route
-     * @param GlobalValues $global
+     * @param ArrayAccess $global
      */
-    public function __construct(Route $route, Context $context, GlobalValues $global)
+    public function __construct(Route $route, Context $context, ArrayAccess $global)
     {
         $this->context = $context;
         $this->route = $route;
@@ -101,29 +106,12 @@ class CompactRoute
     }
 
     /**
-     * @return Binding[]
+     * @return callable[]
      */
     public function getBindings(): array
     {
         if ($this->bindings === null) {
-
-            $values = $this->getValues();
-            $bindings = $this->route->getBindings();
-
-            $bound = [];
-
-            foreach ($bindings as $key => $callback) {
-                $arguments = static::buildArguments($callback, $values, $this->global, false);
-                $bound[$key] = new Binding($callback, $arguments);
-            }
-
-            foreach ($values as $key => $value) {
-                if (!isset($bound[$key])) {
-                    $bound[$key] = new Binding(null, null, $value);
-                }
-            }
-
-            $this->bindings = $bound;
+            $this->bindings = $this->route->getBindings();
         }
 
         return $this->bindings;
@@ -136,7 +124,7 @@ class CompactRoute
     {
         if ($this->result === $this) {
             $callback = $this->route->getAction();
-            $arguments = $this->getArguments($callback);
+            $arguments = $this->getArgumentResolver()->resolve($callback);
             $this->result = $callback(...$arguments);
         }
 
@@ -144,59 +132,25 @@ class CompactRoute
     }
 
     /**
-     * @param callable $callback
-     * @param bool $bind
-     * @return array
+     * @return ArgumentResolver
      */
-    public function getArguments(callable $callback, bool $bind = true): array
+    public function getArgumentResolver(): ArgumentResolver
     {
-        $values = $bind ? $this->getBindings() : $this->getValues();
-        return static::buildArguments($callback, $values, $this->global, $bind);
-    }
+        if ($this->argumentResolver === null) {
 
-    /**
-     * @param callable $callback
-     * @param array $values
-     * @param GlobalValues $global
-     * @param bool $bind
-     * @return array
-     */
-    public static function buildArguments(callable $callback, array $values, GlobalValues $global, bool $bind = true): array
-    {
-        $arguments = [];
+            $resolver = new ArgumentResolver($this->global);
 
-        if (is_string($callback)) {
-            if (function_exists($callback)) {
-                $parameters = (new \ReflectionFunction($callback))->getParameters();
-            } else {
-                $parameters = (new \ReflectionMethod($callback))->getParameters();
+            foreach ($this->getValues() as $key => $value) {
+                $resolver->addValue($key, $value);
             }
-        } elseif (is_object($callback)) {
-            if ($callback instanceof \Closure) {
-                $parameters = (new \ReflectionFunction($callback))->getParameters();
-            } else {
-                $parameters = (new \ReflectionMethod($callback, '__invoke'))->getParameters();
+
+            foreach ($this->getBindings() as $key => $callback) {
+                $resolver->addBinding($key, $callback);
             }
-        } else {
-            /** @var array $callback */
-            $parameters = (new \ReflectionMethod(reset($callback), end($callback)))->getParameters();
+
+            $this->argumentResolver = $resolver;
         }
 
-
-        foreach ($parameters as $param) {
-            $name = $param->getName();
-
-            if (isset($values[$name])) {
-                $arguments[] = $bind ? $values[$name]->value() : $values[$name];
-            } elseif (isset($global[$name])) {
-                $arguments[] = $global[$name];
-            } elseif ($param->isOptional()) {
-                $arguments[] = $param->getDefaultValue();
-            } else {
-                $arguments[] = null;
-            }
-        }
-
-        return $arguments;
+        return $this->argumentResolver;
     }
 }

@@ -31,6 +31,6 @@ class Dispatcher implements IDispatcher
             return null;
         }
 
-        return $router->compact($route)->invokeAction();
+        return $router->resolveInvoker($route)->invokeAction();
     }
 }

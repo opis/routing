@@ -149,4 +149,21 @@ class RoutingTest extends TestCase
         $this->assertEquals('car', $this->router->route(new Context('/foo/car')));
     }
 
+    public function testBindings()
+    {
+        $route = (new Route('/foo/{bar}', function ($baz) {
+            return $baz;
+        }))
+            ->bind('bar', function ($bar) {
+                return strtoupper($bar);
+            })
+            ->bind('baz', function ($bar) {
+                return 'baz' . $bar;
+            });
+
+        $this->routes->addRoute($route);
+        $this->assertEquals('bazBAR', $this->router->route(new Context('/foo/bar')));
+
+    }
+
 }

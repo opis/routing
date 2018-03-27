@@ -17,7 +17,7 @@
 
 namespace Opis\Routing;
 
-use SplObjectStorage;
+use ArrayAccess, ArrayObject;
 
 class Router
 {
@@ -44,13 +44,13 @@ class Router
      * @param RouteCollection $routes
      * @param IDispatcher|null $dispatcher
      * @param FilterCollection|null $filters
-     * @param GlobalValues|null $global
+     * @param ArrayAccess|null $global
      */
     public function __construct(
         RouteCollection $routes,
         IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
-        GlobalValues $global = null
+        ArrayAccess $global = null
     )
     {
         if ($dispatcher === null) {
@@ -88,12 +88,12 @@ class Router
     /**
      * Get global values
      *
-     * @return  GlobalValues
+     * @return  ArrayAccess
      */
-    public function getGlobalValues(): GlobalValues
+    public function getGlobalValues(): ArrayAccess
     {
         if ($this->global === null) {
-            $this->global = new GlobalValues();
+            $this->global = new ArrayObject();
         }
         return $this->global;
     }
@@ -118,15 +118,15 @@ class Router
 
     /**
      * @param Route $route
-     * @return CompactRoute
+     * @return RouteInvoker
      */
-    public function compact(Route $route)
+    public function resolveInvoker(Route $route)
     {
         $cid = spl_object_hash($this->context);
         $rid = spl_object_hash($route);
 
         if (!isset($this->compacted[$cid][$rid])) {
-            return $this->compacted[$cid][$rid] = new CompactRoute($route, $this->context, $this->getGlobalValues());
+            return $this->compacted[$cid][$rid] = new RouteInvoker($route, $this->context, $this->getGlobalValues());
         }
 
         return $this->compacted[$cid][$rid];
