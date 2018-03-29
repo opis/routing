@@ -165,7 +165,7 @@ class Route implements Serializable
      *
      * @param   string $name
      * @param   callable $callback
-     * @return $this|Route
+     * @return  self|Route
      */
     public function bind(string $name, callable $callback): self
     {
@@ -178,7 +178,7 @@ class Route implements Serializable
      *
      * @param   string $name
      * @param   string $value
-     * @return $this|Route
+     * @return  self|Route
      */
     public function placeholder(string $name, string $value): self
     {
@@ -191,7 +191,7 @@ class Route implements Serializable
      *
      * @param   string $name
      * @param   string $value
-     * @return $this|Route
+     * @return  self|Route
      */
     public function where(string $name, string $value): self
     {
@@ -201,7 +201,7 @@ class Route implements Serializable
     /**
      * @param string $name
      * @param string[] $values
-     * @return Route
+     * @return self|Route
      */
     public function whereIn(string $name, array $values): self
     {
@@ -223,7 +223,7 @@ class Route implements Serializable
      *
      * @param   string $name
      * @param   mixed $value
-     * @return $this|Route
+     * @return  self|Route
      */
     public function implicit(string $name, $value): self
     {
@@ -236,7 +236,7 @@ class Route implements Serializable
      *
      * @param   string $name
      * @param   mixed $value
-     * @return $this|Route
+     * @return  self|Route
      */
     public function set(string $name, $value): self
     {
@@ -287,7 +287,7 @@ class Route implements Serializable
      * @param   string $name
      * @param   mixed $value
      *
-     * @return  $this
+     * @return  self
      */
     public function __set(string $name, $value)
     {
@@ -299,7 +299,7 @@ class Route implements Serializable
      *
      * @param   string $name
      * @param   array $arguments
-     * @return $this|Route
+     * @return  self|Route
      */
     public function __call(string $name, array $arguments): self
     {
