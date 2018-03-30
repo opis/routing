@@ -41,6 +41,9 @@ class RouteCollection implements Serializable
     /** @var string|null */
     protected $sortKey;
 
+    /** @var bool */
+    protected $sortDescending;
+
     /** @var callable */
     protected $factory;
 
@@ -49,9 +52,14 @@ class RouteCollection implements Serializable
      * @param callable|null $factory
      * @param RegexBuilder|null $builder
      * @param string|null $sortKey
+     * @param bool $sortDescending
      */
-    public function __construct(callable $factory = null, RegexBuilder $builder = null, string $sortKey = null)
-    {
+    public function __construct(
+        callable $factory = null,
+        RegexBuilder $builder = null,
+        string $sortKey = null,
+        bool $sortDescending = true
+    ) {
         $this->factory = $factory ?? function (
                 RouteCollection $collection,
                 string $id,
@@ -63,6 +71,7 @@ class RouteCollection implements Serializable
             };
         $this->builder = $builder ?? new RegexBuilder();
         $this->sortKey = $sortKey;
+        $this->sortDescending = $sortDescending;
     }
 
     /**
@@ -151,15 +160,18 @@ class RouteCollection implements Serializable
     }
 
     /**
-     * @param bool $descending
+     * Sort collection
      */
-    public function sort($descending = true)
+    public function sort()
     {
         if (!$this->dirty || $this->sortKey === null) {
             return;
         }
 
+
         $sortKey = $this->sortKey;
+        $descending = $this->sortDescending;
+
         /** @var string[] $keys */
         $keys = array_reverse(array_keys($this->routes));
         /** @var Route[] $values */
@@ -179,12 +191,12 @@ class RouteCollection implements Serializable
 
                 if ($invert) {
                     $done = false;
-                    $vtmp = $values[$i];
-                    $ktmp = $keys[$i];
+                    $temp_value = $values[$i];
+                    $temp_key = $keys[$i];
                     $values[$i] = $values[$i + 1];
                     $keys[$i] = $keys[$i + 1];
-                    $values[$i + 1] = $vtmp;
-                    $keys[$i + 1] = $ktmp;
+                    $values[$i + 1] = $temp_value;
+                    $keys[$i + 1] = $temp_key;
                 }
             }
         }
@@ -199,6 +211,7 @@ class RouteCollection implements Serializable
      */
     public function serialize()
     {
+        $this->sort();
         SerializableClosure::enterContext();
         $object = serialize($this->getSerialize());
         SerializableClosure::exitContext();
@@ -230,6 +243,8 @@ class RouteCollection implements Serializable
             'namedRoutes' => $this->namedRoutes,
             'regex' => $this->getRegexPatterns(),
             'dirty' => $this->dirty,
+            'sortKey' => $this->sortKey,
+            'sortDescending' => $this->sortDescending,
             'factory' => $factory,
         ];
     }
@@ -244,6 +259,8 @@ class RouteCollection implements Serializable
         $this->namedRoutes = $object['namedRoutes'];
         $this->regex = $object['regex'];
         $this->dirty = $object['dirty'];
+        $this->sortKey = $object['sortKey'];
+        $this->sortDescending = $object['sortDescending'];
         $this->factory = $object['factory'];
 
         if ($this->factory instanceof SerializableClosure) {

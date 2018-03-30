@@ -50,6 +50,7 @@ trait DispatcherTrait
     {
         $context = (string)$context;
         $routes = $router->getRouteCollection();
+        $routes->sort();
 
         foreach ($routes->getRegexPatterns() as $routeID => $pattern) {
             if (preg_match($pattern, $context)) {
