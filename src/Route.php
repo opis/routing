@@ -18,8 +18,8 @@
 namespace Opis\Routing;
 
 use Closure;
-use Opis\Pattern\Builder;
 use Serializable;
+use Opis\Pattern\RegexBuilder;
 use Opis\Closure\SerializableClosure;
 
 class Route implements Serializable
@@ -66,7 +66,8 @@ class Route implements Serializable
         string $pattern,
         callable $action,
         string $name = null
-    ) {
+    )
+    {
         $this->collection = $collection;
         $this->routeID = $id;
         $this->routePattern = $pattern;
@@ -209,7 +210,7 @@ class Route implements Serializable
             return $this;
         }
 
-        $delimiter = $this->collection->getRegexBuilder()->getOptions()[Builder::REGEX_DELIMITER];
+        $delimiter = $this->collection->getRegexBuilder()->getOptions()[RegexBuilder::REGEX_DELIMITER];
 
         $value = implode('|', array_map(function ($value) use ($delimiter) {
             return preg_quote($value, $delimiter);

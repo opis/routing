@@ -17,9 +17,9 @@
 
 namespace Opis\Routing;
 
-use Opis\Closure\SerializableClosure;
-use Opis\Pattern\Builder as RegexBuilder;
 use Serializable;
+use Opis\Pattern\RegexBuilder;
+use Opis\Closure\SerializableClosure;
 
 class RouteCollection implements Serializable
 {
@@ -59,7 +59,8 @@ class RouteCollection implements Serializable
         RegexBuilder $builder = null,
         string $sortKey = null,
         bool $sortDescending = true
-    ) {
+    )
+    {
         $this->factory = $factory ?? function (
                 RouteCollection $collection,
                 string $id,
