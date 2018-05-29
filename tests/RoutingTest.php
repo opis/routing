@@ -141,6 +141,19 @@ class RoutingTest extends TestCase
         $this->assertEquals('car', $this->router->route(new Context('/foo/car')));
     }
 
+    public function testInlineRegex()
+    {
+        $this->routes->createRoute('/foo/{bar=\d{2,3}}', function ($bar) {
+            return $bar;
+        });
+
+        $this->assertEquals('10', $this->router->route(new Context('/foo/10')));
+        $this->assertEquals('580', $this->router->route(new Context('/foo/580')));
+        $this->assertEquals(null, $this->router->route(new Context('/foo/bar')));
+        $this->assertEquals(null, $this->router->route(new Context('/foo/1')));
+        $this->assertEquals(null, $this->router->route(new Context('/foo/1580')));
+    }
+
     public function testBindings()
     {
         $this->routes->createRoute('/foo/{bar}', function ($baz) {
