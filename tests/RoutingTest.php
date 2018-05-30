@@ -152,6 +152,16 @@ class RoutingTest extends TestCase
         $this->assertEquals(null, $this->router->route(new Context('/foo/bar')));
         $this->assertEquals(null, $this->router->route(new Context('/foo/1')));
         $this->assertEquals(null, $this->router->route(new Context('/foo/1580')));
+
+        $this->routes->createRoute('/foo/{=[a-z]{2,3}}', function () {
+            return "ok";
+        });
+
+        $this->assertEquals('ok', $this->router->route(new Context('/foo/ab')));
+        $this->assertEquals('ok', $this->router->route(new Context('/foo/abc')));
+        $this->assertEquals(null, $this->router->route(new Context('/foo/abcd')));
+        $this->assertEquals(null, $this->router->route(new Context('/foo/1')));
+        $this->assertEquals('12', $this->router->route(new Context('/foo/12')));
     }
 
     public function testBindings()
