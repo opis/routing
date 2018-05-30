@@ -19,5 +19,10 @@ namespace Opis\Routing;
 
 interface IFilter
 {
+    /**
+     * @param Router $router
+     * @param Route $route
+     * @return bool
+     */
     public function filter(Router $router, Route $route): bool;
 }
