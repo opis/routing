@@ -7,9 +7,9 @@ Opis Routing
 
 Routing framework
 ------------------
-**Opis Routing** is a framework for building various components that need 
-routing support. In contrast to other routing libraries,
-it may handle anything that follows a pattern and is not limited to HTTP request.
+**Opis Routing** is a framework for building various components that need routing capabilities. 
+As a routing framework, it may handle all sorts of paths, that are following a pattern, 
+not being limited to HTTP request.
 
 Although this library was conceived to be embedded by other libraries that 
 need routing capabilities and not as a standalone library, 
