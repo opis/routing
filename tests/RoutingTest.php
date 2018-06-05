@@ -19,6 +19,7 @@ namespace Opis\Routing\Test;
 
 use Opis\Routing\Context;
 use Opis\Routing\Dispatcher;
+use Opis\Routing\Route;
 use Opis\Routing\RouteCollection;
 use Opis\Routing\Router;
 use PHPUnit\Framework\TestCase;
@@ -41,10 +42,9 @@ class RoutingTest extends TestCase
         $this->router = new Router($this->routes, $this->dispatcher);
     }
 
-    public function tearDown()
+    public function testCreateRoute()
     {
-        $this->routes = new RouteCollection();
-        $this->router = new Router($this->routes, $this->dispatcher);
+        $this->assertInstanceOf(Route::class, $this->routes->createRoute('', function (){}));
     }
 
     public function testBasicRouting()
@@ -65,6 +65,15 @@ class RoutingTest extends TestCase
         $this->assertEquals('baz', $this->router->route(new Context('/foo/baz')));
     }
 
+    public function testRouteArgumentAtMiddle()
+    {
+        $this->routes->createRoute('/foo/x{bar}z', function ($bar) {
+            return $bar;
+        });
+
+        $this->assertEquals('y', $this->router->route(new Context('/foo/xyz')));
+    }
+
     public function testOptionalArgument()
     {
         $this->routes->createRoute('/foo/{bar?}', function ($bar = 'baz') {
@@ -72,6 +81,17 @@ class RoutingTest extends TestCase
         });
 
         $this->assertEquals('baz', $this->router->route(new Context('/foo')));
+        $this->assertEquals('bar', $this->router->route(new Context('/foo/bar')));
+    }
+
+    public function testOptionalArgumentAtMiddle()
+    {
+        $this->routes->createRoute('/foo/x{bar?}z', function ($bar = 'a') {
+            return $bar;
+        });
+
+        $this->assertEquals('a', $this->router->route(new Context('/foo/xz')));
+        $this->assertEquals('y', $this->router->route(new Context('/foo/xyz')));
     }
 
     public function testImplicitArgument()
@@ -83,6 +103,16 @@ class RoutingTest extends TestCase
         $this->assertEquals('baz', $this->router->route(new Context('/foo')));
     }
 
+    public function testImplicitArgumentAtMiddle()
+    {
+        $this->routes->createRoute('/foo/x{bar?}z', function ($bar) {
+            return $bar;
+        })->implicit('bar', 'a');
+
+        $this->assertEquals('a', $this->router->route(new Context('/foo/xz')));
+        $this->assertEquals('y', $this->router->route(new Context('/foo/xyz')));
+    }
+
     public function testMultipleArguments()
     {
         $this->routes->createRoute('/{foo}/{bar}', function ($bar, $foo) {
@@ -90,6 +120,17 @@ class RoutingTest extends TestCase
         });
 
         $this->assertEquals('bazqux', $this->router->route(new Context('/baz/qux')));
+        $this->assertEquals('bazqux', $this->router->route(new Context('/baz/qux/')));
+    }
+
+    public function testMultipleArgumentsAtMiddle()
+    {
+        $this->routes->createRoute('/a{foo}c/x{bar}z', function ($bar, $foo) {
+            return $foo . $bar;
+        });
+
+        $this->assertEquals('by', $this->router->route(new Context('/abc/xyz')));
+        $this->assertEquals('by', $this->router->route(new Context('/abc/xyz/')));
     }
 
     public function testWildcardArgument()
