@@ -17,7 +17,7 @@
 
 namespace Opis\Routing;
 
-use ArrayAccess;
+use ArrayAccess, ArrayObject;
 
 class ArgumentResolver
 {
@@ -34,9 +34,9 @@ class ArgumentResolver
      * ArgumentsContainer constructor.
      * @param ArrayAccess $global
      */
-    public function __construct(ArrayAccess $global)
+    public function __construct(ArrayAccess $global = null)
     {
-        $this->global = $global;
+        $this->global = $global ?? new ArrayObject();
     }
 
     /**
@@ -111,7 +111,7 @@ class ArgumentResolver
 
     /**
      * @param callable $callback
-     * @return array
+     * @return \ReflectionParameter[]
      * @throws \ReflectionException
      */
     public function getParameters(callable $callback): array
