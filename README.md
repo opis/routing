@@ -7,43 +7,48 @@ Opis Routing
 
 Routing framework
 ------------------
-**Opis Routing** is a framework for building various routing components. In contrast to other routing libraries,
-it may handle anything that follows a pattern and is not limited only to HTTP request.
+**Opis Routing** is a framework for building various components that need 
+routing support. In contrast to other routing libraries,
+it may handle anything that follows a pattern and is not limited to HTTP request.
 
-This library was conceived to be embedded by other libraries that need routing capabilities and not as a
-standalone library; although the usage of this library as a standalone library is not discouraged. 
+Although this library was conceived to be embedded by other libraries that 
+need routing capabilities and not as a standalone library, 
+the usage of this library as a standalone library is not discouraged.
+
+### Documentation
+
+The full documentation for this library can be found [here][documentation]
 
 ### License
 
-**Opis Routing** is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
+**Opis Routing** is licensed under the [Apache License, Version 2.0][apache_license]. 
 
 ### Requirements
 
 * PHP 7.0.* or higher
-* [Opis Closure](http://www.opis.io/closure) ^3.0.1
+* [Opis Closure] ^3.0
 
-### Installation
+## Installation
 
-This library is available on [Packagist](https://packagist.org/packages/opis/routing) and can be installed using [Composer](http://getcomposer.org).
+**Opis Routing** is available on [Packagist] and it can be installed from a 
+command line interface by using [Composer]. 
+
+```bash
+composer require opis/container
+```
+
+Or you could directly reference it into your `composer.json` file as a dependency
 
 ```json
 {
     "require": {
-        "opis/routing": "5.0.x-dev"
+        "opis/routing": "^3.0"
     }
 }
 ```
 
-If you are unable to use [Composer](http://getcomposer.org) you can download the
-[tar.gz](https://github.com/opis/routing/archive/master.tar.gz) or the [zip](https://github.com/opis/routing/archive/master.zip)
-archive file, extract the content of the archive and include de `autoload.php` file into your project. 
-
-```php
-
-require_once 'path/to/routing-master/autoload.php';
-
-```
-
-### Documentation
-
-Examples and documentation can be found [here](http://opis.io/routing).
+[documentation]: https://www.opis.io/container
+[apache_license]: https://www.apache.org/licenses/LICENSE-2.0 "Apache License"
+[Packagist]: https://packagist.org/packages/opis/container "Packagist"
+[Composer]: https://getcomposer.org "Composer"
+[Opis Closure]: https://www.opis.io/closure

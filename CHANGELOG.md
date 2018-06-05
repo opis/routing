@@ -6,37 +6,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Support for PHP 7.0.x
 - Scalar type hints
-- `Opis\Routing\Context` class
-- `Opis\Routing\FilterCollection` class
-- `Opis\Routing\RouteCollection` class
-- `Opis\Routing\ClosureWrapperTrait` trait
-- `Opis\Routing\IDispatcher` interface
 
 ### Removed
 - Support for PHP 5.x
-- `Opis\Routing\Pattern` class
-- `Opis\Routing\CallableExpectedException` class
-- `Opis\Routing\CompiledExpression` class
-- `Opis\Routing\Filter` class
-- `Opis\Routing\PathFilter` class
-- `Opis\Routing\Collections\AbstractCollection` class
-- `Opis\Routing\Collections\DispatcherCollection` class
-- `Opis\Routing\Collections\FilterCollection` class
-- `Opis\Routing\Collections\RouteCollection` class
-- `Opis\Routing\Compiler` class
 
 ### Changed
--  `Opis\Routing\Route`, `Opis\Routing\Router`,
- `Opis\Routing\Dispatcher`, `Opis\Routing\Binding`, `Opis\Routing\Callback`, 
-  `Opis\Routing\CompiledRoute` were refactored
-- Renamed `Opis\Routing\FilterInterface` to `Opis\Routing\IFilter`
-- Renamed `Opis\Routing\Compiler::getNames` to `Opis\Routing\Compiler::getKeys`
-- Renamed `Opis\Routing\CompiledRoute::getNames` to `Opis\Routing\CompiledRoute::getKeys`
-- Source files were moved from `lib` to `src`
 - Added dependency to `opis/pattern`
-
-### Fixed
-- Nothing
+- This is a massive refactor of the library
 
 ## v4.1.0, 2016.01.16
 ### Added
@@ -44,15 +20,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added a 3rd optional argument to `Opis\Routing\Compiler::bind` method
 - Added a 2nd optional argument to `Opis\Routing\CompiledExpression::bind` method
 
-### Removed
-- Nothing
-
 ### Changed
 - Modified `Opis\Routing\Dispatcher` class
 - `Opis\Routing\Router::__construct` accepts now 4th optional argument representing an array of special values.
-
-### Fixed
-- Nothing
 
 ## v4.0.0 - 2016.01.13
 ### Added
@@ -77,9 +47,6 @@ were modified to support these changes.
 - Modifed the `Opis\Routing\Router::route` method
 - Modified the way that `Opis\Routing\Dispatcher` executes a route's callback
 
-### Fixed
-- Nothing
-
 ## v3.0.0 - 2015.07.31
 ### Added
 - The new `Opis\Routing\Callback` class was added
@@ -101,116 +68,44 @@ were modified to support these changes.
 ### Added
 - Added support for late binding. 
 
-### Removed
-- Nothing
-
-### Changed
-- Nothing
-
-### Fixed
-- Nothing
-
 ## v2.4.3 - 2014.11.23
 ### Added
 - Autoload file
 
-### Removed
-- Nothing
-
-### Changed
-- Nothing
-
-### Fixed
-- Nothing
-
 ## v2.4.3 - 2014.11.22
-### Added
-- Nothing
-
-### Removed
-- Nothing
-
-### Changed
-- Nothing
-
 ### Fixed
 - Several bugs in `Opis\Routing\Compiler` class.
 
 ## v2.4.2 - 2014.11.12
-### Added
-- Nothing
-
-### Removed
-- Nothing
-
 ### Changed
 - Modified `Opis\Routing\CompiledRoute`
-
-### Fixed
-- Nothing
 
 ## v2.4.1 - 2014.11.11
 ### Added
 - Added `getMapFunction` and 'getUnmapFunction' protected static methods in `Opis\Routing\Route`.
 
-### Removed
-- Nothing
-
-### Changed
-- Nothing
-
 ### Fixed
 - Fixed a bug in `Opis\Routing\Route::serialize` method.
 
 ## v2.4.0 - 2014.10.23
-### Added
-- Nothing
-
-### Removed
-- Nothing
-
 ### Changed
 - Updated `opis/closure` library dependency to version `1.3.*`
 
-### Fixed
-- Nothing
-
 ## v2.3.1 - 2014.06.11
-### Added
-- Nothing
-
 ### Removed
 - The protected static variable `$compiler` was removed.
-
-### Changed
-- Nothing
 
 ### Fixed
 - Fixed a bug in `Opis\Routing\Route`. 
 
 ## v2.3.0 - 2014.06.11
-### Added
-- Nothing
-
 ### Removed
 - Removed the `Opis\Routing\Contracts\CompilerInterface` argument from `Opis\Routing\Route` constructor method.
 
 ### Changed
 - The `getCompiler` method in `Opis\Routing\Contracts\RouteInterface` is now declared as static.
 
-### Fixed
-- Nothing
-
 ## v2.2.1 - 2014.06.08
-### Added
-- Nothing
-
-### Removed
-- Nothing
-
-### Changed
-- Nothing
-
 ### Fixed
 - Fixed a major bug in `Opis\Routing\Route`
 
@@ -219,13 +114,7 @@ were modified to support these changes.
 - Started changelog
 - Added `getDelimitedPattern`, `getCompiledPattern` methods to `Opis\Routing\Route`
 
-### Removed
-- Nothing
-
 ### Changed
 - Modified `Opis\Routing\CompiledExpression` constructor
 - Modified `Opis\Routing\Router` class to improve performance.
 - Modified `Opis\Routing\PathFilter` class to improve performance.
-
-### Fixed
-- Nothing
