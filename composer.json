@@ -1,7 +1,7 @@
 {
     "name": "opis/routing",
-    "description": "A framework for building routing components",
-    "keywords": ["opis", "routing", "serializable", "framework", "http", "events"],
+    "description": "A framework for building packages that need routing capabilities",
+    "keywords": ["opis", "routing", "serializable", "framework"],
     "homepage": "http://opis.io",
     "license": "Apache-2.0",
     "authors": [
