@@ -34,7 +34,7 @@ The full documentation for this library can be found [here][documentation]
 command line interface by using [Composer]. 
 
 ```bash
-composer require opis/container
+composer require opis/routing
 ```
 
 Or you could directly reference it into your `composer.json` file as a dependency
