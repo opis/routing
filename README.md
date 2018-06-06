@@ -21,7 +21,7 @@ The full documentation for this library can be found [here][documentation]
 
 ### Requirements
 
-* PHP 7.0.* or higher
+* PHP ^7.0
 * [Opis Closure] ^3.0
 * [Opis Pattern] ^1.0
 
