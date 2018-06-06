@@ -44,9 +44,9 @@ Or you could directly reference it into your `composer.json` file as a dependenc
 }
 ```
 
-[documentation]: https://www.opis.io/routing
+[documentation]: https://www.opis.io/routing "Documentation"
 [apache_license]: https://www.apache.org/licenses/LICENSE-2.0 "Apache License"
 [Packagist]: https://packagist.org/packages/opis/routing "Packagist"
 [Composer]: https://getcomposer.org "Composer"
-[Opis Closure]: https://www.opis.io/closure
-[Opis Pattern]: https://www.opis.io/pattern
+[Opis Closure]: https://www.opis.io/closure "Opis Closure"
+[Opis Pattern]: https://www.opis.io/pattern "Opis Pattern"
