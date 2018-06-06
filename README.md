@@ -23,6 +23,7 @@ The full documentation for this library can be found [here][documentation]
 
 * PHP 7.0.* or higher
 * [Opis Closure] ^3.0
+* [Opis Pattern] ^1.0
 
 ## Installation
 
@@ -48,3 +49,4 @@ Or you could directly reference it into your `composer.json` file as a dependenc
 [Packagist]: https://packagist.org/packages/opis/routing "Packagist"
 [Composer]: https://getcomposer.org "Composer"
 [Opis Closure]: https://www.opis.io/closure
+[Opis Pattern]: https://www.opis.io/pattern
