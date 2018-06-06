@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## v5.0.0, 2018.06.05
+## v5.0.0, 2018.06.06
 ### Added
 - Support for PHP 7.0.x
 - Scalar type hints
