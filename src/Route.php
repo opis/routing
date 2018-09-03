@@ -66,8 +66,7 @@ class Route implements Serializable
         string $pattern,
         callable $action,
         string $name = null
-    )
-    {
+    ) {
         $this->collection = $collection;
         $this->routeID = $id;
         $this->routePattern = $pattern;

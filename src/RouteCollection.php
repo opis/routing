@@ -59,8 +59,7 @@ class RouteCollection implements Serializable
         RegexBuilder $builder = null,
         string $sortKey = null,
         bool $sortDescending = true
-    )
-    {
+    ) {
         $this->factory = $factory ?? function (
                 RouteCollection $collection,
                 string $id,
