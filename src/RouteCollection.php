@@ -140,23 +140,23 @@ class RouteCollection implements Serializable
 
     /**
      * @param string $id
-     * @return bool|Route
+     * @return null|Route
      */
     public function getRoute(string $id)
     {
-        return $this->routes[$id] ?? false;
+        return $this->routes[$id] ?? null;
     }
 
     /**
      * @param string $id
-     * @return bool|string
+     * @return null|string
      */
     public function getRegex(string $id)
     {
         if ($this->regex === null) {
             $this->getRegexPatterns();
         }
-        return $this->regex[$id] ?? false;
+        return $this->regex[$id] ?? null;
     }
 
     /**
