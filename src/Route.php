@@ -33,23 +33,21 @@ class Route implements Serializable
     /** @var callable */
     protected $routeAction;
 
-    /** @var  string|null */
+    /** @var string|null */
     protected $routeName;
 
-    /** @var  string */
+    /** @var string */
     protected $routeID;
 
-    /** @var    array */
+    /** @var array */
     protected $placeholders = [];
 
-    /** @var    array */
+    /** @var array */
     protected $bindings = [];
 
-    /** @var    array */
+    /** @var array */
     protected $defaults = [];
 
-    /** @var    array */
-    protected $properties = [];
 
     /**
      * @param RouteCollection $collection
@@ -141,16 +139,6 @@ class Route implements Serializable
     }
 
     /**
-     * Get the route's properties
-     *
-     * @return  array
-     */
-    public function getProperties(): array
-    {
-        return $this->properties;
-    }
-
-    /**
      * @return RouteCollection
      */
     public function getRouteCollection(): RouteCollection
@@ -230,85 +218,6 @@ class Route implements Serializable
     }
 
     /**
-     * Set a property
-     *
-     * @param   string $name
-     * @param   mixed $value
-     * @return  static|Route
-     */
-    public function set(string $name, $value): self
-    {
-        $this->properties[$name] = $value;
-        return $this;
-    }
-
-    /**
-     * Check if a property was set
-     *
-     * @param   string $name
-     *
-     * @return  boolean
-     */
-    public function has(string $name): bool
-    {
-        return array_key_exists($name, $this->properties);
-    }
-
-    /**
-     * Get a property
-     *
-     * @param   string $name
-     * @param   mixed $default (optional)
-     *
-     * @return  mixed
-     */
-    public function get(string $name, $default = null)
-    {
-        return $this->properties[$name] ?? $default;
-    }
-
-    /**
-     * Get a property
-     *
-     * @param   string $name
-     *
-     * @return  mixed
-     */
-    public function __get(string $name)
-    {
-        return $this->get($name);
-    }
-
-    /**
-     * Set a property
-     *
-     * @param   string $name
-     * @param   mixed $value
-     *
-     * @return  static
-     */
-    public function __set(string $name, $value)
-    {
-        return $this->set($name, $value);
-    }
-
-    /**
-     * Set a property
-     *
-     * @param   string $name
-     * @param   array $arguments
-     * @return  static|Route
-     */
-    public function __call(string $name, array $arguments): self
-    {
-        if (count($arguments) <= 1) {
-            $arguments = array_shift($arguments);
-        }
-        $this->properties[$name] = $arguments;
-        return $this;
-    }
-
-    /**
      * @inheritdoc
      */
     public function serialize()
@@ -347,7 +256,6 @@ class Route implements Serializable
             'placeholders' => $this->placeholders,
             'bindings' => $this->wrapClosures($this->bindings),
             'defaults' => $this->wrapClosures($this->defaults),
-            'properties' => $this->wrapClosures($this->properties),
             'collection' => $this->collection,
         ];
     }
@@ -368,7 +276,6 @@ class Route implements Serializable
         $this->placeholders = $data['placeholders'];
         $this->bindings = $this->unwrapClosures($data['bindings']);
         $this->defaults = $this->unwrapClosures($data['defaults']);
-        $this->properties = $this->unwrapClosures($data['properties']);
         $this->collection = $data['collection'];
     }
 
