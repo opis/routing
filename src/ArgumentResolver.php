@@ -31,7 +31,6 @@ class ArgumentResolver
     protected $global;
 
     /**
-     * ArgumentsContainer constructor.
      * @param ArrayAccess $global
      */
     public function __construct(ArrayAccess $global = null)

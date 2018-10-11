@@ -46,7 +46,6 @@ class RouteInvoker
     protected $argumentResolver;
 
     /**
-     * CompactRoute constructor.
      * @param Context $context
      * @param Route $route
      * @param ArrayAccess $global

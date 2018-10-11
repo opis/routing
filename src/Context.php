@@ -19,14 +19,13 @@ namespace Opis\Routing;
 
 class Context
 {
-    /** @var    string */
+    /** @var string */
     protected $path;
 
     /** @var mixed|null */
     protected $data;
 
     /**
-     * Context constructor.
      * @param string $path
      * @param null|mixed $data
      */

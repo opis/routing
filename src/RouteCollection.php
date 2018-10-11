@@ -48,7 +48,6 @@ class RouteCollection implements Serializable
     protected $factory;
 
     /**
-     * RouteCollection constructor.
      * @param callable|null $factory
      * @param RegexBuilder|null $builder
      * @param string|null $sortKey

@@ -40,7 +40,6 @@ class Router
     protected $context;
 
     /**
-     * Router constructor.
      * @param RouteCollection $routes
      * @param IDispatcher|null $dispatcher
      * @param FilterCollection|null $filters
