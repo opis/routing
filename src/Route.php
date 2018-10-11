@@ -24,8 +24,6 @@ use Opis\Closure\SerializableClosure;
 
 class Route implements Serializable
 {
-    use ClosureWrapperTrait;
-
     /** @var  RouteCollection */
     protected $collection;
 
@@ -311,62 +309,99 @@ class Route implements Serializable
     }
 
     /**
-     * Serialize the route
-     *
-     * @return  string
+     * @inheritdoc
      */
     public function serialize()
     {
         SerializableClosure::enterContext();
+        $data = serialize($this->getSerializableData());
+        SerializableClosure::exitContext();
 
+        return $data;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function unserialize($serialized)
+    {
+        $this->setUnserializedData(unserialize($serialized));
+    }
+
+    /**
+     * @return array
+     */
+    protected function getSerializableData(): array
+    {
         $routeAction = $this->routeAction;
 
         if ($routeAction instanceof Closure) {
             $routeAction = SerializableClosure::from($routeAction);
         }
 
-        $map = [static::class, 'wrapClosures'];
-
-        $object = serialize([
+        return [
             'routePattern' => $this->routePattern,
             'routeAction' => $routeAction,
             'routeName' => $this->routeName,
             'routeID' => $this->routeID,
             'placeholders' => $this->placeholders,
-            'bindings' => array_map($map, $this->bindings),
-            'defaults' => array_map($map, $this->defaults),
-            'properties' => array_map($map, $this->properties),
+            'bindings' => $this->wrapClosures($this->bindings),
+            'defaults' => $this->wrapClosures($this->defaults),
+            'properties' => $this->wrapClosures($this->properties),
             'collection' => $this->collection,
-        ]);
-
-        SerializableClosure::exitContext();
-
-        return $object;
+        ];
     }
 
     /**
-     * Unserialize the route
-     *
-     * @param   string $data
+     * @param array $data
      */
-    public function unserialize($data)
+    protected function setUnserializedData(array $data)
     {
-        $object = unserialize($data);
-
-        if ($object['routeAction'] instanceof SerializableClosure) {
-            $object['routeAction'] = $object['routeAction']->getClosure();
+        if ($data['routeAction'] instanceof SerializableClosure) {
+            $data['routeAction'] = $data['routeAction']->getClosure();
         }
 
-        $map = [static::class, 'unwrapClosures'];
+        $this->routePattern = $data['routePattern'];
+        $this->routeAction = $data['routeAction'];
+        $this->routeName = $data['routeName'];
+        $this->routeID = $data['routeID'];
+        $this->placeholders = $data['placeholders'];
+        $this->bindings = $this->unwrapClosures($data['bindings']);
+        $this->defaults = $this->unwrapClosures($data['defaults']);
+        $this->properties = $this->unwrapClosures($data['properties']);
+        $this->collection = $data['collection'];
+    }
 
-        $this->routePattern = $object['routePattern'];
-        $this->routeAction = $object['routeAction'];
-        $this->routeName = $object['routeName'];
-        $this->routeID = $object['routeID'];
-        $this->placeholders = $object['placeholders'];
-        $this->bindings = array_map($map, $object['bindings']);
-        $this->defaults = array_map($map, $object['defaults']);
-        $this->properties = array_map($map, $object['properties']);
-        $this->collection = $object['collection'];
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function wrapClosures(array $data): array
+    {
+        $result = [];
+        foreach ($data as $key => $value) {
+            if ($value instanceof Closure) {
+                $value = SerializableClosure::from($value);
+            }
+            $result[$key] = $value;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function unwrapClosures(array $data): array
+    {
+        $result = [];
+        foreach ($data as $key => $value) {
+            if ($value instanceof SerializableClosure) {
+                $value = $value->getClosure();
+            }
+            $result[$key] = $value;
+        }
+        return $result;
     }
 }
