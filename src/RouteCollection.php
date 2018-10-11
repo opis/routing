@@ -212,11 +212,11 @@ class RouteCollection implements Serializable
      */
     public function serialize()
     {
-        $this->sort();
         SerializableClosure::enterContext();
-        $object = serialize($this->getSerialize());
+        $this->sort();
+        $data = serialize($this->getSerializableData());
         SerializableClosure::exitContext();
-        return $object;
+        return $data;
     }
 
     /**
@@ -224,13 +224,13 @@ class RouteCollection implements Serializable
      */
     public function unserialize($serialized)
     {
-        $this->setUnserialize(unserialize($serialized));
+        $this->setUnserializedData(unserialize($serialized));
     }
 
     /**
      * @return array
      */
-    protected function getSerialize()
+    protected function getSerializableData(): array
     {
         $factory = $this->factory;
 
@@ -251,18 +251,18 @@ class RouteCollection implements Serializable
     }
 
     /**
-     * @param $object
+     * @param array $data
      */
-    protected function setUnserialize($object)
+    protected function setUnserializedData(array $data)
     {
-        $this->builder = $object['builder'];
-        $this->routes = $object['routes'];
-        $this->namedRoutes = $object['namedRoutes'];
-        $this->regex = $object['regex'];
-        $this->dirty = $object['dirty'];
-        $this->sortKey = $object['sortKey'];
-        $this->sortDescending = $object['sortDescending'];
-        $this->factory = $object['factory'];
+        $this->builder = $data['builder'];
+        $this->routes = $data['routes'];
+        $this->namedRoutes = $data['namedRoutes'];
+        $this->regex = $data['regex'];
+        $this->dirty = $data['dirty'];
+        $this->sortKey = $data['sortKey'];
+        $this->sortDescending = $data['sortDescending'];
+        $this->factory = $data['factory'];
 
         if ($this->factory instanceof SerializableClosure) {
             $this->factory = $this->factory->getClosure();
