@@ -24,6 +24,8 @@ use Opis\Closure\SerializableClosure;
 
 class Route implements Serializable
 {
+    use ClosureTrait;
+
     /** @var  RouteCollection */
     protected $collection;
 
@@ -277,38 +279,5 @@ class Route implements Serializable
         $this->bindings = $this->unwrapClosures($data['bindings']);
         $this->defaults = $this->unwrapClosures($data['defaults']);
         $this->collection = $data['collection'];
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    protected function wrapClosures(array $data): array
-    {
-        $result = [];
-        foreach ($data as $key => $value) {
-            if ($value instanceof Closure) {
-                $value = SerializableClosure::from($value);
-            }
-            $result[$key] = $value;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    protected function unwrapClosures(array $data): array
-    {
-        $result = [];
-        foreach ($data as $key => $value) {
-            if ($value instanceof SerializableClosure) {
-                $value = $value->getClosure();
-            }
-            $result[$key] = $value;
-        }
-        return $result;
     }
 }
