@@ -27,29 +27,31 @@ class Route implements Serializable
     use ClosureTrait;
 
     /** @var  RouteCollection */
-    protected $collection;
+    private $collection;
 
     /** @var string */
-    protected $routePattern;
+    private $routePattern;
 
     /** @var callable */
-    protected $routeAction;
+    private $routeAction;
 
     /** @var string|null */
-    protected $routeName;
+    private $routeName;
 
     /** @var string */
-    protected $routeID;
+    private $routeID;
 
     /** @var array */
-    protected $placeholders = [];
+    private $placeholders = [];
 
     /** @var array */
-    protected $bindings = [];
+    private $bindings = [];
 
     /** @var array */
-    protected $defaults = [];
+    private $defaults = [];
 
+    /** @var array */
+    private $properties = [];
 
     /**
      * @param RouteCollection $collection
@@ -146,6 +148,48 @@ class Route implements Serializable
     public function getRouteCollection(): RouteCollection
     {
         return $this->collection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProperties(): array
+    {
+        return $this->properties;
+    }
+
+    /**
+     * @param string $property
+     * @param null $default
+     * @return mixed|null
+     */
+    public function get(string $property, $default = null)
+    {
+        if (array_key_exists($property, $this->properties)) {
+            return $this->properties[$property];
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param string $property
+     * @param $value
+     * @return static|Route
+     */
+    public function set(string $property, $value): self
+    {
+        $this->properties[$property] = $value;
+        return $this;
+    }
+
+    /**
+     * @param string $property
+     * @return bool
+     */
+    public function has(string $property): bool
+    {
+        return array_key_exists($property, $this->properties);
     }
 
     /**
@@ -258,6 +302,7 @@ class Route implements Serializable
             'placeholders' => $this->placeholders,
             'bindings' => $this->wrapClosures($this->bindings),
             'defaults' => $this->wrapClosures($this->defaults),
+            'properties' => $this->wrapClosures($this->properties),
             'collection' => $this->collection,
         ];
     }
@@ -278,6 +323,7 @@ class Route implements Serializable
         $this->placeholders = $data['placeholders'];
         $this->bindings = $this->unwrapClosures($data['bindings']);
         $this->defaults = $this->unwrapClosures($data['defaults']);
+        $this->properties = $this->unwrapClosures($data['properties']);
         $this->collection = $data['collection'];
     }
 }
