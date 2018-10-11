@@ -23,7 +23,7 @@ trait DispatcherTrait
      * @param Router $router
      * @return null|Route
      */
-    protected function findRoute(Router $router)
+    protected function findRoute(Router $router): ?Route
     {
         $context = $router->getContext();
         $global = $router->getGlobalValues();

@@ -119,7 +119,7 @@ class Router
      * @param Route $route
      * @return RouteInvoker
      */
-    public function resolveInvoker(Route $route)
+    public function resolveInvoker(Route $route): RouteInvoker
     {
         $context = $this->getContext();
         $cid = spl_object_hash($context);
