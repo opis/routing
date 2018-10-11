@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.0",
+        "php": "^7.1",
         "opis/closure": "^3.0",
         "opis/pattern": "^1.0"
     },
