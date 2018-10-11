@@ -32,6 +32,8 @@ trait ClosureTrait
         foreach ($data as $key => $value) {
             if ($value instanceof Closure) {
                 $value = SerializableClosure::from($value);
+            } elseif (is_array($value)) {
+                $value = $this->wrapClosures($value);
             }
             $result[$key] = $value;
         }
@@ -49,6 +51,8 @@ trait ClosureTrait
         foreach ($data as $key => $value) {
             if ($value instanceof SerializableClosure) {
                 $value = $value->getClosure();
+            } elseif (is_array($value)) {
+                $value = $this->unwrapClosures($value);
             }
             $result[$key] = $value;
         }
