@@ -351,6 +351,13 @@ class Route
         ];
     }
 
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $property => $value) {
+            $this->{$property} = $value;
+        }
+    }
+
     /**
      * @param Route $route
      * @param bool $value
