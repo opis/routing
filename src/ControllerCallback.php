@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,17 @@ namespace Opis\Routing;
 
 class ControllerCallback
 {
-    /** @var    string */
-    protected $method;
 
-    /** @var    string */
-    protected $className;
+    protected string $method;
 
-    /** @var    boolean */
-    protected $isStatic;
+    protected string $className;
+
+    protected bool $isStatic;
 
     /**
      * @var self[]
      */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     /**
      * Constructor

@@ -23,7 +23,9 @@ use Opis\Utils\ArgumentResolver;
 abstract class Invoker
 {
     private ArrayAccess $defaults;
+
     private ?ArgumentResolver $argumentResolver = null;
+
     /** @var Invoker|mixed */
     private $result;
 

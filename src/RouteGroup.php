@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class RouteGroup
         $this->routes = $routes;
     }
 
-    public function mixin(string $name, array $config = null): self
+    public function mixin(string $name, ?array $config = null): self
     {
         return $this->callMethod(__FUNCTION__, [$name, $config]);
     }
@@ -41,12 +41,12 @@ class RouteGroup
         return $this->callMethod(__FUNCTION__, [$name, $callback]);
     }
 
-    public function filter(string $name, callable $callback = null): self
+    public function filter(string $name, ?callable $callback = null): self
     {
         return $this->callMethod(__FUNCTION__, [$name, $callback]);
     }
 
-    public function guard(string $name, callable $callback = null): self
+    public function guard(string $name, ?callable $callback = null): self
     {
         return $this->callMethod(__FUNCTION__, [$name, $callback]);
     }

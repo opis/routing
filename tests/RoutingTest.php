@@ -17,6 +17,7 @@
 
 namespace Opis\Routing\Test;
 
+use ArrayObject;
 use Opis\Routing\{DefaultDispatcher,
     Route,
     Router,
@@ -30,15 +31,15 @@ use function Opis\Closure\init as enableSerialization;
 
 class RoutingTest extends TestCase
 {
-    /** @var  Router */
-    protected $router;
-    /** @var  RouteCollection */
-    protected $collection;
+
+    protected Router $router;
+
+    protected RouteCollection $collection;
 
     public function setUp(): void
     {
         $this->collection = new RouteCollection();
-        $global = new \ArrayObject();
+        $global = new ArrayObject();
         $global['x'] = 'X';
         $this->router = new Router($this->collection, new DefaultDispatcher(), $global);
     }
@@ -78,9 +79,7 @@ class RoutingTest extends TestCase
 
     public function testBasicRouting()
     {
-        $this->route('/', function () {
-            return 'OK';
-        });
+        $this->route('/', static fn () => 'OK');
 
         $response = $this->exec('/');
 
@@ -96,9 +95,7 @@ class RoutingTest extends TestCase
 
     public function testNotFound2()
     {
-        $this->route('/', function () {
-            return 'OK';
-        });
+        $this->route('/', static fn () => 'OK');
 
         $this->assertEquals(404, $this->exec('/foo')->getStatusCode());
         $this->assertEquals('', $this->exec('/foo')->getBody());
@@ -106,9 +103,7 @@ class RoutingTest extends TestCase
 
     public function testNotFound3()
     {
-        $this->route('/', function () {
-            return new Response(404, [], null);
-        });
+        $this->route('/', static fn () => new Response(404, [], null));
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
         $this->assertEquals('', $this->exec('/')->getBody());
@@ -116,9 +111,7 @@ class RoutingTest extends TestCase
 
     public function testParam()
     {
-        $this->route('/{foo}', function ($foo) {
-            return $foo;
-        });
+        $this->route('/{foo}', static fn ($foo) => $foo);
 
         $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
@@ -126,9 +119,7 @@ class RoutingTest extends TestCase
 
     public function testParamConstraintSuccess()
     {
-        $this->route('/{foo}', function ($foo) {
-            return $foo;
-        })
+        $this->route('/{foo}', static fn ($foo) => $foo)
             ->where('foo', '[a-z]+');
 
         $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
@@ -137,9 +128,7 @@ class RoutingTest extends TestCase
 
     public function testParamInlineRegex()
     {
-        $this->route('/{foo=[a-z]+}', function ($foo) {
-            return $foo;
-        });
+        $this->route('/{foo=[a-z]+}', static fn ($foo) => $foo);
 
         $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
@@ -150,9 +139,7 @@ class RoutingTest extends TestCase
 
     public function testParamConstraintFail()
     {
-        $this->route('/{foo}', function ($foo) {
-            return $foo;
-        })
+        $this->route('/{foo}', static fn ($foo) => $foo)
             ->where('foo', '[a-z]+');
 
         $this->assertEquals(404, $this->exec('/123')->getStatusCode());
@@ -161,9 +148,7 @@ class RoutingTest extends TestCase
 
     public function testParamOptional1()
     {
-        $this->route('/{foo?}', function ($foo) {
-            return $foo;
-        });
+        $this->route('/{foo?}', static fn ($foo) => $foo);
 
         $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
@@ -171,18 +156,14 @@ class RoutingTest extends TestCase
 
     public function testParamOptional2()
     {
-        $this->route('/{foo?}', function ($foo = 'bar') {
-            return $foo;
-        });
+        $this->route('/{foo?}', static fn ($foo = 'bar') => $foo);
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/')->getBody());
     }
 
     public function testParamOptional3()
     {
-        $this->route('/{foo?}', function ($foo) {
-            return $foo;
-        })
+        $this->route('/{foo?}', static fn ($foo) => $foo)
             ->implicit('foo', 'bar');
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
@@ -191,9 +172,7 @@ class RoutingTest extends TestCase
 
     public function testMultipleParams()
     {
-        $this->route('/{foo}/{bar}', function ($bar, $foo) {
-            return $bar . $foo;
-        });
+        $this->route('/{foo}/{bar}', static fn ($bar, $foo) => $bar . $foo);
 
         $this->assertEquals(200, $this->exec('/foo/bar')->getStatusCode());
         $this->assertEquals('barfoo', $this->exec('/foo/bar')->getBody());
@@ -201,12 +180,8 @@ class RoutingTest extends TestCase
 
     public function testLocalBeforeFilterSuccess()
     {
-        $this->route('/', function () {
-            return 'OK';
-        })
-            ->filter('foo', function () {
-                return true;
-            });
+        $this->route('/', static fn () => 'OK')
+            ->filter('foo', static fn () => true);
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
@@ -214,12 +189,8 @@ class RoutingTest extends TestCase
 
     public function testLocalBeforeFilterFail()
     {
-        $this->route('/', function () {
-            return 'OK';
-        })
-            ->filter('foo', function () {
-                return false;
-            });
+        $this->route('/', static fn () => 'OK')
+            ->filter('foo', static fn () => false);
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
         $this->assertEquals('', $this->exec('/')->getBody());
@@ -227,9 +198,7 @@ class RoutingTest extends TestCase
 
     public function testGlobalBeforeFilterSuccess()
     {
-        $this->collection->filter('foo', function() {
-            return true;
-        });
+        $this->collection->filter('foo', static fn () => true);
 
         $this->route('/', function () {
             return 'OK';
@@ -242,13 +211,9 @@ class RoutingTest extends TestCase
 
     public function testGlobalBeforeFilterFail()
     {
-        $this->collection->filter('foo', function() {
-            return false;
-        });
+        $this->collection->filter('foo', static fn () => false);
 
-        $this->route('/', function () {
-            return 'OK';
-        })
+        $this->route('/', static fn () => 'OK')
             ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
@@ -257,12 +222,8 @@ class RoutingTest extends TestCase
 
     public function testLocalFilterGlobalValuesSuccess()
     {
-        $this->route('/', function () {
-            return 'OK';
-        })
-            ->filter('foo', function ($x) {
-                return $x == 'X';
-            });
+        $this->route('/', static fn () => 'OK')
+            ->filter('foo', static fn ($x) => $x == 'X');
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
@@ -270,12 +231,8 @@ class RoutingTest extends TestCase
 
     public function testLocalFilterGlobalValuesFail()
     {
-        $this->route('/', function () {
-            return 'OK';
-        })
-            ->filter('foo', function ($x) {
-                return $x != 'X';
-            });
+        $this->route('/', static fn () => 'OK')
+            ->filter('foo', static fn ($x) => $x != 'X');
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
         $this->assertEquals('', $this->exec('/')->getBody());
@@ -283,13 +240,9 @@ class RoutingTest extends TestCase
 
     public function testGlobalFilterGlobalValuesSuccess()
     {
-        $this->collection->filter('foo', function ($x) {
-            return $x == 'X';
-        });
+        $this->collection->filter('foo', static fn ($x) => $x == 'X');
 
-        $this->route('/', function () {
-            return 'OK';
-        })
+        $this->route('/', static fn () => 'OK')
             ->filter('foo');
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
@@ -298,13 +251,9 @@ class RoutingTest extends TestCase
 
     public function testGlobalFilterGlobalValuesFail()
     {
-        $this->collection->filter('foo', function ($x) {
-            return $x != 'X';
-        });
+        $this->collection->filter('foo', static fn ($x) => $x != 'X');
 
-        $this->route('/', function () {
-            return 'OK';
-        })
+        $this->route('/', static fn () => 'OK')
             ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
@@ -313,12 +262,8 @@ class RoutingTest extends TestCase
 
     public function testLocalBinding1()
     {
-        $this->route('/{foo}', function ($foo) {
-            return $foo;
-        })
-            ->bind('foo', function ($foo) {
-                return strtoupper($foo);
-            });
+        $this->route('/{foo}', static fn ($foo) => $foo)
+            ->bind('foo', static fn ($foo) => strtoupper($foo));
 
         $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/bar')->getBody());
@@ -326,12 +271,8 @@ class RoutingTest extends TestCase
 
     public function testLocalBinding2()
     {
-        $this->route('/', function ($foo) {
-            return $foo;
-        })
-            ->bind('foo', function () {
-                return 'BAR';
-            });
+        $this->route('/', static fn ($foo) => $foo)
+            ->bind('foo', static fn () => 'BAR');
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/')->getBody());
@@ -339,13 +280,9 @@ class RoutingTest extends TestCase
 
     public function testGlobalBinding1()
     {
-        $this->collection->bind('foo', function ($foo) {
-            return strtoupper($foo);
-        });
+        $this->collection->bind('foo', static fn ($foo) => strtoupper($foo));
 
-        $this->route('/{foo}', function ($foo) {
-            return $foo;
-        });
+        $this->route('/{foo}', static fn ($foo) => $foo);
 
         $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/bar')->getBody());
@@ -353,13 +290,9 @@ class RoutingTest extends TestCase
 
     public function testGlobalBinding2()
     {
-        $this->collection->bind('foo', function () {
-            return 'BAR';
-        });
+        $this->collection->bind('foo', static fn () => 'BAR');
 
-        $this->route('/', function ($foo) {
-            return $foo;
-        });
+        $this->route('/', static fn ($foo) => $foo);
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/')->getBody());
@@ -367,9 +300,7 @@ class RoutingTest extends TestCase
 
     public function testGlobals1()
     {
-        $this->route('/', function ($x) {
-            return $x;
-        });
+        $this->route('/', static fn($x) => $x);
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('X', $this->exec('/')->getBody());
@@ -377,12 +308,8 @@ class RoutingTest extends TestCase
 
     public function testGlobals2()
     {
-        $this->route('/', function ($y) {
-            return $y;
-        })
-            ->bind('y', function ($x) {
-                return $x;
-            });
+        $this->route('/', static fn($y) => $y)
+            ->bind('y', static fn($x) => $x);
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('X', $this->exec('/')->getBody());
@@ -392,12 +319,8 @@ class RoutingTest extends TestCase
     {
         enableSerialization();
 
-        $this->route('/', function () {
-            return 'OK';
-        })
-            ->filter('foo', function ($x) {
-                return $x == 'X';
-            });
+        $this->route('/', static fn () => 'OK')
+            ->filter('foo', static fn ($x) => $x == 'X');
 
         $this->router = unserialize(serialize($this->router));
         $this->assertEquals(200, $this->exec('/')->getStatusCode());

@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ use Opis\Http\Request;
 class RouteInvoker extends Invoker
 {
     private Router $router;
+
     private Route $route;
+
     private Request $request;
 
     /** @var string[]|null */
@@ -71,7 +73,7 @@ class RouteInvoker extends Invoker
             $builder = $routes->getRegexBuilder();
 
             $regex = $routes->getRegex($this->route->getID());
-            $values = $builder->getValues($regex, $this->request->getUri()->getPath());
+            $values = $builder->getValues($regex, $this->request->getUri()->path());
 
             $this->values = array_intersect_key($values, array_flip($this->getNames())) + $this->route->getDefaults();
         }

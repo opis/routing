@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 namespace Opis\Routing;
 
+use SplQueue;
 use Opis\Http\{Request, Responses\HtmlResponse, Response};
 
 class DefaultDispatcher implements Dispatcher
@@ -24,19 +25,15 @@ class DefaultDispatcher implements Dispatcher
     use Traits\Dispatcher;
 
     /** @var callable */
-    private $httpError = null;
+    private $httpError;
 
-    public function __construct(callable $httpError = null)
+    public function __construct(?callable $httpError = null)
     {
-        if ($httpError === null) {
-            $httpError = fn(int $code) => new Response($code);
-        }
-        $this->httpError = $httpError;
+        $this->httpError = $httpError ?? (static::class . '::createHttpError');
     }
 
     /**
-     * @param Router $router
-     * @return mixed
+     * @inheritDoc
      */
     public function dispatch(Router $router, Request $request): Response
     {
@@ -78,8 +75,8 @@ class DefaultDispatcher implements Dispatcher
             return $result;
         }
 
-        $queue = new \SplQueue();
-        $next = function () use ($queue, $invoker) {
+        $queue = new SplQueue();
+        $next = static function () use ($queue, $invoker) {
             do {
                 if ($queue->isEmpty()) {
                     $result = $invoker->invokeAction();
@@ -107,5 +104,15 @@ class DefaultDispatcher implements Dispatcher
         }
 
         return $next();
+    }
+
+    /**
+     * Default value for httpError property
+     * @param int $code
+     * @return Response
+     */
+    protected static function createHttpError(int $code): Response
+    {
+        return new Response($code);
     }
 }

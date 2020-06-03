@@ -20,13 +20,13 @@ namespace Opis\Routing\Traits;
 trait Filter
 {
     /** @var array */
-    private $placeholders = [];
+    private array $placeholders = [];
 
     /** @var callable[] */
-    private $guards = [];
+    private array $guards = [];
 
     /** @var callable[] */
-    private $filters = [];
+    private array $filters = [];
 
     /**
      * Get placeholders
@@ -78,7 +78,7 @@ trait Filter
      * @param callable|null $callback
      * @return static
      */
-    public function filter(string $name, callable $callback = null): self
+    public function filter(string $name, ?callable $callback = null): self
     {
         $this->filters[$name] = $callback;
         return $this;
@@ -91,7 +91,7 @@ trait Filter
      * @param callable|null $callback
      * @return static
      */
-    public function guard(string $name, callable $callback = null): self
+    public function guard(string $name, ?callable $callback = null): self
     {
         $this->guards[$name] = $callback;
         return $this;

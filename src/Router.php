@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +19,22 @@ namespace Opis\Routing;
 
 use ArrayAccess, ArrayObject;
 use Opis\Http\Request;
-use Opis\Routing\Filters\RequestFilter;
-use Opis\Routing\Filters\UserFilter;
+use Opis\Routing\Filters\{
+    RequestFilter, UserFilter
+};
 
 class Router
 {
-    /** @var RouteCollection */
+
     private RouteCollection $routes;
 
     /** @var Filter[] */
     private array $filters;
 
-    /** @var Dispatcher */
     private Dispatcher $dispatcher;
 
-    /** @var array */
     protected ArrayAccess $global;
 
-    /** @var array */
     private array $compacted = [];
 
     /**
@@ -48,9 +46,9 @@ class Router
      */
     public function __construct(
         RouteCollection $routes,
-        Dispatcher $dispatcher = null,
-        ArrayAccess $global = null,
-        array $filters = null
+        ?Dispatcher $dispatcher = null,
+        ?ArrayAccess $global = null,
+        ?array $filters = null
     ) {
         $this->routes = $routes;
         $this->dispatcher = $dispatcher ?? new DefaultDispatcher();

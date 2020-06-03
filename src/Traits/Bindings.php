@@ -20,10 +20,10 @@ namespace Opis\Routing\Traits;
 trait Bindings
 {
     /** @var callable[] */
-    private $bindings = [];
+    private array $bindings = [];
 
     /** @var array */
-    private $defaults = [];
+    private array $defaults = [];
 
     /**
      * Get bindings

@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,13 @@ use Opis\Utils\RegexBuilder;
 
 class Route
 {
-    use FilterTrait{
+    use FilterTrait {
         getPlaceholders as getLocalPlaceholders;
         filter as private setFilter;
         guard as private setGuard;
         placeholder as private setPlaceholder;
     }
+
     use BindingTrait {
         getBindings as getLocalBindings;
         getDefaults as getLocalDefaults;
@@ -39,22 +40,18 @@ class Route
         implicit as private setImplicit;
     }
 
-    /** @var  RouteCollection */
-    private $collection;
+    private RouteCollection $collection;
 
-    /** @var string */
-    private $pattern;
+    private string $pattern;
 
     /** @var callable */
     private $action;
 
-    /** @var string|null */
-    private $name;
+    private ?string $name;
 
-    private int $priority = 0;
+    private int $priority;
 
-    /** @var string */
-    private $id;
+    private string $id;
 
     /** @var string[] */
     private array $method;
@@ -132,7 +129,7 @@ class Route
      *
      * @return null|string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -229,7 +226,7 @@ class Route
         return $this->setImplicit($name, $value);
     }
 
-    public function filter(string $name, callable $callback = null): self
+    public function filter(string $name, ?callable $callback = null): self
     {
         if ($this->inheriting && array_key_exists($name, $this->filters)) {
             return $this;
@@ -238,7 +235,7 @@ class Route
         return $this->setFilter($name, $callback);
     }
 
-    public function guard(string $name, callable $callback = null): self
+    public function guard(string $name, ?callable $callback = null): self
     {
         if ($this->inheriting && array_key_exists($name, $this->guards)) {
             return $this;
@@ -312,7 +309,7 @@ class Route
 
         $delimiter = $this->collection->getRegexBuilder()->getOptions()[RegexBuilder::REGEX_DELIMITER];
 
-        $value = implode('|', array_map(function ($value) use ($delimiter) {
+        $value = implode('|', array_map(static function ($value) use ($delimiter) {
             return preg_quote($value, $delimiter);
         }, $values));
 
@@ -324,7 +321,7 @@ class Route
      * @param array|null $config
      * @return static
      */
-    public function mixin(string $name, array $config = null): self
+    public function mixin(string $name, ?array $config = null): self
     {
         $collection = $this->getRouteCollection();
         $mixins = $collection->getMixins();
@@ -354,6 +351,10 @@ class Route
         ];
     }
 
+    /**
+     * @param Route $route
+     * @param bool $value
+     */
     public static function setIsInheriting(Route $route, bool $value)
     {
         $route->inheriting = $value;

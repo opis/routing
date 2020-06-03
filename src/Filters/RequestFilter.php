@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ class RequestFilter implements Filter
 
         $properties = $route->getProperties();
 
-        if (($properties['secure'] ?? false) && $request->getUri()->getScheme() !== 'https') {
+        if (($properties['secure'] ?? false) && $request->getUri()->scheme() !== 'https') {
             return false;
         }
 
         if (null !== $domain = ($properties['domain'] ?? null)) {
             $regex = $route->getRouteCollection()->getDomainBuilder()->getRegex($domain, $route->getPlaceholders());
-            if(!preg_match($regex, $request->getUri()->getHost())) {
+            if(!preg_match($regex, $request->getUri()->host())) {
                 return false;
             }
         }

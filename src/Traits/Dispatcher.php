@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 
 namespace Opis\Routing\Traits;
 
+use Generator;
 use Opis\Http\Request;
-use Opis\Routing\Route;
-use Opis\Routing\Router;
+use Opis\Routing\{Route, Router};
 
 trait Dispatcher
 {
@@ -32,7 +32,7 @@ trait Dispatcher
         $global = $router->getGlobalValues();
         $global['router'] = $router;
         /** @var Route $route */
-        foreach ($this->match($router, $request->getUri()->getPath()) as $route) {
+        foreach ($this->match($router, $request->getUri()->path() ?? '') as $route) {
             $global['route'] = $route;
             if (!$this->filter($router, $route, $request)) {
                 continue;
@@ -46,9 +46,9 @@ trait Dispatcher
     /**
      * @param Router $router
      * @param string $path
-     * @return \Generator
+     * @return Generator
      */
-    protected function match(Router $router, string $path): \Generator
+    protected function match(Router $router, string $path): Generator
     {
         $routes = $router->getRouteCollection();
         $routes->sort();

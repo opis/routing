@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,37 +25,31 @@ use Opis\Utils\RegexBuilder;
 
 class RouteCollection
 {
-    use FilterTrait;
-    use BindingTrait;
+    use FilterTrait, BindingTrait;
 
     /** @var Route[] */
-    private $routes = [];
+    private array $routes = [];
 
     /** @var null|string[] */
-    private $regex;
+    private ?array $regex = null;
 
     /** @var string[] */
-    private $namedRoutes = [];
+    private array $namedRoutes = [];
 
-    /** @var  RegexBuilder */
-    private $builder;
+    private RegexBuilder $builder;
 
-    /** @var RegexBuilder|null */
-    private $domainBuilder;
+    private ?RegexBuilder $domainBuilder = null;
 
-    /** @var bool */
-    private $dirty = false;
+    private bool $dirty = false;
 
     /** @var callable[] */
-    private $mixins = [];
+    private array $mixins = [];
 
     /**
      * RouteCollection constructor.
      * @param RegexBuilder|null $builder
      */
-    public function __construct(
-        RegexBuilder $builder = null
-    ) {
+    public function __construct(?RegexBuilder $builder = null) {
         $this->builder = $builder ?? new RegexBuilder();
     }
 
@@ -67,7 +61,8 @@ class RouteCollection
      * @param string|null $name
      * @return Route
      */
-    public function createRoute(string $pattern, callable $action, array $method, int $priority = 0, string $name = null): Route
+    public function createRoute(string $pattern, callable $action, array $method,
+                                int $priority = 0, ?string $name = null): Route
     {
         $id = $this->generateRouteId();
         $route = new Route($this, $id, $pattern, $action, $method, $priority, $name);
@@ -110,6 +105,7 @@ class RouteCollection
                     $route->getPlaceholders());
             }
         }
+
         return $this->regex;
     }
 
@@ -146,7 +142,7 @@ class RouteCollection
     /**
      * Sort collection
      */
-    public function sort()
+    public function sort(): void
     {
         if (!$this->dirty) {
             return;
@@ -191,6 +187,7 @@ class RouteCollection
                 RegexBuilder::CAPTURE_MODE => RegexBuilder::CAPTURE_RIGHT,
             ]);
         }
+
         return $this->domainBuilder;
     }
 
@@ -210,6 +207,7 @@ class RouteCollection
     public function mixin(string $name, callable $callback): self
     {
         $this->mixins[$name] = $callback;
+
         return $this;
     }
 

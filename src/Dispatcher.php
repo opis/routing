@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2018-2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ interface Dispatcher
     /**
      * @param Router $router
      * @param Request $request
-     * @return mixed
+     * @return Response
      */
     public function dispatch(Router $router, Request $request): Response;
 }
