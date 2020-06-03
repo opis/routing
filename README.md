@@ -22,7 +22,7 @@ The full documentation for this library can be found [here][documentation]
 ### Requirements
 
 * PHP ^7.4
-* [Opis Closure] ^4.0
+* [Opis HTTP] ^2020
 * [Opis Utils] ^2020
 
 ## Installation
@@ -48,5 +48,5 @@ Or you could directly reference it into your `composer.json` file as a dependenc
 [license]: https://www.apache.org/licenses/LICENSE-2.0 "Apache License"
 [Packagist]: https://packagist.org/packages/opis/routing "Packagist"
 [Composer]: https://getcomposer.org "Composer"
-[Opis Closure]: https://github.com/opis/closure "Opis Closure"
+[Opis HTTP]: https://github.com/opis/http "Opis HTTP"
 [Opis Utils]: https://github.com/opis/utils "Opis Utils"
