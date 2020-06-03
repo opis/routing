@@ -17,47 +17,68 @@
 
 namespace Opis\Routing;
 
-use Closure;
-use Serializable;
-use Opis\Pattern\RegexBuilder;
-use Opis\Closure\SerializableClosure;
+use RuntimeException;
+use Opis\Routing\Traits\{
+    Filter as FilterTrait,
+    Bindings as BindingTrait
+};
+use Opis\Utils\RegexBuilder;
 
-class Route implements Serializable
+class Route
 {
-    use ClosureTrait;
+    use FilterTrait{
+        getPlaceholders as getLocalPlaceholders;
+        filter as private setFilter;
+        guard as private setGuard;
+        placeholder as private setPlaceholder;
+    }
+    use BindingTrait {
+        getBindings as getLocalBindings;
+        getDefaults as getLocalDefaults;
+        bind as private setBinding;
+        implicit as private setImplicit;
+    }
 
     /** @var  RouteCollection */
     private $collection;
 
     /** @var string */
-    private $routePattern;
+    private $pattern;
 
     /** @var callable */
-    private $routeAction;
+    private $action;
 
     /** @var string|null */
-    private $routeName;
+    private $name;
+
+    private int $priority = 0;
 
     /** @var string */
-    private $routeID;
+    private $id;
 
-    /** @var array */
-    private $placeholders = [];
-
-    /** @var array */
-    private $bindings = [];
-
-    /** @var array */
-    private $defaults = [];
-
-    /** @var array */
-    private $properties = [];
+    /** @var string[] */
+    private array $method;
 
     /**
+     * @var array
+     */
+    private array $cache = [];
+
+    /**
+     * @var array
+     */
+    private array $properties = [];
+
+    private bool $inheriting = false;
+
+    /**
+     * Route constructor.
      * @param RouteCollection $collection
      * @param string $id
      * @param string $pattern
      * @param callable $action
+     * @param string[] $method
+     * @param int $priority
      * @param string|null $name
      */
     public function __construct(
@@ -65,13 +86,17 @@ class Route implements Serializable
         string $id,
         string $pattern,
         callable $action,
+        array $method = ['GET'],
+        int $priority = 0,
         string $name = null
     ) {
         $this->collection = $collection;
-        $this->routeID = $id;
-        $this->routePattern = $pattern;
-        $this->routeAction = $action;
-        $this->routeName = $name;
+        $this->id = $id;
+        $this->pattern = $pattern;
+        $this->action = $action;
+        $this->name = $name;
+        $this->priority = $priority;
+        $this->method = $method;
     }
 
     /**
@@ -79,7 +104,7 @@ class Route implements Serializable
      */
     public function getID(): string
     {
-        return $this->routeID;
+        return $this->id;
     }
 
     /**
@@ -89,7 +114,7 @@ class Route implements Serializable
      */
     public function getPattern(): string
     {
-        return $this->routePattern;
+        return $this->pattern;
     }
 
     /**
@@ -99,7 +124,7 @@ class Route implements Serializable
      */
     public function getAction(): callable
     {
-        return $this->routeAction;
+        return $this->action;
     }
 
     /**
@@ -109,37 +134,7 @@ class Route implements Serializable
      */
     public function getName()
     {
-        return $this->routeName;
-    }
-
-    /**
-     * Get the route's wildcards
-     *
-     * @return  array
-     */
-    public function getPlaceholders(): array
-    {
-        return $this->placeholders;
-    }
-
-    /**
-     * Get the route's bindings
-     *
-     * @return callable[]
-     */
-    public function getBindings(): array
-    {
-        return $this->bindings;
-    }
-
-    /**
-     * Get the route's default values
-     *
-     * @return  array
-     */
-    public function getDefaults(): array
-    {
-        return $this->defaults;
+        return $this->name;
     }
 
     /**
@@ -151,6 +146,14 @@ class Route implements Serializable
     }
 
     /**
+     * @return string[]
+     */
+    public function getMethod(): array
+    {
+        return $this->method;
+    }
+
+    /**
      * @return array
      */
     public function getProperties(): array
@@ -158,63 +161,129 @@ class Route implements Serializable
         return $this->properties;
     }
 
-    /**
-     * @param string $property
-     * @param null $default
-     * @return mixed|null
-     */
-    public function get(string $property, $default = null)
+    public function getPriority(): int
     {
-        if (array_key_exists($property, $this->properties)) {
-            return $this->properties[$property];
+        return $this->priority;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaults(): array
+    {
+        if (!isset($this->cache[__FUNCTION__])) {
+            $this->cache[__FUNCTION__] = $this->getLocalDefaults() + $this->collection->getDefaults();
         }
 
-        return $default;
+        return $this->cache[__FUNCTION__];
     }
 
     /**
-     * @param string $property
-     * @param $value
-     * @return static|Route
+     * @return callable[]
      */
-    public function set(string $property, $value): self
+    public function getBindings(): array
     {
-        $this->properties[$property] = $value;
-        return $this;
+        if (!isset($this->cache[__FUNCTION__])) {
+            $this->cache[__FUNCTION__] = $this->getLocalBindings() + $this->collection->getBindings();
+        }
+
+        return $this->cache[__FUNCTION__];
     }
 
     /**
-     * @param string $property
-     * @return bool
+     * @return array
      */
-    public function has(string $property): bool
+    public function getPlaceholders(): array
     {
-        return array_key_exists($property, $this->properties);
+        if (!isset($this->cache[__FUNCTION__])) {
+            $this->cache[__FUNCTION__] = $this->getLocalPlaceholders() + $this->collection->getPlaceholders();
+        }
+
+        return $this->cache[__FUNCTION__];
     }
 
-    /**
-     * Bind a value to a name
-     *
-     * @param   string $name
-     * @param   callable $callback
-     * @return  static|Route
-     */
     public function bind(string $name, callable $callback): self
     {
-        $this->bindings[$name] = $callback;
+        if ($this->inheriting && isset($this->getLocalBindings()[$name])) {
+            return $this;
+        }
+
+        return $this->setBinding($name, $callback);
+    }
+
+    public function placeholder(string $name, $value): self
+    {
+        if ($this->inheriting && isset($this->getLocalPlaceholders()[$name])) {
+            return $this;
+        }
+
+        return $this->setPlaceholder($name, $value);
+    }
+
+    public function implicit(string $name, $value): self
+    {
+        if ($this->inheriting && array_key_exists($name, $this->getLocalDefaults())) {
+            return $this;
+        }
+
+        return $this->setImplicit($name, $value);
+    }
+
+    public function filter(string $name, callable $callback = null): self
+    {
+        if ($this->inheriting && array_key_exists($name, $this->filters)) {
+            return $this;
+        }
+
+        return $this->setFilter($name, $callback);
+    }
+
+    public function guard(string $name, callable $callback = null): self
+    {
+        if ($this->inheriting && array_key_exists($name, $this->guards)) {
+            return $this;
+        }
+
+        return $this->setGuard($name, $callback);
+    }
+
+    /**
+     * @param string ...$middleware
+     * @return static
+     */
+    public function middleware(string ...$middleware): self
+    {
+        if ($this->inheriting && isset($this->properties['middleware'])) {
+            return $this;
+        }
+        $this->properties['middleware'] = $middleware;
         return $this;
     }
 
     /**
-     * Define a new placeholder
-     *
-     * @param   string $name
-     * @param   string $value
-     * @return  static|Route
+     * @param string $value
+     * @return static
      */
-    public function placeholder(string $name, string $value): self
+    public function domain(string $value): self
     {
-        $this->placeholders[$name] = $value;
+        if ($this->inheriting && isset($this->properties['domain'])) {
+            return $this;
+        }
+        $this->properties['domain'] = $value;
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return static
+     */
+    public function secure(bool $value = true): self
+    {
+        if ($this->inheriting && isset($this->properties['secure'])) {
+            return $this;
+        }
+
+        $this->properties['secure'] = $value;
         return $this;
     }
 
@@ -251,79 +320,42 @@ class Route implements Serializable
     }
 
     /**
-     * Define a new implicit value
-     *
-     * @param   string $name
-     * @param   mixed $value
-     * @return  static|Route
+     * @param string $name
+     * @param array|null $config
+     * @return static
      */
-    public function implicit(string $name, $value): self
+    public function mixin(string $name, array $config = null): self
     {
-        $this->defaults[$name] = $value;
+        $collection = $this->getRouteCollection();
+        $mixins = $collection->getMixins();
+        if (!isset($mixins[$name])) {
+            throw new RuntimeException("Unknown mixin name " . $name);
+        }
+        $mixins[$name]($this, $config);
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
+    public function __serialize(): array
     {
-        SerializableClosure::enterContext();
-        $data = serialize($this->getSerializableData());
-        SerializableClosure::exitContext();
-
-        return $data;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function unserialize($serialized)
-    {
-        $this->setUnserializedData(unserialize($serialized));
-    }
-
-    /**
-     * @return array
-     */
-    protected function getSerializableData(): array
-    {
-        $routeAction = $this->routeAction;
-
-        if ($routeAction instanceof Closure) {
-            $routeAction = SerializableClosure::from($routeAction);
-        }
-
         return [
-            'routePattern' => $this->routePattern,
-            'routeAction' => $routeAction,
-            'routeName' => $this->routeName,
-            'routeID' => $this->routeID,
-            'placeholders' => $this->placeholders,
-            'bindings' => $this->wrapClosures($this->bindings),
-            'defaults' => $this->wrapClosures($this->defaults),
-            'properties' => $this->wrapClosures($this->properties),
             'collection' => $this->collection,
+            'pattern' => $this->pattern,
+            'action' => $this->action,
+            'method' => $this->method,
+            'name' => $this->name,
+            'priority' => $this->priority,
+            'id' => $this->id,
+            'properties' => $this->properties,
+            'placeholders' => $this->placeholders,
+            'filters' => $this->filters,
+            'guards' => $this->guards,
+            'bindings' => $this->bindings,
+            'defaults' => $this->defaults,
         ];
     }
 
-    /**
-     * @param array $data
-     */
-    protected function setUnserializedData(array $data)
+    public static function setIsInheriting(Route $route, bool $value)
     {
-        if ($data['routeAction'] instanceof SerializableClosure) {
-            $data['routeAction'] = $data['routeAction']->getClosure();
-        }
-
-        $this->routePattern = $data['routePattern'];
-        $this->routeAction = $data['routeAction'];
-        $this->routeName = $data['routeName'];
-        $this->routeID = $data['routeID'];
-        $this->placeholders = $data['placeholders'];
-        $this->bindings = $this->unwrapClosures($data['bindings']);
-        $this->defaults = $this->unwrapClosures($data['defaults']);
-        $this->properties = $this->unwrapClosures($data['properties']);
-        $this->collection = $data['collection'];
+        $route->inheriting = $value;
     }
 }

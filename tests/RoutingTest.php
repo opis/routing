@@ -17,207 +17,392 @@
 
 namespace Opis\Routing\Test;
 
-use Opis\Routing\Context;
-use Opis\Routing\Dispatcher;
-use Opis\Routing\Route;
-use Opis\Routing\RouteCollection;
-use Opis\Routing\Router;
+use Opis\Routing\{DefaultDispatcher,
+    Route,
+    Router,
+    RouteCollection};
+use Opis\Http\{
+    Response,
+    Request
+};
 use PHPUnit\Framework\TestCase;
+use function Opis\Closure\init as enableSerialization;
 
 class RoutingTest extends TestCase
 {
-    /** @var  RouteCollection */
-    protected $routes;
-
     /** @var  Router */
     protected $router;
+    /** @var  RouteCollection */
+    protected $collection;
 
-    /** @var  Dispatcher */
-    protected $dispatcher;
-
-    public function setUp()
+    public function setUp(): void
     {
-        $this->routes = new RouteCollection();
-        $this->dispatcher = new Dispatcher();
-        $this->router = new Router($this->routes, $this->dispatcher);
+        $this->collection = new RouteCollection();
+        $global = new \ArrayObject();
+        $global['x'] = 'X';
+        $this->router = new Router($this->collection, new DefaultDispatcher(), $global);
     }
 
-    public function testCreateRoute()
+    /**
+     * @param $pattern
+     * @param $action
+     * @param string $method
+     * @return Route
+     */
+    protected function route($pattern, $action, $method = 'GET')
     {
-        $this->assertInstanceOf(Route::class, $this->routes->createRoute('', function (){}));
+        if (!is_array($method)) {
+            $method = [$method];
+        }
+        return $this->collection->createRoute($pattern, $action, $method);
+    }
+
+    /**
+     * @param $path
+     * @param string $domain
+     * @param string $method
+     * @param bool $secure
+     * @return Response
+     */
+    protected function exec($path, $method = 'GET', $domain = 'localhost', $secure = false, array $headers = [])
+    {
+
+        $headers += [
+            'Host' => $domain
+        ];
+
+        $request = new Request($method, $path, 'HTTP/1.1', $secure, $headers);
+
+        return $this->router->route($request);
     }
 
     public function testBasicRouting()
     {
-        $this->routes->createRoute('/foo', function () {
-            return 'ok';
+        $this->route('/', function () {
+            return 'OK';
         });
 
-        $this->assertEquals('ok', $this->router->route(new Context('/foo')));
+        $response = $this->exec('/');
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('OK', $response->getBody());
     }
 
-    public function testRouteArgument()
+    public function testNotFound1()
     {
-        $this->routes->createRoute('/foo/{bar}', function ($bar) {
-            return $bar;
+        $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
+    }
+
+    public function testNotFound2()
+    {
+        $this->route('/', function () {
+            return 'OK';
         });
 
-        $this->assertEquals('baz', $this->router->route(new Context('/foo/baz')));
+        $this->assertEquals(404, $this->exec('/foo')->getStatusCode());
+        $this->assertEquals('', $this->exec('/foo')->getBody());
     }
 
-    public function testRouteArgumentAtMiddle()
+    public function testNotFound3()
     {
-        $this->routes->createRoute('/foo/x{bar}z', function ($bar) {
-            return $bar;
+        $this->route('/', function () {
+            return new Response(404, [], null);
         });
 
-        $this->assertEquals('y', $this->router->route(new Context('/foo/xyz')));
+        $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
     }
 
-    public function testOptionalArgument()
+    public function testParam()
     {
-        $this->routes->createRoute('/foo/{bar?}', function ($bar = 'baz') {
-            return $bar;
+        $this->route('/{foo}', function ($foo) {
+            return $foo;
         });
 
-        $this->assertEquals('baz', $this->router->route(new Context('/foo')));
-        $this->assertEquals('bar', $this->router->route(new Context('/foo/bar')));
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
+        $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
-    public function testOptionalArgumentAtMiddle()
+    public function testParamConstraintSuccess()
     {
-        $this->routes->createRoute('/foo/x{bar?}z', function ($bar = 'a') {
-            return $bar;
+        $this->route('/{foo}', function ($foo) {
+            return $foo;
+        })
+            ->where('foo', '[a-z]+');
+
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
+        $this->assertEquals('bar', $this->exec('/bar')->getBody());
+    }
+
+    public function testParamInlineRegex()
+    {
+        $this->route('/{foo=[a-z]+}', function ($foo) {
+            return $foo;
         });
 
-        $this->assertEquals('a', $this->router->route(new Context('/foo/xz')));
-        $this->assertEquals('y', $this->router->route(new Context('/foo/xyz')));
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
+        $this->assertEquals('bar', $this->exec('/bar')->getBody());
+
+        $this->assertEquals(404, $this->exec('/123')->getStatusCode());
+        $this->assertEquals('', $this->exec('/123')->getBody());
     }
 
-    public function testImplicitArgument()
+    public function testParamConstraintFail()
     {
-        $this->routes->createRoute('/foo/{bar?}', function ($bar) {
-            return $bar;
-        })->implicit('bar', 'baz');
+        $this->route('/{foo}', function ($foo) {
+            return $foo;
+        })
+            ->where('foo', '[a-z]+');
 
-        $this->assertEquals('baz', $this->router->route(new Context('/foo')));
+        $this->assertEquals(404, $this->exec('/123')->getStatusCode());
+        $this->assertEquals('', $this->exec('/123')->getBody());
     }
 
-    public function testImplicitArgumentAtMiddle()
+    public function testParamOptional1()
     {
-        $this->routes->createRoute('/foo/x{bar?}z', function ($bar) {
-            return $bar;
-        })->implicit('bar', 'a');
-
-        $this->assertEquals('a', $this->router->route(new Context('/foo/xz')));
-        $this->assertEquals('y', $this->router->route(new Context('/foo/xyz')));
-    }
-
-    public function testMultipleArguments()
-    {
-        $this->routes->createRoute('/{foo}/{bar}', function ($bar, $foo) {
-            return $foo . $bar;
+        $this->route('/{foo?}', function ($foo) {
+            return $foo;
         });
 
-        $this->assertEquals('bazqux', $this->router->route(new Context('/baz/qux')));
-        $this->assertEquals('bazqux', $this->router->route(new Context('/baz/qux/')));
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
+        $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
-    public function testMultipleArgumentsAtMiddle()
+    // TODO: Check this
+    public function xtestParamOptional2()
     {
-        $this->routes->createRoute('/a{foo}c/x{bar}z', function ($bar, $foo) {
-            return $foo . $bar;
+        $this->route('/{foo?}', function ($foo = 'bar') {
+            return $foo;
         });
 
-        $this->assertEquals('by', $this->router->route(new Context('/abc/xyz')));
-        $this->assertEquals('by', $this->router->route(new Context('/abc/xyz/')));
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('bar', $this->exec('/')->getBody());
+    }
+    // TODO: Check this
+    public function xtestParamOptional3()
+    {
+        $this->route('/{foo?}', function ($foo) {
+            return $foo;
+        })
+            ->implicit('foo', 'bar');
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('bar', $this->exec('/')->getBody());
     }
 
-    public function testWildcardArgument()
+    public function testMultipleParams()
     {
-        $this->routes->createRoute('/foo/{bar}', function ($bar) {
-            return $bar;
-        })->where('bar', '[0-9]+');
-
-        $this->assertEquals(null, $this->router->route(new Context('/foo/bar')));
-        $this->assertEquals('123', $this->router->route(new Context('/foo/123')));
-    }
-
-    public function testBindArgument()
-    {
-        $this->routes->createRoute('/foo/{bar}', function ($bar) {
-            return $bar;
-        })->bind('bar', function ($bar) {
-            return strtoupper($bar);
+        $this->route('/{foo}/{bar}', function ($bar, $foo) {
+            return $bar . $foo;
         });
 
-        $this->assertEquals('BAR', $this->router->route(new Context('/foo/bar')));
+        $this->assertEquals(200, $this->exec('/foo/bar')->getStatusCode());
+        $this->assertEquals('barfoo', $this->exec('/foo/bar')->getBody());
+    }
+
+    public function testLocalBeforeFilterSuccess()
+    {
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo', function () {
+                return true;
+            });
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('OK', $this->exec('/')->getBody());
+    }
+
+    public function testLocalBeforeFilterFail()
+    {
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo', function () {
+                return false;
+            });
+
+        $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
+    }
+
+    public function testGlobalBeforeFilterSuccess()
+    {
+        $this->collection->filter('foo', function() {
+            return true;
+        });
+
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo');
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('OK', $this->exec('/')->getBody());
+    }
+
+    public function testGlobalBeforeFilterFail()
+    {
+        $this->collection->filter('foo', function() {
+            return false;
+        });
+
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo');
+
+        $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
+    }
+
+    public function testLocalFilterGlobalValuesSuccess()
+    {
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo', function ($x) {
+                return $x == 'X';
+            });
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('OK', $this->exec('/')->getBody());
+    }
+
+    public function testLocalFilterGlobalValuesFail()
+    {
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo', function ($x) {
+                return $x != 'X';
+            });
+
+        $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
+    }
+
+    public function testGlobalFilterGlobalValuesSuccess()
+    {
+        $this->collection->filter('foo', function ($x) {
+            return $x == 'X';
+        });
+
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo');
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('OK', $this->exec('/')->getBody());
+    }
+
+    public function testGlobalFilterGlobalValuesFail()
+    {
+        $this->collection->filter('foo', function ($x) {
+            return $x != 'X';
+        });
+
+        $this->route('/', function () {
+            return 'OK';
+        })
+            ->filter('foo');
+
+        $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
+    }
+
+    public function testLocalBinding1()
+    {
+        $this->route('/{foo}', function ($foo) {
+            return $foo;
+        })
+            ->bind('foo', function ($foo) {
+                return strtoupper($foo);
+            });
+
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
+        $this->assertEquals('BAR', $this->exec('/bar')->getBody());
+    }
+
+    public function testLocalBinding2()
+    {
+        $this->route('/', function ($foo) {
+            return $foo;
+        })
+            ->bind('foo', function () {
+                return 'BAR';
+            });
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('BAR', $this->exec('/')->getBody());
+    }
+
+    public function testGlobalBinding1()
+    {
+        $this->collection->bind('foo', function ($foo) {
+            return strtoupper($foo);
+        });
+
+        $this->route('/{foo}', function ($foo) {
+            return $foo;
+        });
+
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
+        $this->assertEquals('BAR', $this->exec('/bar')->getBody());
+    }
+
+    public function testGlobalBinding2()
+    {
+        $this->collection->bind('foo', function () {
+            return 'BAR';
+        });
+
+        $this->route('/', function ($foo) {
+            return $foo;
+        });
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('BAR', $this->exec('/')->getBody());
+    }
+
+    public function testGlobals1()
+    {
+        $this->route('/', function ($x) {
+            return $x;
+        });
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('X', $this->exec('/')->getBody());
+    }
+
+    public function testGlobals2()
+    {
+        $this->route('/', function ($y) {
+            return $y;
+        })
+            ->bind('y', function ($x) {
+                return $x;
+            });
+
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('X', $this->exec('/')->getBody());
     }
 
     public function testSerialization()
     {
-        $routes = new RouteCollection();
+        enableSerialization();
 
-        $routes->createRoute('/foo/{bar}', function ($bar) {
-            return $bar;
-        })->bind('bar', function ($bar) {
-            return strtoupper($bar);
-        });
-
-        $router = new Router(unserialize(serialize($routes)), $this->dispatcher);
-        $this->assertEquals('BAR', $router->route(new Context('/foo/bar')));
-    }
-
-    public function testWhereIn()
-    {
-        $this->routes->createRoute('/foo/{bar}', function ($bar) {
-            return $bar;
-        })->whereIn('bar', ['a', 'b', 'car']);
-
-
-        $this->assertEquals(null, $this->router->route(new Context('/foo/bar')));
-        $this->assertEquals('a', $this->router->route(new Context('/foo/a')));
-        $this->assertEquals('b', $this->router->route(new Context('/foo/b')));
-        $this->assertEquals(null, $this->router->route(new Context('/foo/ab')));
-        $this->assertEquals('car', $this->router->route(new Context('/foo/car')));
-    }
-
-    public function testInlineRegex()
-    {
-        $this->routes->createRoute('/foo/{bar=\d{2,3}}', function ($bar) {
-            return $bar;
-        });
-
-        $this->assertEquals('10', $this->router->route(new Context('/foo/10')));
-        $this->assertEquals('580', $this->router->route(new Context('/foo/580')));
-        $this->assertEquals(null, $this->router->route(new Context('/foo/bar')));
-        $this->assertEquals(null, $this->router->route(new Context('/foo/1')));
-        $this->assertEquals(null, $this->router->route(new Context('/foo/1580')));
-
-        $this->routes->createRoute('/foo/{=[a-z]{2,3}}', function () {
-            return "ok";
-        });
-
-        $this->assertEquals('ok', $this->router->route(new Context('/foo/ab')));
-        $this->assertEquals('ok', $this->router->route(new Context('/foo/abc')));
-        $this->assertEquals(null, $this->router->route(new Context('/foo/abcd')));
-        $this->assertEquals(null, $this->router->route(new Context('/foo/1')));
-        $this->assertEquals('12', $this->router->route(new Context('/foo/12')));
-    }
-
-    public function testBindings()
-    {
-        $this->routes->createRoute('/foo/{bar}', function ($baz) {
-            return $baz;
+        $this->route('/', function () {
+            return 'OK';
         })
-            ->bind('bar', function ($bar) {
-                return strtoupper($bar);
-            })
-            ->bind('baz', function ($bar) {
-                return 'baz' . $bar;
+            ->filter('foo', function ($x) {
+                return $x == 'X';
             });
 
-        $this->assertEquals('bazBAR', $this->router->route(new Context('/foo/bar')));
+        $this->router = unserialize(serialize($this->router));
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
+        $this->assertEquals('OK', $this->exec('/')->getBody());
     }
-
 }

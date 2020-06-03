@@ -17,12 +17,15 @@
 
 namespace Opis\Routing;
 
-interface IFilter
+use Opis\Http\Request;
+
+interface Filter
 {
     /**
      * @param Router $router
      * @param Route $route
+     * @param Request $request
      * @return bool
      */
-    public function filter(Router $router, Route $route): bool;
+    public function filter(Router $router, Route $route, Request $request): bool;
 }

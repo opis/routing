@@ -15,24 +15,26 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\Routing;
+namespace Opis\Routing\Traits;
 
-trait DispatcherTrait
+use Opis\Http\Request;
+use Opis\Routing\Route;
+use Opis\Routing\Router;
+
+trait Dispatcher
 {
     /**
      * @param Router $router
      * @return null|Route
      */
-    protected function findRoute(Router $router): ?Route
+    protected function findRoute(Router $router, Request $request): ?Route
     {
-        $context = $router->getContext();
         $global = $router->getGlobalValues();
         $global['router'] = $router;
-        $global['context'] = $context;
         /** @var Route $route */
-        foreach ($this->match($router, $context) as $route) {
+        foreach ($this->match($router, $request->getUri()->getPath()) as $route) {
             $global['route'] = $route;
-            if (!$this->filter($router, $route)) {
+            if (!$this->filter($router, $route, $request)) {
                 continue;
             }
             return $route;
@@ -43,17 +45,16 @@ trait DispatcherTrait
 
     /**
      * @param Router $router
-     * @param Context $context
+     * @param string $path
      * @return \Generator
      */
-    protected function match(Router $router, Context $context): \Generator
+    protected function match(Router $router, string $path): \Generator
     {
-        $context = (string)$context;
         $routes = $router->getRouteCollection();
         $routes->sort();
 
         foreach ($routes->getRegexPatterns() as $routeID => $pattern) {
-            if (preg_match($pattern, $context)) {
+            if (preg_match($pattern, $path)) {
                 yield $routes->getRoute($routeID);
             }
         }
@@ -62,12 +63,13 @@ trait DispatcherTrait
     /**
      * @param Router $router
      * @param Route $route
+     * @param Request $request
      * @return bool
      */
-    protected function filter(Router $router, Route $route): bool
+    protected function filter(Router $router, Route $route, Request $request): bool
     {
-        foreach ($router->getFilterCollection()->getFilters() as $filter) {
-            if (!$filter->filter($router, $route)) {
+        foreach ($router->getFilters() as $filter) {
+            if (!$filter->filter($router, $route, $request)) {
                 return false;
             }
         }

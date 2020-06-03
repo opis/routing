@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2018 Zindex Software
+ * Copyright 2020 Zindex Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 
 namespace Opis\Routing;
 
-interface IDispatcher
+abstract class Controller
 {
-    /**
-     * @param Router $router
-     * @return mixed
-     */
-    public function dispatch(Router $router);
+    final public function __construct()
+    {
+        // nop
+    }
 }

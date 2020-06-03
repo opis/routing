@@ -18,46 +18,44 @@
 namespace Opis\Routing;
 
 use ArrayAccess, ArrayObject;
+use Opis\Http\Request;
+use Opis\Routing\Filters\RequestFilter;
+use Opis\Routing\Filters\UserFilter;
 
 class Router
 {
     /** @var RouteCollection */
-    protected $routes;
+    private RouteCollection $routes;
 
-    /** @var FilterCollection */
-    protected $filters;
+    /** @var Filter[] */
+    private array $filters;
 
     /** @var Dispatcher */
-    protected $dispatcher;
+    private Dispatcher $dispatcher;
 
     /** @var array */
-    protected $global;
+    protected ArrayAccess $global;
 
     /** @var array */
-    protected $compacted = [];
-
-    /** @var Context|null */
-    protected $context;
+    private array $compacted = [];
 
     /**
+     * Router constructor.
      * @param RouteCollection $routes
-     * @param IDispatcher|null $dispatcher
-     * @param FilterCollection|null $filters
+     * @param Dispatcher|null $dispatcher
      * @param ArrayAccess|null $global
+     * @param array|null $filters
      */
     public function __construct(
         RouteCollection $routes,
-        IDispatcher $dispatcher = null,
-        FilterCollection $filters = null,
-        ArrayAccess $global = null
+        Dispatcher $dispatcher = null,
+        ArrayAccess $global = null,
+        array $filters = null
     ) {
-        if ($dispatcher === null) {
-            $dispatcher = new Dispatcher();
-        }
         $this->routes = $routes;
-        $this->dispatcher = $dispatcher;
-        $this->filters = $filters;
-        $this->global = $global;
+        $this->dispatcher = $dispatcher ?? new DefaultDispatcher();
+        $this->global = $global ?? new ArrayObject();
+        $this->filters = $filters ?? [new RequestFilter(), new UserFilter()];
     }
 
     /**
@@ -71,15 +69,10 @@ class Router
     }
 
     /**
-     * Get the filter collection
-     *
-     * @return  FilterCollection
+     * @return Filter[]
      */
-    public function getFilterCollection(): FilterCollection
+    public function getFilters(): array
     {
-        if ($this->filters === null) {
-            $this->filters = new FilterCollection();
-        }
         return $this->filters;
     }
 
@@ -90,66 +83,39 @@ class Router
      */
     public function getGlobalValues(): ArrayAccess
     {
-        if ($this->global === null) {
-            $this->global = new ArrayObject();
-        }
         return $this->global;
     }
 
     /**
      * Get the dispatcher resolver
      *
-     * @return IDispatcher
+     * @return Dispatcher
      */
-    public function getDispatcher(): IDispatcher
+    public function getDispatcher(): Dispatcher
     {
         return $this->dispatcher;
     }
 
     /**
-     * @return Context
-     */
-    public function getContext(): Context
-    {
-        return $this->context;
-    }
-
-    /**
      * @param Route $route
+     * @param Request $request
      * @return RouteInvoker
      */
-    public function resolveInvoker(Route $route): RouteInvoker
+    public function resolveInvoker(Route $route, Request $request): RouteInvoker
     {
-        $context = $this->getContext();
-        $cid = spl_object_hash($context);
+        $cid = spl_object_hash($request);
         $rid = spl_object_hash($route);
 
         if (!isset($this->compacted[$cid][$rid])) {
-            return $this->compacted[$cid][$rid] = $this->createInvoker($route, $context);
+            return $this->compacted[$cid][$rid] = new RouteInvoker($this, $route, $request);
         }
 
         return $this->compacted[$cid][$rid];
     }
 
-    /**
-     *
-     * @param   Context $context
-     *
-     * @return  mixed
-     */
-    public function route(Context $context)
+    public function route(Request $request)
     {
-        $this->context = $context;
-        return $this->getDispatcher()->dispatch($this);
-    }
-
-    /**
-     * @param Route $route
-     * @param Context $context
-     * @return RouteInvoker
-     */
-    protected function createInvoker(Route $route, Context $context): RouteInvoker
-    {
-        return new RouteInvoker($route, $context, $this->getGlobalValues());
+        $this->global['request'] = $request;
+        return $this->getDispatcher()->dispatch($this, $request);
     }
 }

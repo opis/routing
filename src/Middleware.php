@@ -17,47 +17,27 @@
 
 namespace Opis\Routing;
 
-class Context
+use Closure;
+use Opis\Http\Response;
+
+abstract class Middleware
 {
-    /** @var string */
-    protected $path;
-
-    /** @var mixed|null */
-    protected $data;
+    /** @var Closure */
+    private $next;
 
     /**
-     * @param string $path
-     * @param null|mixed $data
+     * @param Closure $next
      */
-    public function __construct(string $path, $data = null)
+    final function __construct(Closure $next)
     {
-        $this->path = $path;
-        $this->data = $data;
+        $this->next = $next;
     }
 
     /**
-     * @return string
+     * @return Response
      */
-    public function path(): string
+    protected function next(): Response
     {
-        return $this->path;
-    }
-
-    /**
-     * @return mixed|null
-     */
-    public function data()
-    {
-        return $this->data;
-    }
-
-    /**
-     * Stringify
-     *
-     * @return  string
-     */
-    public function __toString()
-    {
-        return $this->path;
+        return ($this->next)();
     }
 }

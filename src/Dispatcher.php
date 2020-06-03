@@ -17,20 +17,14 @@
 
 namespace Opis\Routing;
 
-class Dispatcher implements IDispatcher
-{
-    use DispatcherTrait;
+use Opis\Http\{Request, Response};
 
+interface Dispatcher
+{
     /**
      * @param Router $router
-     * @return mixed|null
+     * @param Request $request
+     * @return mixed
      */
-    public function dispatch(Router $router)
-    {
-        if (null === $route = $this->findRoute($router)) {
-            return null;
-        }
-
-        return $router->resolveInvoker($route)->invokeAction();
-    }
+    public function dispatch(Router $router, Request $request): Response;
 }

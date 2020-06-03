@@ -17,80 +17,66 @@
 
 namespace Opis\Routing;
 
-use Serializable;
-use Opis\Pattern\RegexBuilder;
-use Opis\Closure\SerializableClosure;
+use Opis\Routing\Traits\{
+    Filter as FilterTrait,
+    Bindings as BindingTrait
+};
+use Opis\Utils\RegexBuilder;
 
-class RouteCollection implements Serializable
+class RouteCollection
 {
+    use FilterTrait;
+    use BindingTrait;
+
     /** @var Route[] */
-    protected $routes = [];
+    private $routes = [];
 
     /** @var null|string[] */
-    protected $regex;
+    private $regex;
 
     /** @var string[] */
-    protected $namedRoutes = [];
+    private $namedRoutes = [];
 
     /** @var  RegexBuilder */
-    protected $builder;
+    private $builder;
+
+    /** @var RegexBuilder|null */
+    private $domainBuilder;
 
     /** @var bool */
-    protected $dirty = false;
+    private $dirty = false;
 
-    /** @var string|null */
-    protected $sortKey;
-
-    /** @var bool */
-    protected $sortDescending;
-
-    /** @var callable */
-    protected $factory;
+    /** @var callable[] */
+    private $mixins = [];
 
     /**
-     * @param callable|null $factory
+     * RouteCollection constructor.
      * @param RegexBuilder|null $builder
-     * @param string|null $sortKey
-     * @param bool $sortDescending
      */
     public function __construct(
-        callable $factory = null,
-        RegexBuilder $builder = null,
-        string $sortKey = null,
-        bool $sortDescending = true
+        RegexBuilder $builder = null
     ) {
-        $this->factory = $factory ?? function (
-                RouteCollection $collection,
-                string $id,
-                string $pattern,
-                callable $action,
-                string $name = null
-            ) {
-                return new Route($collection, $id, $pattern, $action, $name);
-            };
-        $this->builder = $builder ?? new RegexBuilder();
-        $this->sortKey = $sortKey;
-        $this->sortDescending = $sortDescending;
+        $this->builder = $builder ?? new RegexBuilder([
+                RegexBuilder::CAPTURE_MODE => RegexBuilder::CAPTURE_LEFT,
+        ]);
     }
 
     /**
      * @param string $pattern
      * @param callable $action
+     * @param string[] $method
+     * @param int $priority
      * @param string|null $name
      * @return Route
      */
-    public function createRoute(string $pattern, callable $action, string $name = null): Route
+    public function createRoute(string $pattern, callable $action, array $method, int $priority = 0, string $name = null): Route
     {
         $id = $this->generateRouteId();
-        /** @var Route $route */
-        $route = ($this->factory)($this, $id, $pattern, $action, $name);
-        if (!($route instanceof Route)) {
-            throw new \RuntimeException("Invalid return value from factory. Expected instance of " . Route::class);
-        }
-
+        $route = new Route($this, $id, $pattern, $action, $method, $priority, $name);
         $this->routes[$id] = $route;
         $this->dirty = true;
         $this->regex = null;
+
         if (null !== $name = $route->getName()) {
             $this->namedRoutes[$name] = $id;
         }
@@ -164,13 +150,9 @@ class RouteCollection implements Serializable
      */
     public function sort()
     {
-        if (!$this->dirty || $this->sortKey === null) {
+        if (!$this->dirty) {
             return;
         }
-
-
-        $sortKey = $this->sortKey;
-        $descending = $this->sortDescending;
 
         /** @var string[] $keys */
         $keys = array_reverse(array_keys($this->routes));
@@ -182,13 +164,7 @@ class RouteCollection implements Serializable
         while (!$done) {
             $done = true;
             for ($i = 0, $l = count($this->routes) - 1; $i < $l; $i++) {
-
-                if ($descending) {
-                    $invert = $values[$i]->get($sortKey) < $values[$i + 1]->get($sortKey);
-                } else {
-                    $invert = $values[$i]->get($sortKey) > $values[$i + 1]->get($sortKey);
-                }
-
+                $invert = $values[$i]->getPriority() < $values[$i + 1]->getPriority();
                 if ($invert) {
                     $done = false;
                     $temp_value = $values[$i];
@@ -207,71 +183,66 @@ class RouteCollection implements Serializable
     }
 
     /**
-     * @inheritdoc
+     * @return RegexBuilder
      */
-    public function serialize()
+    public function getDomainBuilder(): RegexBuilder
     {
-        SerializableClosure::enterContext();
-        $this->sort();
-        $data = serialize($this->getSerializableData());
-        SerializableClosure::exitContext();
-        return $data;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function unserialize($serialized)
-    {
-        $this->setUnserializedData(unserialize($serialized));
-    }
-
-    /**
-     * @return array
-     */
-    protected function getSerializableData(): array
-    {
-        $factory = $this->factory;
-
-        if ($factory instanceof \Closure) {
-            $factory = SerializableClosure::from($factory);
+        if ($this->domainBuilder === null) {
+            $this->domainBuilder = new RegexBuilder([
+                RegexBuilder::SEPARATOR_SYMBOL => '.',
+                RegexBuilder::CAPTURE_MODE => RegexBuilder::CAPTURE_RIGHT,
+            ]);
         }
+        return $this->domainBuilder;
+    }
 
+    /**
+     * @return callable[]
+     */
+    public function getMixins(): array
+    {
+        return $this->mixins;
+    }
+
+    /**
+     * @param string $name
+     * @param callable $callback
+     * @return static
+     */
+    public function mixin(string $name, callable $callback): self
+    {
+        $this->mixins[$name] = $callback;
+        return $this;
+    }
+
+    public function __serialize(): array
+    {
         return [
             'builder' => $this->builder,
+            'domainBuilder' => $this->domainBuilder,
+            'dirty' => $this->dirty,
+            'regex' => $this->regex,
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
-            'regex' => $this->getRegexPatterns(),
-            'dirty' => $this->dirty,
-            'sortKey' => $this->sortKey,
-            'sortDescending' => $this->sortDescending,
-            'factory' => $factory,
+            'defaults' => $this->defaults,
+            'bindings' => $this->bindings,
+            'filters' => $this->filters,
+            'placeholders' => $this->placeholders,
+            'mixins' => $this->mixins,
         ];
     }
 
-    /**
-     * @param array $data
-     */
-    protected function setUnserializedData(array $data)
+    public function __unserialize(array $data): void
     {
-        $this->builder = $data['builder'];
-        $this->routes = $data['routes'];
-        $this->namedRoutes = $data['namedRoutes'];
-        $this->regex = $data['regex'];
-        $this->dirty = $data['dirty'];
-        $this->sortKey = $data['sortKey'];
-        $this->sortDescending = $data['sortDescending'];
-        $this->factory = $data['factory'];
-
-        if ($this->factory instanceof SerializableClosure) {
-            $this->factory = $this->factory->getClosure();
+        foreach ($data as $property => $value) {
+            $this->{$property} = $value;
         }
     }
 
     /**
      * @return string
      */
-    protected function generateRouteId(): string
+    private function generateRouteId(): string
     {
         try {
             return sprintf('%012x%04x%04x%012x',

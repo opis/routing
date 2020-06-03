@@ -17,61 +17,30 @@
 
 namespace Opis\Routing;
 
-use ArrayAccess;
+use RuntimeException;
+use Opis\Http\Request;
 
-class RouteInvoker
+class RouteInvoker extends Invoker
 {
-    /** @var Context */
-    protected $context;
+    private Router $router;
+    private Route $route;
+    private Request $request;
 
-    /** @var Route */
-    protected $route;
+    /** @var string[]|null */
+    private ?array $names = null;
 
-    /** @var ArrayAccess */
-    protected $global;
+    /** @var array|null */
+    private ?array $values = null;
 
-    /** @var string[] */
-    protected $names;
+    /** @var callable[]|null */
+    private ?array $bindings = null;
 
-    /** @var array */
-    protected $values;
-
-    /** @var array[] */
-    protected $bindings;
-
-    /** @var RouteInvoker */
-    protected $result;
-
-    /** @var ArgumentResolver */
-    protected $argumentResolver;
-
-    /**
-     * @param Context $context
-     * @param Route $route
-     * @param ArrayAccess $global
-     */
-    public function __construct(Route $route, Context $context, ArrayAccess $global)
+    public function __construct(Router $router, Route $route, Request $request)
     {
-        $this->context = $context;
+        parent::__construct($router->getGlobalValues());
+        $this->router = $router;
         $this->route = $route;
-        $this->global = $global;
-        $this->result = $this;
-    }
-
-    /**
-     * @return Context
-     */
-    public function getContext(): Context
-    {
-        return $this->context;
-    }
-
-    /**
-     * @return Route
-     */
-    public function getRoute(): Route
-    {
-        return $this->route;
+        $this->request = $request;
     }
 
     /**
@@ -80,7 +49,13 @@ class RouteInvoker
     public function getNames(): array
     {
         if ($this->names === null) {
-            $this->names = $this->route->getRouteCollection()->getRegexBuilder()->getNames($this->route->getPattern());
+            $names = [];
+            $collection = $this->route->getRouteCollection();
+            if (null !== $domain = ($this->route->getProperties()['domain'] ?? null)) {
+                $names += $collection->getDomainBuilder()->getNames($domain);
+            }
+            $names += $collection->getRegexBuilder()->getNames($this->route->getPattern());
+            $this->names = $names;
         }
 
         return $this->names;
@@ -96,7 +71,7 @@ class RouteInvoker
             $builder = $routes->getRegexBuilder();
 
             $regex = $routes->getRegex($this->route->getID());
-            $values = $builder->getValues($regex, (string)$this->context);
+            $values = $builder->getValues($regex, $this->request->getUri()->getPath());
 
             $this->values = array_intersect_key($values, array_flip($this->getNames())) + $this->route->getDefaults();
         }
@@ -116,40 +91,47 @@ class RouteInvoker
         return $this->bindings;
     }
 
-    /**
-     * @return mixed
-     */
-    public function invokeAction()
+    protected function getCallback(): callable
     {
-        if ($this->result === $this) {
-            $callback = $this->route->getAction();
-            $arguments = $this->getArgumentResolver()->resolve($callback);
-            $this->result = $callback(...$arguments);
+        $callback = $this->route->getAction();
+
+        if (!$callback instanceof ControllerCallback) {
+            return $callback;
         }
 
-        return $this->result;
-    }
+        /** @var ControllerCallback $callback */
+        $methodName = $callback->getMethod();
+        $className = $callback->getClass();
 
-    /**
-     * @return ArgumentResolver
-     */
-    public function getArgumentResolver(): ArgumentResolver
-    {
-        if ($this->argumentResolver === null) {
+        $argResolver = $this->getArgumentResolver();
 
-            $resolver = new ArgumentResolver($this->global);
-
-            foreach ($this->getValues() as $key => $value) {
-                $resolver->addValue($key, $value);
+        if ($className[0] === '@') {
+            $className = substr($className, 1);
+            $class = $argResolver->getArgumentValue($className);
+            if ($class === null) {
+                throw new RuntimeException("Unknown controller variable '$className'");
             }
-
-            foreach ($this->getBindings() as $key => $callback) {
-                $resolver->addBinding($key, $callback);
-            }
-
-            $this->argumentResolver = $resolver;
+        } else {
+            $class = $className;
         }
 
-        return $this->argumentResolver;
+        if ($methodName[0] === '@') {
+            $methodName = substr($methodName, 1);
+            $method = $argResolver->getArgumentValue($methodName);
+            if ($method === null) {
+                throw new RuntimeException("Unknown controller variable '$methodName'");
+            }
+        } else {
+            $method = $methodName;
+        }
+
+        if (!$callback->isStatic()) {
+            if (!is_subclass_of($class, Controller::class)) {
+                throw new RuntimeException('Not an instance of ' . Controller::class);
+            }
+            $class = new $class();
+        }
+
+        return [$class, $method];
     }
 }

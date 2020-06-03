@@ -1,15 +1,15 @@
 Opis Routing
 =================
-[![Build Status](https://travis-ci.org/opis/routing.svg?branch=master)](https://travis-ci.org/opis/routing)
+[![Tests](https://github.com/opis/routing/workflows/Tests/badge.svg)](https://github.com/opis/routing/actions)
 [![Latest Stable Version](https://poser.pugx.org/opis/routing/version.png)](https://packagist.org/packages/opis/routing)
 [![Latest Unstable Version](https://poser.pugx.org/opis/routing/v/unstable.png)](https://packagist.org/packages/opis/routing)
 [![License](https://poser.pugx.org/opis/routing/license.png)](https://packagist.org/packages/opis/routing)
 
 Routing framework
 ------------------
-**Opis Routing** is a framework for building various components that need routing capabilities. 
-As a routing framework, it may handle all sorts of paths that are following a pattern, 
-not being limited to HTTP request.
+**Opis Routing** is a library that enables you to route HTTP requests. It provides a full range of features like
+path filters, custom user filters, domain filters, bindings, middleware, and more.
+
 
 ### Documentation
 
@@ -17,13 +17,13 @@ The full documentation for this library can be found [here][documentation]
 
 ### License
 
-**Opis Routing** is licensed under the [Apache License, Version 2.0][apache_license]. 
+**Opis Routing** is licensed under the [Apache License, Version 2.0][license]. 
 
 ### Requirements
 
-* PHP ^7.1
-* [Opis Closure] ^3.0
-* [Opis Pattern] ^1.0
+* PHP ^7.4
+* [Opis Closure] ^4.0
+* [Opis Utils] ^2020
 
 ## Installation
 
@@ -39,14 +39,14 @@ Or you could directly reference it into your `composer.json` file as a dependenc
 ```json
 {
     "require": {
-        "opis/routing": "^5.0"
+        "opis/routing": "^2020"
     }
 }
 ```
 
 [documentation]: https://www.opis.io/routing "Documentation"
-[apache_license]: https://www.apache.org/licenses/LICENSE-2.0 "Apache License"
+[license]: https://www.apache.org/licenses/LICENSE-2.0 "Apache License"
 [Packagist]: https://packagist.org/packages/opis/routing "Packagist"
 [Composer]: https://getcomposer.org "Composer"
-[Opis Closure]: https://www.opis.io/closure "Opis Closure"
-[Opis Pattern]: https://www.opis.io/pattern "Opis Pattern"
+[Opis Closure]: https://github.com/opis/closure "Opis Closure"
+[Opis Utils]: https://github.com/opis/utils "Opis Utils"
