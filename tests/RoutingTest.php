@@ -174,7 +174,6 @@ class RoutingTest extends TestCase
         $this->route('/{foo?}', function ($foo = 'bar') {
             return $foo;
         });
-        print_r($this->router->getRouteCollection()->getNamedRoutes()['current']);
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/')->getBody());
     }
