@@ -56,9 +56,7 @@ class RouteCollection
     public function __construct(
         RegexBuilder $builder = null
     ) {
-        $this->builder = $builder ?? new RegexBuilder([
-                RegexBuilder::CAPTURE_MODE => RegexBuilder::CAPTURE_LEFT,
-        ]);
+        $this->builder = $builder ?? new RegexBuilder();
     }
 
     /**

@@ -54,7 +54,7 @@ class RoutingTest extends TestCase
         if (!is_array($method)) {
             $method = [$method];
         }
-        return $this->collection->createRoute($pattern, $action, $method);
+        return $this->collection->createRoute($pattern, $action, $method, 0, "current");
     }
 
     /**
@@ -169,18 +169,17 @@ class RoutingTest extends TestCase
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
-    // TODO: Check this
-    public function xtestParamOptional2()
+    public function testParamOptional2()
     {
         $this->route('/{foo?}', function ($foo = 'bar') {
             return $foo;
         });
-
+        print_r($this->router->getRouteCollection()->getNamedRoutes()['current']);
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/')->getBody());
     }
-    // TODO: Check this
-    public function xtestParamOptional3()
+
+    public function testParamOptional3()
     {
         $this->route('/{foo?}', function ($foo) {
             return $foo;
