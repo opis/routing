@@ -215,7 +215,6 @@ class RouteCollection
     {
         return [
             'builder' => $this->builder,
-            'domainBuilder' => $this->domainBuilder,
             'dirty' => $this->dirty,
             'regex' => $this->regex,
             'routes' => $this->routes,

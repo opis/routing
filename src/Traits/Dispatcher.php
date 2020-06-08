@@ -25,6 +25,7 @@ trait Dispatcher
 {
     /**
      * @param Router $router
+     * @param Request $request
      * @return null|Route
      */
     protected function findRoute(Router $router, Request $request): ?Route
