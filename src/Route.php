@@ -323,12 +323,11 @@ class Route
      */
     public function mixin(string $name, ?array $config = null): self
     {
-        $collection = $this->getRouteCollection();
-        $mixins = $collection->getMixins();
-        if (!isset($mixins[$name])) {
-            throw new RuntimeException("Unknown mixin name " . $name);
+        if (!is_subclass_of($name, Mixin::class, true)) {
+            throw new RuntimeException("Unknown mixin " . $name);
+
         }
-        $mixins[$name]($this, $config);
+        (new $name)($this, $config);
         return $this;
     }
 

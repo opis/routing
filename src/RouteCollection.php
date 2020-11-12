@@ -42,9 +42,6 @@ class RouteCollection
 
     private bool $dirty = false;
 
-    /** @var callable[] */
-    private array $mixins = [];
-
     /**
      * RouteCollection constructor.
      * @param RegexBuilder|null $builder
@@ -191,26 +188,6 @@ class RouteCollection
         return $this->domainBuilder;
     }
 
-    /**
-     * @return callable[]
-     */
-    public function getMixins(): array
-    {
-        return $this->mixins;
-    }
-
-    /**
-     * @param string $name
-     * @param callable $callback
-     * @return static
-     */
-    public function mixin(string $name, callable $callback): self
-    {
-        $this->mixins[$name] = $callback;
-
-        return $this;
-    }
-
     public function __serialize(): array
     {
         return [
@@ -223,7 +200,6 @@ class RouteCollection
             'bindings' => $this->bindings,
             'filters' => $this->filters,
             'placeholders' => $this->placeholders,
-            'mixins' => $this->mixins,
         ];
     }
 
