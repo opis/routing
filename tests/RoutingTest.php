@@ -27,7 +27,6 @@ use Opis\Http\{
     Request
 };
 use PHPUnit\Framework\TestCase;
-use function Opis\Closure\init as enableSerialization;
 
 class RoutingTest extends TestCase
 {
@@ -317,7 +316,7 @@ class RoutingTest extends TestCase
 
     public function testSerialization()
     {
-        enableSerialization();
+        \Opis\Closure\SerializableClosure::init();
 
         $this->route('/', static fn () => 'OK')
             ->filter('foo', static fn ($x) => $x == 'X');
