@@ -129,11 +129,21 @@ class RouteInvoker extends Invoker
 
         if (!$callback->isStatic()) {
             if (!is_subclass_of($class, Controller::class)) {
-                throw new RuntimeException('Not an instance of ' . Controller::class);
+                throw new RuntimeException("Controller class {$class} must extend " . Controller::class);
             }
             $class = new $class();
         }
 
-        return [$class, $method];
+        $ret = [$class, $method];
+
+        if (!is_callable($ret)) {
+            if (is_object($class)) {
+                throw new RuntimeException("Cannot find public method '{$method}' on controller class " . get_class($class));
+            } else {
+                throw new RuntimeException("Cannot find public static method '{$method}' on controller class {$class}");
+            }
+        }
+
+        return $ret;
     }
 }
