@@ -37,16 +37,15 @@ class RouteCollection
     private array $namedRoutes = [];
 
     private RegexBuilder $builder;
-
     private ?RegexBuilder $domainBuilder = null;
-
     private bool $dirty = false;
 
     /**
      * RouteCollection constructor.
      * @param RegexBuilder|null $builder
      */
-    public function __construct(?RegexBuilder $builder = null) {
+    public function __construct(?RegexBuilder $builder = null)
+    {
         $this->builder = $builder ?? new RegexBuilder();
     }
 
@@ -58,8 +57,13 @@ class RouteCollection
      * @param string|null $name
      * @return Route
      */
-    public function createRoute(string $pattern, callable $action, array $method,
-                                int $priority = 0, ?string $name = null): Route
+    public function createRoute(
+        string $pattern,
+        callable $action,
+        array $method,
+        int $priority = 0,
+        ?string $name = null)
+    : Route
     {
         $id = $this->generateRouteId();
         $route = new Route($this, $id, $pattern, $action, $method, $priority, $name);

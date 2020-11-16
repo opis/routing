@@ -41,31 +41,20 @@ class Route
     }
 
     private RouteCollection $collection;
-
     private string $pattern;
 
     /** @var callable */
     private $action;
 
     private ?string $name;
-
     private int $priority;
-
     private string $id;
 
     /** @var string[] */
     private array $method;
 
-    /**
-     * @var array
-     */
     private array $cache = [];
-
-    /**
-     * @var array
-     */
     private array $properties = [];
-
     private bool $inheriting = false;
 
     /**
@@ -325,7 +314,6 @@ class Route
     {
         if (!is_subclass_of($name, Mixin::class, true)) {
             throw new RuntimeException("Unknown mixin " . $name);
-
         }
         (new $name)($this, $config);
         return $this;

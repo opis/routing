@@ -25,16 +25,13 @@ use Opis\Routing\Filters\{
 
 class Router
 {
-
     private RouteCollection $routes;
 
     /** @var Filter[] */
     private array $filters;
 
     private Dispatcher $dispatcher;
-
     protected ArrayAccess $global;
-
     private array $compacted = [];
 
     /**

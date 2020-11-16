@@ -48,9 +48,9 @@ class ControllerCallback
     /**
      * Make the instances of this class being a valid callable value
      */
-    public function __invoke()
+    final public function __invoke()
     {
-
+        // nop
     }
 
     /**

@@ -22,7 +22,6 @@ use Opis\Http\Response;
 
 abstract class Middleware
 {
-
     private Closure $next;
 
     /**
