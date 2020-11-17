@@ -2,7 +2,7 @@
     "name": "opis/routing",
     "description": "Route HTTP requests",
     "keywords": ["routing", "http router"],
-    "homepage": "http://opis.io",
+    "homepage": "https://opis.io",
     "license": "Apache-2.0",
     "authors": [
         {
@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^7.4|^8.0",
         "opis/utils": "2020.x-dev",
         "opis/http": "2020.x-dev"
     },
