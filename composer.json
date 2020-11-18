@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^7.4 || ^8.0",
         "opis/utils": "2020.x-dev",
         "opis/http": "2020.x-dev"
     },
