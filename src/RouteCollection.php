@@ -197,7 +197,7 @@ class RouteCollection
         return [
             'builder' => $this->builder,
             'dirty' => $this->dirty,
-            'regex' => $this->regex,
+            'regex' => $this->getRegexPatterns(),
             'routes' => $this->routes,
             'namedRoutes' => $this->namedRoutes,
             'defaults' => $this->defaults,
