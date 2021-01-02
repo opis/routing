@@ -18,7 +18,6 @@
 namespace Opis\Routing;
 
 use ArrayAccess;
-use Opis\Utils\ArgumentResolver;
 
 abstract class Invoker
 {

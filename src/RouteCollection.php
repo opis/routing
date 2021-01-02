@@ -21,7 +21,6 @@ use Opis\Routing\Traits\{
     Filter as FilterTrait,
     Bindings as BindingTrait
 };
-use Opis\Utils\RegexBuilder;
 
 class RouteCollection
 {
